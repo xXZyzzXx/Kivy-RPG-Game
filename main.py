@@ -98,6 +98,7 @@ class MainScreen(Screen):
             self.money_label.text = f'{money[0]} [size=13]+{money[1]}[/size]'
         else:
             self.money_label.text = f'{money[0]}'
+
         # Обновление для сырьевых ресурсов
         for i, resource in enumerate(config.resourses):
             if config.resourses[resource][0]<=config.sklad and config.resourses[resource][0] + config.resourses[resource][1] <= config.sklad:
