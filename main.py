@@ -61,12 +61,14 @@ class MainScreen(Screen):
         stackscreens.add_widget(data_center_screen)
         navigation.add_widget(stack)
         mainmenu.add_widget(stackscreens)
-        self.empty_space = Building(id='f1', pos_hint=({'center_x': .4, 'center_y': .1}), size_hint=(None, None))
-        self.empty_space2 = Building(id='f2', pos_hint=({'center_x': .6, 'center_y': .1}), size_hint=(None, None))
+        self.empty_space = Building(id='f1', pos_hint=({'center_x': .4, 'center_y': .2}), size_hint=(None, None))
+        self.empty_space2 = Building(id='f2', pos_hint=({'center_x': .6, 'center_y': .2}), size_hint=(None, None))
+        self.empty_space3 = Building(id='f3', pos_hint=({'center_x': .5, 'center_y': .3}), size_hint=(None, None))
         buildings = [self.empty_space, self.empty_space2]
         self.layout.add_widget(canvas)
         self.layout.add_widget(self.empty_space)
         self.layout.add_widget(self.empty_space2)
+        self.layout.add_widget(self.empty_space3)
         self.layout.add_widget(navigation)
         self.layout.add_widget(mainmenu)
         self.layout.add_widget(self.right_sidebar_content())
@@ -101,16 +103,16 @@ class MainScreen(Screen):
 
         # Обновление для сырьевых ресурсов
         for i, resource in enumerate(config.resourses):
-            if config.resourses[resource][0]<=config.sklad and config.resourses[resource][0] + config.resourses[resource][1] <= config.sklad:
-                config.resourses[resource][0] += config.resourses[resource][1]
-            else:
-                config.resourses[resource][0] = config.sklad
             res = config.resourses[resource]
+            if res[0]<=res[3] and res[0] + res[1] <= res[3]:
+                res[0] += res[1]
+            else:
+                res[0] = res[3]
             if res[1] > 0:
                 res_label_list[i].text = f'{int(res[0])} [size=13]+{res[1]}[/size]'
             else:
                 res_label_list[i].text = f'{int(res[0])}'
-            sklad_coefficient = res[0] / config.sklad
+            sklad_coefficient = res[0] / res[3]
             pb_list[i].value_normalized = sklad_coefficient
 
 
@@ -134,12 +136,12 @@ class MainScreen(Screen):
         self.res_grid = GridLayout(rows=5, row_default_height=30)
         for res in config.resourses:
             resource = config.resourses[res]
-            sklad_coefficient = resource[0] / config.sklad
+           # sklad_coefficient = resource[0] / config.sklad
             rel_ress = GridLayout(cols=2, size_hint_y=None, padding=5, height=40)
             resource_box = TestBoxLayout(orientation='vertical', spacing=2, padding=2)
             resource_label = ResLabel(id=f'{res}', text=f'{int(resource[0])} [size=13]+{resource[1]}[/size]')
-            resource_progress = ProgressBar(id=f'p_{res}', size_hint=(.9, .1), max=config.sklad)
-            resource_progress.value_normalized = sklad_coefficient
+            resource_progress = ProgressBar(id=f'p_{res}', size_hint=(.9, .1), max=resource[3])
+            #resource_progress.value_normalized = sklad_coefficient
             resource_box.add_widget(resource_label)
             resource_box.add_widget(resource_progress)
             rel_ress.add_widget(MoneyImage(size_hint_x=.25, source=resource[2]))
