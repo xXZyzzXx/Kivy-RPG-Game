@@ -80,10 +80,10 @@ class MainScreen(Screen):
         self.timer_event = Clock.schedule_interval(
             lambda dt: self.update_resources(self.res_label_list, self.pb_list, buildings), 1)
 
-    def prod_menu_newscreen(self):
+    def data_center_newscreen(self):
         self.layout.add_widget(data_center.data_center_content(self.empty_space))
 
-    def data_center_newscreen(self):
+    def prod_menu_newscreen(self):
         empty_space2 = Building(id='f2', pos_hint=({'center_x': .6, 'center_y': .1}), size_hint=(None, None))
         self.layout.add_widget(building.prod_menu(self.empty_space2))
 
@@ -100,7 +100,10 @@ class MainScreen(Screen):
             self.money_label.text = f'{money[0]}'
         # Обновление для сырьевых ресурсов
         for i, resource in enumerate(config.resourses):
-            config.resourses[resource][0] += config.resourses[resource][1]
+            if config.resourses[resource][0]<=config.sklad and config.resourses[resource][0] + config.resourses[resource][1] <= config.sklad:
+                config.resourses[resource][0] += config.resourses[resource][1]
+            else:
+                config.resourses[resource][0] = config.sklad
             res = config.resourses[resource]
             if res[1] > 0:
                 res_label_list[i].text = f'{int(res[0])} [size=13]+{res[1]}[/size]'
@@ -108,10 +111,13 @@ class MainScreen(Screen):
                 res_label_list[i].text = f'{int(res[0])}'
             sklad_coefficient = res[0] / config.sklad
             pb_list[i].value_normalized = sklad_coefficient
+
+
         for b in buildings:
             if b.active:
                 b.update_available_units()
 
+    # Добавление и обовление ресурсов
     def right_sidebar_content(self):
         right_sidebar = RightSidebar(orientation='vertical', size_hint=(.17, .6),
                                      pos_hint=({'center_y': .5, 'right': 1}))

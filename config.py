@@ -31,8 +31,8 @@ player_units = {'Рабочий': 0,
 
 money = [20000, 20, r'data/images/res_icons/money.png']
 
-resourses = {'Древесина': [70000, 0.2, r'data/images/res_icons/wood.png'],
-             'Еда': [560, 2, r'data/images/res_icons/food.png'],
+resourses = {'Древесина': [50000, 500, r'data/images/res_icons/wood.png'],
+             'Еда': [560, 10000, r'data/images/res_icons/food.png'],
              'Железо': [200, 0, r'data/images/res_icons/iron.png'],
              'Глина': [15500, 5550, r'data/images/res_icons/clay.png']}
 
@@ -49,7 +49,7 @@ res = {'Деньги': [1550, 5550],
        'Железо': [70000, 0],
        'Глина': [20, 9970]}
 
-sklad = 600
+sklad = 60000
 
 empty_icon = r'data/images/gui_elements/empty_icon.png'
 
