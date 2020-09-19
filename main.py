@@ -24,6 +24,7 @@ def set_screen(name_screen, sm):
     sm.current = name_screen
 
 
+
 class MainScreen(Screen):
     def __init__(self, **kw):
         super(MainScreen, self).__init__(**kw)
@@ -32,9 +33,20 @@ class MainScreen(Screen):
         self.money_label = None
         self.res_grid = None
 
+
+
+
     def on_enter(self, *args):
         self.layout = RelativeLayout()
         canvas = CityCanvas()
+
+        # Выбор окна в главном меню
+        mainmenu = BoxLayout(orientation='vertical', size_hint=(.1, .1), pos_hint=({'x': 0, 'top': 0.5}))
+        stackscreens = GridLayout(rows=2, spacing=5)
+        prod_menu_screen = Button(size_hint_x=(0.1), text='prod_menu',on_release=lambda x: self.prod_menu_newscreen())
+        data_center_screen = Button(size_hint_x=(0.1),text='data_center',on_release=lambda x: self.data_center_newscreen())
+
+
         navigation = BoxLayout(size_hint=(.4, .11), pos_hint=({'center_x': .5, 'top': 1}))
         stack = GridLayout(cols=4, spacing=5)
         map_button = RockLayout(MapButton(on_press=lambda x: set_screen('iso_map', self.manager)))
@@ -45,22 +57,39 @@ class MainScreen(Screen):
         stack.add_widget(map_button)
         stack.add_widget(report_button)
         stack.add_widget(letter_button)
+        stackscreens.add_widget(prod_menu_screen)
+        stackscreens.add_widget(data_center_screen)
         navigation.add_widget(stack)
-        empty_space = Building(id='f1', pos_hint=({'center_x': .4, 'center_y': .1}), size_hint=(None, None))
-        empty_space2 = Building(id='f2', pos_hint=({'center_x': .6, 'center_y': .1}), size_hint=(None, None))
-        buildings = [empty_space, empty_space2]
+        mainmenu.add_widget(stackscreens)
+        self.empty_space = Building(id='f1', pos_hint=({'center_x': .4, 'center_y': .1}), size_hint=(None, None))
+        self.empty_space2 = Building(id='f2', pos_hint=({'center_x': .6, 'center_y': .1}), size_hint=(None, None))
+        buildings = [self.empty_space, self.empty_space2]
         self.layout.add_widget(canvas)
-        self.layout.add_widget(empty_space)
-        self.layout.add_widget(empty_space2)
+        self.layout.add_widget(self.empty_space)
+        self.layout.add_widget(self.empty_space2)
         self.layout.add_widget(navigation)
+        self.layout.add_widget(mainmenu)
         self.layout.add_widget(self.right_sidebar_content())
         self.add_widget(self.layout)
         #building.menu_content(empty_space)
         #empty_space.name = 'Казармы'  # For testing
         #empty_space.active = True
         #self.layout.add_widget(empty_space.building_content(build_place=self, build='Казармы'))  # For testing
-        self.layout.add_widget(data_center.data_center_content(empty_space2))
-        self.timer_event = Clock.schedule_interval(lambda dt: self.update_resources(self.res_label_list, self.pb_list, buildings), 1)
+        #self.layout.add_widget(building.prod_menu(empty_space2))
+
+        self.timer_event = Clock.schedule_interval(
+            lambda dt: self.update_resources(self.res_label_list, self.pb_list, buildings), 1)
+
+    def data_center_newscreen(self):
+        self.layout.add_widget(data_center.data_center_content(self.empty_space))
+
+    def prod_menu_newscreen(self):
+        empty_space2 = Building(id='f2', pos_hint=({'center_x': .6, 'center_y': .1}), size_hint=(None, None))
+        self.layout.add_widget(building.prod_menu(self.empty_space2))
+
+
+
+
 
     def update_resources(self, res_label_list, pb_list, buildings):
         money = config.money
@@ -69,9 +98,13 @@ class MainScreen(Screen):
             self.money_label.text = f'{money[0]} [size=13]+{money[1]}[/size]'
         else:
             self.money_label.text = f'{money[0]}'
+
         # Обновление для сырьевых ресурсов
         for i, resource in enumerate(config.resourses):
-            config.resourses[resource][0] += config.resourses[resource][1]
+            if config.resourses[resource][0]<=config.sklad and config.resourses[resource][0] + config.resourses[resource][1] <= config.sklad:
+                config.resourses[resource][0] += config.resourses[resource][1]
+            else:
+                config.resourses[resource][0] = config.sklad
             res = config.resourses[resource]
             if res[1] > 0:
                 res_label_list[i].text = f'{int(res[0])} [size=13]+{res[1]}[/size]'
@@ -79,10 +112,13 @@ class MainScreen(Screen):
                 res_label_list[i].text = f'{int(res[0])}'
             sklad_coefficient = res[0] / config.sklad
             pb_list[i].value_normalized = sklad_coefficient
+
+
         for b in buildings:
             if b.active:
                 b.update_available_units()
 
+    # Добавление и обовление ресурсов
     def right_sidebar_content(self):
         right_sidebar = RightSidebar(orientation='vertical', size_hint=(.17, .6),
                                      pos_hint=({'center_y': .5, 'right': 1}))
