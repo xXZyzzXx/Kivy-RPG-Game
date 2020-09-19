@@ -1,0 +1,167 @@
+#:kivy 1.0
+#:import utils kivy.utils
+
+<BuildingScrollView>
+    scroll_wheel_distance: 15
+    smooth_scroll_end: 10
+    bar_width: 5
+    bar_color: utils.get_color_from_hex('#75bbfd')
+    effect_cls: "ScrollEffect"
+    scroll_type: ['content']
+
+<UpButton>
+    my_x_hint: 1
+    pos_hint: {"center_x": self.my_x_hint}
+<DownButton>
+    my_x_hint: 1
+    pos_hint: {"center_x": self.my_x_hint}
+<TotalTimeLabel>
+    padding: (5, 5)
+    opacity: 0
+    text_size: self.size
+    halign: 'left'
+    valign: 'middle'
+    canvas.before:
+        Color:
+            rgba: 1, 1, .8, .7
+        Rectangle:
+            pos: self.pos
+            size: self.size
+<TotalResLabel>
+    opacity: 0
+    text_size: self.size
+    halign: 'left'
+    valign: 'middle'
+<BuildResLabel>
+    text_size: self.size
+    font_size: 14
+    color: (0, 0, 0, 1)
+    halign: 'left'
+    valign: 'middle'
+    markup: True
+
+<ResLabel>
+    text_size: self.size
+    font_size: 14
+    color: (0, 0, 0, 1)
+    size_hint_y: .9
+    halign: 'left'
+    valign: 'middle'
+    markup: True
+
+<CityCanvas>
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/background-min.jpg'
+
+<RightSidebar>
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/navigation/scroll_2.png'
+            canvas.before:
+
+<SkladLabel>
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/gui_elements/rect2.png'
+
+
+
+<MenuLayout>
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/gui_elements/main_ui.png'
+
+<PlaceLabel>
+    color: (0, 0, 0, 1)
+    size: self.texture_size
+    size_hint: (None, None)
+    pos_hint: {"center_x": .5, "top": .98}
+
+<BuildTimeLabel>
+    color: (0, 0, 0, 1)
+    canvas.before:
+        Color:
+            rgba: 1, 1, .8, .7
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+<IconImage>:
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/gui_elements/LightBrown.png'
+
+
+<BuildNameLabel>
+    color: (0, 0, 0, 1)
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/gui_elements/rect2.png'
+
+
+
+<BuildButton>
+    canvas:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/gui_elements/hammer.png'
+
+<UpperBoxLayout>
+    canvas.before:
+        Color:
+            rgba: 0, 0, 0, 1
+        Line:
+            width: 2
+            rectangle: self.x, self.y, self.width, self.height
+
+<UpBoxLayout>
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/gui_elements/scroll_2.png'
+
+<BoxLayout>
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+        Line:
+            width: 1
+            rectangle: self.x, self.y, self.width, self.height
+
+<RelativeLayout>
+    canvas.before:
+        Color:
+            rgba: 0, 0, 0, 1
+        Line:
+            width: 1
+            rectangle: self.x, self.y, self.width, self.height
+<Label>
+    color: (0, 0, 0, 1)
+
+
+<DevItemIcon>
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/gui_elements/orange_back.png'
+    canvas.after:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/gui_elements/dev_item_back.png'
