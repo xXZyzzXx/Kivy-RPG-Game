@@ -62,7 +62,6 @@
             pos: self.pos
             size: self.size
             source: 'data/images/navigation/scroll_2.png'
-            canvas.before:
 
 <SkladLabel>
     canvas.before:
@@ -143,13 +142,7 @@
             width: 1
             rectangle: self.x, self.y, self.width, self.height
 
-<RelativeLayout>
-    canvas.before:
-        Color:
-            rgba: 0, 0, 0, 1
-        Line:
-            width: 1
-            rectangle: self.x, self.y, self.width, self.height
+
 <Label>
     color: (0, 0, 0, 1)
 
@@ -169,5 +162,5 @@
             size: self.size
             source: 'data/images/gui_elements/dev_item_back.png'
 
-<GifLineVertical>
+
 
