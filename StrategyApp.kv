@@ -27,11 +27,13 @@
         Rectangle:
             pos: self.pos
             size: self.size
+
 <TotalResLabel>
     opacity: 0
     text_size: self.size
     halign: 'left'
     valign: 'middle'
+
 <BuildResLabel>
     text_size: self.size
     font_size: 14
@@ -163,4 +165,56 @@
             source: 'data/images/gui_elements/dev_item_back.png'
 
 
+<InfoLabel>
+    color: utils.get_color_from_hex('#A9A9A9')
+    text_size: self.size
+    valign: 'middle'
 
+<DefAmountLabel>
+    halign: 'left'  # doesn't work, need to add text_size: self.size
+
+<TerminalRelativeLayout>
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/gui_elements/terminal1.png'
+
+<TerminalScrollView>
+    canvas.before:
+        Color:
+            rgba: 0, 0, 0, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+        Color:
+            rgba: 1, 1, 1, 1
+        Line:
+            width: 1
+            rectangle: self.x, self.y, self.width, self.height
+
+<TerminalTitleLabel>
+    text_size: self.size
+    halign: 'left'
+    valign: 'middle'
+
+<TerminalLabel>
+    color: (1, 1, 1, 1)
+    font_name: 'data/fonts/LucidaConsole.ttf'
+    font_size: 12
+    text_size: self.size
+    height: 30
+    size_hint_y: None
+    halign: 'left'
+    valign: 'middle'
+
+<TerminalTextInput>
+    color: (1, 1, 1, 1)
+    font_name: 'data/fonts/LucidaConsole.ttf'
+    font_size: 12
+    multiline: False
+    height: 30
+    size_hint_y: None
+    text_size: self.size
+    halign: 'left'
+    valign: 'middle'

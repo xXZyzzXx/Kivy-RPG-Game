@@ -53,7 +53,12 @@ sklad = 60000
 
 empty_icon = r'data/images/gui_elements/empty_icon.png'
 
-data_center = {'Защита': [r'data/images/gui_elements/data_center.png', [250, 250]],
+stealh_default = 250
+active_default = 350
+percent_amount = 10
+
+data_center = {'Защита': [r'data/images/gui_elements/data_center.png', [stealh_default, stealh_default, 5],
+                          [active_default, active_default, 0]],
                'Взлом': [r'data/images/gui_elements/hack.png'],
                'Разработка': [r'data/images/gui_elements/malware_main.png'],
                'Улучшения': [r'data/images/gui_elements/robots.png']}
@@ -66,8 +71,19 @@ programs = {'Червь': [r'data/images/gui_elements/data_center.png', [250, 25
             'Логическая бомба': [r'data/images/gui_elements/building_tools.png', [5250, 23250], 'Видимый'],
             'Троян': [r'data/images/gui_elements/robots.png', [6333, 6322], 'Видимый']}
 
-antimalware_upgrades = {'Стелс узел': [r'data/images/gui_elements/eye_crossed.png', [5350, 2230], [47, 1.8]],
-               'Активный узел': [r'data/images/gui_elements/eye.png', [230, 22420], [56, 1.8]]}
+antimalware_upgrades = {'Стелс узел': [r'data/images/gui_elements/eye_crossed.png', [5350, 2230], [47, 1.8], 0],
+               'Активный узел': [r'data/images/gui_elements/eye.png', [230, 22420], [56, 1.8], 0]}
+
+descriptions = {'Защита от взлома': 'При защите от хакерских атак  противников предусмотрено два режима работы '
+                                    'фаервола: для обнаружения скрытных атак и для противодействия прямому вторжению '
+                                    'в систему. Выбрав нужный режим для подавления компьютерной мощи противника он '
+                                    'вступит в силу через три хода, постепенно набирая влияние на систему. Включённый '
+                                    'режим постепенно увеличивает процент, который будет добавлен к текущей выбранной '
+                                    'защите, пока не достигнет своего максимума. Увеличить процент защиты можно '
+                                    'улучшением выбранной области. При смене режимов бонус фаервола сбрасывается до '
+                                    'нуля и восстанавливается заново.'}
+
+
 '''
 <BoxLayout>
     canvas.before:
