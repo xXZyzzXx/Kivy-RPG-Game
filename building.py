@@ -1,40 +1,18 @@
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.relativelayout import RelativeLayout
-from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.image import Image
-from kivy.uix.behaviors import ButtonBehavior
-from kivy.app import App
-from kivy.uix.button import Button
+import config
+from kivy.animation import Animation
 from kivy.graphics import Color, Rectangle
+from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.stacklayout import StackLayout
-from functools import partial
+from kivy.uix.button import Button
+from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.gridlayout import GridLayout
+from kivy.uix.image import Image
+from kivy.uix.label import Label
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.scatterlayout import ScatterLayout
-from kivy.uix.scatter import Scatter
-from kivy.uix.togglebutton import ToggleButton, ToggleButtonBehavior
-from kivy.uix.accordion import Accordion, AccordionItem
-from kivy.animation import Animation
-from kivy.uix.anchorlayout import AnchorLayout
-from kivy.uix.screenmanager import ScreenManager, Screen, WipeTransition
-from kivy.properties import ListProperty, OptionProperty, StringProperty
-from kivy.uix.recycleview import RecycleView
-from kivy.uix.gridlayout import GridLayout
-from kivy.clock import Clock
-from kivy.core.window import Window
-from kivy.config import ConfigParser
-from kivy.uix.slider import Slider
-from kivy.uix.image import Image, AsyncImage
-from kivy.uix.checkbox import CheckBox
-from kivy.uix.behaviors import ButtonBehavior
-from kivy.uix.textinput import TextInput
-from kivy.uix.label import Label
-from kivy.uix.textinput import TextInput
-from kivy.utils import get_color_from_hex
 from kivy.uix.scrollview import ScrollView
-from kivy.uix.tabbedpanel import TabbedPanel, TabbedPanelItem, TabbedPanelContent, TabbedPanelHeader
-import config
+from kivy.uix.tabbedpanel import TabbedPanel, TabbedPanelItem, TabbedPanelHeader
 
 
 def create_building_list(build_type, build_place, scatter):
@@ -309,7 +287,7 @@ class TopUpgradeLayout(ButtonBehavior, BoxLayout):
         upgrade_bottom_layout.add_widget(upgrade_bottom_label)
         for lay in self.upgrade_grid.lay_list:
             if lay.active:
-                anim_height_down = HeightAnimation(lay, height=80, duration=.3)
+                anim_height_down = HeightAnimation(lay, height=80, duration=.2)
                 anim_height_down.start(lay.upper_lay)
 
         if not self.active:
