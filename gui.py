@@ -1,5 +1,4 @@
 import re
-
 import building
 import config
 from additional import *
@@ -17,6 +16,8 @@ from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.scatterlayout import ScatterLayout
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.textinput import TextInput
+from kivy.uix.checkbox import CheckBox
+from kivy.uix.slider import Slider
 
 res_list = list(config.resourses.keys())
 anim_opacity_up = Animation(opacity=1, duration=.5)
