@@ -31,6 +31,7 @@ class MainScreen(Screen):
     def on_enter(self, *args):
         self.layout = RelativeLayout()
         canvas = CityCanvas()
+
         # Выбор окна в главном меню
         mainmenu = BoxLayout(orientation='vertical', size_hint=(.1, .1), pos_hint=({'x': 0, 'top': 0.5}))
         stackscreens = GridLayout(rows=3, spacing=5)
@@ -38,6 +39,10 @@ class MainScreen(Screen):
         data_center_screen = Button(size_hint_x=.1, text='data_center',
                                     on_release=lambda x: self.data_center_newscreen())
         terminal_button = Button(size_hint_x=.1, text='terminal', on_release=lambda x: self.open_terminal())
+
+        #Главное здание базы
+        self.main_base = BuildingBase(id='main_base', pos_hint=({'center_x': .5, 'center_y': .6}), size_hint=(0.3, 0.3))
+
         stackscreens.add_widget(prod_menu_screen)
         stackscreens.add_widget(data_center_screen)
         stackscreens.add_widget(terminal_button)
@@ -58,6 +63,7 @@ class MainScreen(Screen):
         self.empty_space3 = Building(id='f3', pos_hint=({'center_x': .5, 'center_y': .3}), size_hint=(None, None))
         buildings = [self.empty_space, self.empty_space2]
         self.layout.add_widget(canvas)
+        self.layout.add_widget(self.main_base)
         self.layout.add_widget(self.empty_space)
         self.layout.add_widget(self.empty_space2)
         self.layout.add_widget(self.empty_space3)
@@ -141,15 +147,18 @@ class MainScreen(Screen):
         for res in config.resourses:
             resource = config.resourses[res]
            # sklad_coefficient = resource[0] / config.sklad
-            rel_ress = GridLayout(cols=2, size_hint_y=None, padding=5, height=40)
+            rel_ress = GridLayout(cols=4, size_hint_y=None, padding=5, height=40)
             resource_box = TestBoxLayout(orientation='vertical', spacing=2, padding=2)
             resource_label = ResLabel(id=f'{res}', text=f'{int(resource[0])} [size=13]+{resource[1]}[/size]')
-            resource_progress = ProgressBar(id=f'p_{res}', size_hint=(.9, .1), max=resource[3])
+            resource_progress = ProgressBar(id=f'p_{res}', size_hint=(1, .1), max=resource[3])
             #resource_progress.value_normalized = sklad_coefficient
             resource_box.add_widget(resource_label)
             resource_box.add_widget(resource_progress)
             rel_ress.add_widget(MoneyImage(size_hint_x=.25, source=resource[2]))
             rel_ress.add_widget(resource_box)
+            max_ress = BoxLayout(orientation='horizontal', height=20, size_hint=(0.3,None))
+            max_ress.add_widget(Label(text=f'{resource[3]}',color=(0,0,0,0.3),size_hint=(0.5,0.5)))
+            rel_ress.add_widget(max_ress)
             self.res_grid.add_widget(rel_ress)
             self.res_label_list.append(resource_label)
             self.pb_list.append(resource_progress)
@@ -157,7 +166,6 @@ class MainScreen(Screen):
         right_sidebar.add_widget(rel_res)
         right_sidebar.add_widget(Image(source='data/images/gui_elements/line.png', size_hint_y=.05))
         right_sidebar.add_widget(self.res_grid)
-        right_sidebar.add_widget(SkladLabel(text=f'Склад: {config.sklad}', size_hint_y=.1, color=(0, 0, 0, 1)))
         return right_sidebar
 
     def on_leave(self, *args):
