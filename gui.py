@@ -86,6 +86,22 @@ class MailButton(ButtonBehavior, Image):
         super(MailButton, self).__init__(**kwargs)
         self.source = 'data/images/navigation/letter.png'
 
+#Инициализация базы
+class BuildingBase(ButtonBehavior, Image):
+    def __init__(self, **kwargs):
+        super(BuildingBase, self).__init__(**kwargs)
+        self.source = 'data/images/buildings/main-base.png'
+        self.free_space = False
+        self.active = False
+        self.name = 'main_base'
+        self.unit_grid = None
+        self.slider = None
+        self.available_list = None
+
+    def on_release(self):
+        self.parent.add_widget(building.main_base_menu(build_place=self))
+
+
 
 class Building(ButtonBehavior, Image):
     def __init__(self, **kwargs):

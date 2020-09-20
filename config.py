@@ -43,6 +43,8 @@ prod_upgrades = {'Ирригация': [[250, 0, 0, 0], r'data/images/gui_elemen
 
 player = {'Население': [100, 2, r"data/images/units/worker.png"]}
 
+resourses_generation = {'main_base': {'Электричество': 500, 'Еда': 500,'Сырьевые ресурсы': 0}}
+
 res = {'Деньги': [1550, 5550],
        'Древесина': [20000, 20],
        'Еда': [600, 0.2],
