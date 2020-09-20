@@ -1,19 +1,19 @@
 # CONFIG
 
-buildings = {'Хижина': [[None], 100, [60, 40, 0, 5], r"data/images/buildings/house.png", 'Социальные', ['Рабочий']],
-             'Ратуша': [['Колесо', 'Дома'], 40, [30, 0, 5, 0], r"data/images/buildings/building_found.png",
+buildings = {'Хижина': [[None], 100, [60, 40, 0], r"data/images/buildings/house.png", 'Социальные', ['Рабочий']],
+             'Ратуша': [['Колесо', 'Дома'], 40, [30, 0, 5], r"data/images/buildings/building_found.png",
                         'Социальные', ['Рабочий']],
-             'Казармы': [['Военное дело'], 60, [20, 30, 400, 50], r"data/images/buildings/barracks.png", 'Военные',
+             'Казармы': [['Военное дело'], 60, [20, 30, 400], r"data/images/buildings/barracks.png", 'Военные',
                          ['Рабочий', 'Воин', 'Стрелок']],
-             'Мастерская': [['Обработка дерева'], 20, [7400, 2200, 500, 388],
+             'Мастерская': [['Обработка дерева'], 20, [7400, 2200, 50],
                             r"data/images/buildings/building_found.png", 'Производственные', ['Рабочий']],
-             'Казармы1': [['Военное дело'], 60, [2000, 3000, 40000, 500000], r"data/images/buildings/barracks.png",
+             'Казармы1': [['Военное дело'], 60, [2000, 3000, 40000], r"data/images/buildings/barracks.png",
                           'Военные', ['Рабочий']],
-             'Казармы2': [['Военное дело'], 60, [20, 30, 400, 50], r"data/images/buildings/barracks.png", 'Военные',
+             'Казармы2': [['Военное дело'], 60, [20, 30, 400], r"data/images/buildings/barracks.png", 'Военные',
                           ['Рабочий']],
-             'Казармы3': [['Военное дело'], 60, [20, 30, 400, 50], r"data/images/buildings/barracks.png", 'Военные',
+             'Казармы3': [['Военное дело'], 60, [20, 30, 400], r"data/images/buildings/barracks.png", 'Военные',
                           ['Рабочий']],
-             'Казармы4': [['Военное дело'], 60, [20, 30, 400, 50], r"data/images/buildings/barracks.png", 'Военные',
+             'Казармы4': [['Военное дело'], 60, [20, 30, 400], r"data/images/buildings/barracks.png", 'Военные',
                           ['Рабочий']],
              }
 
@@ -31,10 +31,10 @@ player_units = {'Рабочий': 0,
 
 money = [20000, 20, r'data/images/res_icons/money.png']
 
-resourses = {'Древесина': [50000, 510, r'data/images/res_icons/wood.png'],
-             'Еда': [560, 10000, r'data/images/res_icons/food.png'],
-             'Железо': [200, 0, r'data/images/res_icons/iron.png'],
-             'Глина': [15500, 5550, r'data/images/res_icons/clay.png']}
+resourses = {'Электричество': [200, 0, r'data/images/res_icons/lighting.png', 500],
+             'Еда': [250, 0, r'data/images/res_icons/food.png', 500],
+             'Сырьевые ресурсы': [1000, 15, r'data/images/res_icons/iron.png', 6000],
+             }
 
 prod_upgrades = {'Ирригация': [[250, 0, 0, 0], r'data/images/gui_elements/irrigation.jpg'],
                  'Новый инструмент': [[20, 0, 0, 0], r'data/images/gui_elements/building_tools.png'],
@@ -49,7 +49,7 @@ res = {'Деньги': [1550, 5550],
        'Железо': [70000, 0],
        'Глина': [20, 9970]}
 
-sklad = 60000
+sklad = 1000
 
 empty_icon = r'data/images/gui_elements/empty_icon.png'
 
