@@ -181,58 +181,6 @@ def prod_menu(build_place):
     scatter.add_widget(menu)
     return scatter
 
-def base_energy():
-    pass
-
-def base_food():
-    pass
-
-def main_base_menu(build_place):
-    scatter = ScatterLayout()
-    menu = MenuLayout()
-    inside_menu = InsideMenuLayout()
-    main_box = BoxLayout(orientation='horizontal')
-    left_box = BoxLayout(orientation='vertical', size_hint_x=.35)
-    right_box = BoxLayout(size_hint_x=.65)
-    icon_bottom_box = BoxLayout(size_hint=(.9, .8))
-    icon_layout = BoxLayout(size_hint_y=.4)  # pos_hint=({'top': 1})
-    statistic_grid = GridLayout(cols=1, size_hint_y=None, pos_hint=({'top': .9}), spacing=10, padding=5)
-
-    # Вывод производства ресурсов
-    res_gen = BoxLayout(orientation='horizontal', height=40, size_hint_y=None)
-    res_gen.add_widget(Label(text='Производит ресурсов',size_hint_x=.8))
-    statistic_grid.add_widget(res_gen)
-    for r in config.resourses:
-        res = config.resourses[r]
-        build_name=config.resourses_generation['main_base']
-        if build_name[r]>0:
-            stat_box = BoxLayout(orientation='horizontal', height=40, size_hint_y=None)
-            stat_box.add_widget(Image(source=res[2], size_hint_x=.2))
-            stat_box.add_widget(Label(text=f'{build_name[r]}', size_hint_x=.8))
-            statistic_grid.add_widget(stat_box)
-
-    #Добавление вкладок Здания
-    tb = TabbedPanel(do_default_tab=False, tab_width=130)
-    base_e = TabbedPanelItem(text='Энергия')
-    base_e.content = base_energy()
-    base_f = TabbedPanelItem(text='Пища')
-    base_f.content = base_food()
-    tb.add_widget(base_e)
-    tb.add_widget(base_f)
-
-    icon_bottom_box.add_widget(statistic_grid)
-    icon_layout.add_widget(Image(source='data/images/buildings/main-base.png'))
-    left_box.add_widget(icon_layout)
-    left_box.add_widget(icon_bottom_box)
-    right_box.add_widget(tb)
-    main_box.add_widget(left_box)
-    main_box.add_widget(right_box)
-    inside_menu.add_widget(main_box)
-    close_b = CloseMenuButton(build_place, scatter)
-    menu.add_widget(inside_menu)
-    menu.add_widget(close_b)
-    scatter.add_widget(menu)
-    return scatter
 
 
 

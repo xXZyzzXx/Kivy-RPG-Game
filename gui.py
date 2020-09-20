@@ -1,5 +1,6 @@
 import re
 
+import main_base
 import building
 import config
 from additional import *
@@ -17,6 +18,7 @@ from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.scatterlayout import ScatterLayout
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.textinput import TextInput
+
 
 res_list = list(config.resourses.keys())
 anim_opacity_up = Animation(opacity=1, duration=.5)
@@ -99,7 +101,7 @@ class BuildingBase(ButtonBehavior, Image):
         self.available_list = None
 
     def on_release(self):
-        self.parent.add_widget(building.main_base_menu(build_place=self))
+        self.parent.add_widget(main_base.main_base_menu(build_place=self))
 
 
 
