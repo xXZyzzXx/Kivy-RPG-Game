@@ -106,7 +106,6 @@ class MainScreen(Screen):
             self.money_label.text = f'{money[0]} [size=13]+{money[1]}[/size]'
         else:
             self.money_label.text = f'{money[0]}'
-
         # Обновление для сырьевых ресурсов
         for i, resource in enumerate(config.resourses):
             res = config.resourses[resource]
