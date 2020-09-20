@@ -130,6 +130,7 @@ class MainScreen(Screen):
             if b.active:
                 b.update_available_units()
 
+                
     # Добавление и обовление ресурсов
     def right_sidebar_content(self):
         right_sidebar = RightSidebar(orientation='vertical', size_hint=(.17, .6),
