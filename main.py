@@ -1,28 +1,23 @@
+import config
+import data_center
 from gui import *
 # CityCanvas, RockLayout, MapButton, WarButton, ReportButton, MailButton, RightSidebar, FoundamentButton, MenuLayout
 from kivy.app import App
-from kivy.uix.button import Button
-from kivy.uix.label import Label
-from kivy.uix.boxlayout import BoxLayout
 from kivy.clock import Clock
-from kivy.uix.stacklayout import StackLayout
+from kivy.config import ConfigParser
+from kivy.core.window import Window
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
+from kivy.uix.gridlayout import GridLayout
+from kivy.uix.label import Label
+from kivy.uix.progressbar import ProgressBar
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.scatterlayout import ScatterLayout
-from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.screenmanager import ScreenManager, Screen, WipeTransition
-from kivy.properties import ListProperty, OptionProperty, StringProperty
-from kivy.uix.recycleview import RecycleView
-from kivy.uix.gridlayout import GridLayout
-from kivy.uix.progressbar import ProgressBar
-from kivy.core.window import Window
-from kivy.config import ConfigParser
-import config
-import data_center
 
 
 def set_screen(name_screen, sm):
     sm.current = name_screen
-
 
 
 class MainScreen(Screen):
@@ -33,20 +28,19 @@ class MainScreen(Screen):
         self.money_label = None
         self.res_grid = None
 
-
-
-
     def on_enter(self, *args):
         self.layout = RelativeLayout()
         canvas = CityCanvas()
-
         # Выбор окна в главном меню
         mainmenu = BoxLayout(orientation='vertical', size_hint=(.1, .1), pos_hint=({'x': 0, 'top': 0.5}))
-        stackscreens = GridLayout(rows=2, spacing=5)
-        prod_menu_screen = Button(size_hint_x=(0.1), text='prod_menu',on_release=lambda x: self.prod_menu_newscreen())
-        data_center_screen = Button(size_hint_x=(0.1),text='data_center',on_release=lambda x: self.data_center_newscreen())
-
-
+        stackscreens = GridLayout(rows=3, spacing=5)
+        prod_menu_screen = Button(size_hint_x=.1, text='prod_menu', on_release=lambda x: self.prod_menu_newscreen())
+        data_center_screen = Button(size_hint_x=.1, text='data_center',
+                                    on_release=lambda x: self.data_center_newscreen())
+        terminal_button = Button(size_hint_x=.1, text='terminal', on_release=lambda x: self.open_terminal())
+        stackscreens.add_widget(prod_menu_screen)
+        stackscreens.add_widget(data_center_screen)
+        stackscreens.add_widget(terminal_button)
         navigation = BoxLayout(size_hint=(.4, .11), pos_hint=({'center_x': .5, 'top': 1}))
         stack = GridLayout(cols=4, spacing=5)
         map_button = RockLayout(MapButton(on_press=lambda x: set_screen('iso_map', self.manager)))
@@ -57,8 +51,6 @@ class MainScreen(Screen):
         stack.add_widget(map_button)
         stack.add_widget(report_button)
         stack.add_widget(letter_button)
-        stackscreens.add_widget(prod_menu_screen)
-        stackscreens.add_widget(data_center_screen)
         navigation.add_widget(stack)
         mainmenu.add_widget(stackscreens)
         self.empty_space = Building(id='f1', pos_hint=({'center_x': .4, 'center_y': .1}), size_hint=(None, None))
@@ -71,11 +63,11 @@ class MainScreen(Screen):
         self.layout.add_widget(mainmenu)
         self.layout.add_widget(self.right_sidebar_content())
         self.add_widget(self.layout)
-        #building.menu_content(empty_space)
-        #empty_space.name = 'Казармы'  # For testing
-        #empty_space.active = True
-        #self.layout.add_widget(empty_space.building_content(build_place=self, build='Казармы'))  # For testing
-        #self.layout.add_widget(building.prod_menu(empty_space2))
+        # building.menu_content(empty_space)
+        # empty_space.name = 'Казармы'  # For testing
+        # empty_space.active = True
+        # self.layout.add_widget(empty_space.building_content(build_place=self, build='Казармы'))  # For testing
+        # self.layout.add_widget(building.prod_menu(empty_space2))
 
         self.timer_event = Clock.schedule_interval(
             lambda dt: self.update_resources(self.res_label_list, self.pb_list, buildings), 1)
@@ -84,12 +76,26 @@ class MainScreen(Screen):
         self.layout.add_widget(data_center.data_center_content(self.empty_space))
 
     def prod_menu_newscreen(self):
-        empty_space2 = Building(id='f2', pos_hint=({'center_x': .6, 'center_y': .1}), size_hint=(None, None))
         self.layout.add_widget(building.prod_menu(self.empty_space2))
 
-
-
-
+    def open_terminal(self):
+        scatter_terminal = ScatterLayout(size_hint=(.4, .5))
+        terminal_lay = TerminalRelativeLayout()
+        scroll_terminal = TerminalScrollView(size_hint=(.97, .87), pos_hint=({'center_x': .5, 'top': .9}))
+        terminal_top = RelativeLayout(size_hint=(.97, .1), pos_hint=({'center_x': .5, 'top': 1}))
+        terminal_top.add_widget(TerminalIcon(pos_hint=({'x': .005, 'top': 1}), size_hint_x=.04))
+        terminal_top.add_widget(TerminalTitleLabel(text=r'C:\JARVIS\Terminal [Version 7.1.2336]',
+                                                   pos_hint=({'x': .05, 'top': 1}), size_hint_x=.992))
+        terminal_top.add_widget(TerminalClose(pos_hint=({'right': .99, 'top': 1}), size_hint_x=.04))
+        terminal_main = TerminalGridLayout(cols=1, size_hint_y=None, padding=3, spacing=5)
+        terminal_main.bind(minimum_height=terminal_main.setter('height'))
+        terminal_main.add_widget(TerminalLabel(text='JARVIS Terminal (c) Corporation JARVIS, 2044. All rights reserved'))
+        terminal_main.add_widget(TerminalTextInput(grid=terminal_main))
+        terminal_lay.add_widget(terminal_top)
+        scroll_terminal.add_widget(terminal_main)
+        terminal_lay.add_widget(scroll_terminal)
+        scatter_terminal.add_widget(terminal_lay)
+        self.layout.add_widget(scatter_terminal)
 
     def update_resources(self, res_label_list, pb_list, buildings):
         money = config.money
@@ -101,7 +107,8 @@ class MainScreen(Screen):
 
         # Обновление для сырьевых ресурсов
         for i, resource in enumerate(config.resourses):
-            if config.resourses[resource][0]<=config.sklad and config.resourses[resource][0] + config.resourses[resource][1] <= config.sklad:
+            if config.resourses[resource][0] <= config.sklad and config.resourses[resource][0] + \
+                    config.resourses[resource][1] <= config.sklad:
                 config.resourses[resource][0] += config.resourses[resource][1]
             else:
                 config.resourses[resource][0] = config.sklad
@@ -112,7 +119,6 @@ class MainScreen(Screen):
                 res_label_list[i].text = f'{int(res[0])}'
             sklad_coefficient = res[0] / config.sklad
             pb_list[i].value_normalized = sklad_coefficient
-
 
         for b in buildings:
             if b.active:
