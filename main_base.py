@@ -40,24 +40,42 @@ from data_center import DevScrollView, ProgramsRelativeLayout
 
 
 
+
+
 def base_energy():
     scroll = DevScrollView(do_scroll_x=False, scroll_x=.5, scroll_y=1)
-    main_rel_layout = ProgramsRelativeLayout(height=500, width=600, size_hint=(1, 1))
+    main_rel_layout = RelativeLayout(height=500, width=600, size_hint=(1, 1))
+    generators_lay = GridLayout(rows=2,padding=20)
+    generators_desc = BoxLayout(size_hint_y=1)
 
-    dev_item1 = DevItemIcon(pos_hint=({'center_x': .1, 'top': .95}))
-    dev_item2 = DevItemIcon(pos_hint=({'center_x': .2, 'top': .60}))
-    dev_item3 = DevItemIcon(pos_hint=({'center_x': .4, 'top': .60}))
-    dev_item4 = DevItemIcon(pos_hint=({'center_x': .6, 'top': .60}))
+    generators_stack = GridLayout(rows=1,size_hint=(1,0.5))
 
-    dev_item1.add_widget(Image(source=r'data/images/main_base/generator_lvl1.png'))
-    dev_item2.add_widget(Image(source=r'data/images/main_base/generator_lvl1.png'))
-    dev_item3.add_widget(Image(source=r'data/images/main_base/generator_lvl1.png'))
-    dev_item4.add_widget(Image(source=r'data/images/main_base/generator_lvl1.png'))
+#generators stack content
+    dev_item1 = BoxLayout(padding=5)
+    dev_item2 = BoxLayout(padding=5)
+    dev_item3 = BoxLayout(padding=5)
+    dev_item4 = BoxLayout(padding=5)
 
-    main_rel_layout.add_widget(dev_item1)
-    main_rel_layout.add_widget(dev_item2)
-    main_rel_layout.add_widget(dev_item3)
-    main_rel_layout.add_widget(dev_item4)
+    dev_item1.add_widget(GenImage())
+    dev_item2.add_widget(GenImage())
+    dev_item3.add_widget(GenImage())
+    dev_item4.add_widget(GenImage())
+
+    generators_stack.add_widget(dev_item1)
+    generators_stack.add_widget(dev_item2)
+    generators_stack.add_widget(dev_item3)
+    generators_stack.add_widget(dev_item4)
+# generators stack content
+
+# generators description content
+    generators_desc.add_widget(Label(text='Описание генераторов'))
+# generators description content
+
+
+    generators_lay.add_widget(generators_stack)
+    generators_lay.add_widget(generators_desc)
+
+    main_rel_layout.add_widget(generators_lay)
 
     scroll.add_widget(main_rel_layout)
     return scroll
@@ -66,20 +84,6 @@ def base_food():
     pass
 
 
-def res_generation(id_build):
-    statistic_grid = GridLayout(cols=1, size_hint_y=None, pos_hint=({'top': .9}), spacing=10, padding=5)
-    res_gen = BoxLayout(orientation='horizontal', height=40, size_hint_y=None)
-    res_gen.add_widget(Label(text='Производит ресурсов', size_hint_x=.8))
-    statistic_grid.add_widget(res_gen)
-    for r in config.resourses:
-        res = config.resourses[r]
-        build_name = config.resourses_generation[id_build]
-        if build_name[r] > 0:
-            stat_box = BoxLayout(orientation='horizontal', height=40, size_hint_y=None)
-            stat_box.add_widget(Image(source=res[2], size_hint_x=.2))
-            stat_box.add_widget(Label(text=f'{build_name[r]}', size_hint_x=.8))
-            statistic_grid.add_widget(stat_box)
-    return statistic_grid
 
 def main_base_menu(build_place):
     scatter = ScatterLayout()
@@ -117,9 +121,45 @@ def main_base_menu(build_place):
     scatter.add_widget(menu)
     return scatter
 
+def res_generation(id_build):
+    statistic_grid = GridLayout(cols=1, size_hint_y=None, pos_hint=({'top': .9}), spacing=10, padding=5)
+    res_gen = BoxLayout(orientation='horizontal', height=40, size_hint_y=None)
+    res_gen.add_widget(Label(text='Производит ресурсов', size_hint_x=.8))
+    statistic_grid.add_widget(res_gen)
+    for r in config.resourses:
+        res = config.resourses[r]
+        build_name = config.resourses_generation[id_build]
+        if build_name[r] > 0:
+            stat_box = BoxLayout(orientation='horizontal', height=40, size_hint_y=None)
+            stat_box.add_widget(Image(source=res[2], size_hint_x=.2))
+            stat_box.add_widget(Label(text=f'{build_name[r]}', size_hint_x=.8))
+            statistic_grid.add_widget(stat_box)
+    return statistic_grid
 
-class DevItemIcon(BoxLayout, ButtonBehavior):
+class GenImage(BoxLayout, ButtonBehavior):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         if self.disabled:
-            self.opacity = .5
+            self.opacity = .2
+
+    def gen_set(self):
+        scatter = ScatterLayout()
+        menu = building.MenuLayout()
+        inside_menu = building.InsideMenuLayout()
+        main_box = BoxLayout(orientation='horizontal')
+        left_box = BoxLayout(orientation='vertical', size_hint_x=.35)
+        right_box = BoxLayout(size_hint_x=.65)
+        icon_bottom_box = BoxLayout(size_hint=(.9, .8))
+        icon_layout = BoxLayout(size_hint_y=.4)  # pos_hint=({'top': 1})
+        left_box.add_widget(icon_layout)
+        left_box.add_widget(icon_bottom_box)
+        main_box.add_widget(left_box)
+        main_box.add_widget(right_box)
+        inside_menu.add_widget(main_box)
+        close_b = building.CloseMenuButton(self, scatter)
+        menu.add_widget(inside_menu)
+        menu.add_widget(close_b)
+        scatter.add_widget(menu)
+        return scatter
+
+    

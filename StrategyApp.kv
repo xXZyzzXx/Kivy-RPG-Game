@@ -113,6 +113,21 @@
             source: 'data/images/gui_elements/rect2.png'
 
 
+<GenImage>
+    opacity: 0.3
+    size_hint_x: .15
+    size_hint_y: None
+    height: self.width
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/main_base/generator_lvl1.png'
+    Button:
+        pos: self.pos
+        size: self.size
+        on_release:
+            root.gen_set()
 
 <BuildButton>
     canvas:
