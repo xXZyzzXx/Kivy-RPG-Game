@@ -261,6 +261,15 @@ class BuildingButt(ButtonBehavior, BoxLayout):
     def on_release(self):
         self.build_place.create_building(self.build_name)
         self.build_place.parent.remove_widget(self.scatter)
+        i=0
+        for res in config.resourses:
+            if res=='Сырьевые ресурсы':
+                buildres = config.buildings[self.build_name][2]
+                config.resourses[res][0] -= buildres[i]
+            else:
+                buildres = config.buildings[self.build_name][2]
+                config.resourses[res][0] += buildres[i]
+                i += 1
         self.build_place.active = False
 
 
