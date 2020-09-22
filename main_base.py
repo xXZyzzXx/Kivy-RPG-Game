@@ -36,21 +36,19 @@ from kivy.uix.scrollview import ScrollView
 from kivy.uix.tabbedpanel import TabbedPanel, TabbedPanelItem, TabbedPanelContent, TabbedPanelHeader
 import config
 import building
-#from data_center import ProgramsRelativeLayout
-
-
+import data_center
 
 
 
 def base_energy():
-    scroll = DevScrollView(do_scroll_x=False, scroll_x=.5, scroll_y=1)
+    scroll = ScrollView(do_scroll_x=False, scroll_x=.5, scroll_y=1)
     main_rel_layout = RelativeLayout(height=500, width=600, size_hint=(1, 1))
-    generators_lay = GridLayout(rows=2,padding=20)
+    generators_lay = GridLayout(rows=2, padding=20)
     generators_desc = BoxLayout(size_hint_y=1)
 
-    generators_stack = GridLayout(rows=1,size_hint=(1,0.5))
+    generators_stack = GridLayout(rows=1, size_hint=(1, 0.5))
 
-#generators stack content
+    # generators stack content
     dev_item1 = BoxLayout(padding=5)
     dev_item2 = BoxLayout(padding=5)
     dev_item3 = BoxLayout(padding=5)
@@ -65,12 +63,11 @@ def base_energy():
     generators_stack.add_widget(dev_item2)
     generators_stack.add_widget(dev_item3)
     generators_stack.add_widget(dev_item4)
-# generators stack content
+    # generators stack content
 
-# generators description content
+    # generators description content
     generators_desc.add_widget(Label(text='Описание генераторов'))
-# generators description content
-
+    # generators description content
 
     generators_lay.add_widget(generators_stack)
     generators_lay.add_widget(generators_desc)
@@ -80,9 +77,9 @@ def base_energy():
     scroll.add_widget(main_rel_layout)
     return scroll
 
+
 def base_food():
     pass
-
 
 
 def main_base_menu(build_place):
@@ -96,9 +93,9 @@ def main_base_menu(build_place):
     icon_layout = BoxLayout(size_hint_y=.4)  # pos_hint=({'top': 1})
 
     # Вывод производства ресурсов
-    stat_res=res_generation('main_base')
+    stat_res = res_generation('main_base')
 
-    #Добавление вкладок Здания
+    # Добавление вкладок Здания
     tb = TabbedPanel(do_default_tab=False, tab_width=130)
     base_e = TabbedPanelItem(text='Энергия')
     base_e.content = base_energy()
@@ -121,6 +118,7 @@ def main_base_menu(build_place):
     scatter.add_widget(menu)
     return scatter
 
+
 def res_generation(id_build):
     statistic_grid = GridLayout(cols=1, size_hint_y=None, pos_hint=({'top': .9}), spacing=10, padding=5)
     res_gen = BoxLayout(orientation='horizontal', height=40, size_hint_y=None)
@@ -135,6 +133,7 @@ def res_generation(id_build):
             stat_box.add_widget(Label(text=f'{build_name[r]}', size_hint_x=.8))
             statistic_grid.add_widget(stat_box)
     return statistic_grid
+
 
 class GenImage(BoxLayout, ButtonBehavior):
     def __init__(self, **kwargs):
@@ -162,9 +161,7 @@ class GenImage(BoxLayout, ButtonBehavior):
         scatter.add_widget(menu)
         return scatter
 
-
-
 class DevScrollView(ScrollView):
     def __init__(self, **kwargs):
         super(DevScrollView, self).__init__(**kwargs)
-    
+

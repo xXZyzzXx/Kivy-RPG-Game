@@ -382,3 +382,5 @@ class BuildButton(Button):
 
 
 
+class BuildResLabel(Label):
+    pass

@@ -4,6 +4,7 @@ import building
 import config
 from additional import *
 from building import *
+from kivy.utils import get_color_from_hex
 from kivy.animation import Animation
 from kivy.graphics import Rectangle
 from kivy.uix.behaviors import ButtonBehavior
@@ -19,7 +20,6 @@ from kivy.uix.scrollview import ScrollView
 from kivy.uix.textinput import TextInput
 from kivy.uix.checkbox import CheckBox
 from kivy.uix.slider import Slider
-
 
 res_list = list(config.resourses.keys())
 anim_opacity_up = Animation(opacity=1, duration=.5)
@@ -89,7 +89,8 @@ class MailButton(ButtonBehavior, Image):
         super(MailButton, self).__init__(**kwargs)
         self.source = 'data/images/navigation/letter.png'
 
-#Инициализация базы
+
+# Инициализация базы
 class BuildingBase(ButtonBehavior, Image):
     def __init__(self, **kwargs):
         super(BuildingBase, self).__init__(**kwargs)
@@ -103,7 +104,6 @@ class BuildingBase(ButtonBehavior, Image):
 
     def on_release(self):
         self.parent.add_widget(main_base.main_base_menu(build_place=self))
-
 
 
 class Building(ButtonBehavior, Image):
@@ -580,9 +580,11 @@ class TerminalGridLayout(GridLayout):
 
 
 class TerminalClose(ButtonBehavior, Image, HoverBehavior):
-    def __init__(self, **kwargs):
+    def __init__(self, parent_lay, close_lay, **kwargs):
         super().__init__(**kwargs)
         self.source = 'data/images/gui_elements/terminal_close_normal.png'
+        self.parent_lay = parent_lay
+        self.close_lay = close_lay
 
     def on_enter(self):
         self.source = 'data/images/gui_elements/terminal_close_hovered.png'
@@ -595,6 +597,7 @@ class TerminalClose(ButtonBehavior, Image, HoverBehavior):
 
     def on_release(self):
         self.source = 'data/images/gui_elements/terminal_close_hovered.png'
+        self.parent_lay.remove_widget(self.close_lay)
 
 
 class TerminalIcon(ButtonBehavior, Image):
@@ -612,10 +615,6 @@ class TerminalLabel(Label):
 
 
 class TerminalScrollView(ScrollView):
-    pass
-
-
-class BuildResLabel(Label):
     pass
 
 
