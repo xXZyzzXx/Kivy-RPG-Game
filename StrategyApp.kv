@@ -72,8 +72,6 @@
             size: self.size
             source: 'data/images/gui_elements/rect2.png'
 
-
-
 <MenuLayout>
     canvas.before:
         Rectangle:
@@ -152,18 +150,6 @@
             size: self.size
             source: 'data/images/gui_elements/scroll_2.png'
 
-<BoxLayout>
-    canvas.before:
-        Color:
-            rgba: 1, 1, 1, 1
-        Line:
-            width: 1
-            rectangle: self.x, self.y, self.width, self.height
-
-
-<Label>
-    color: (0, 0, 0, 1)
-
 
 <DevItemIcon>
     size_hint_x: .15
@@ -234,3 +220,38 @@
     text_size: self.size
     halign: 'left'
     valign: 'middle'
+
+
+<FrameBoxLayout>
+    canvas.after:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/gui_elements/frame.png'
+
+<ProgramTitleLabel>
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/gui_elements/Brown.png'
+
+<HackIconBoxLayout>
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/gui_elements/terminal_icon.png'
+
+
+<BoxLayout>
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+        Line:
+            width: 1
+            rectangle: self.x, self.y, self.width, self.height
+
+
+<Label>
+    color: (0, 0, 0, 1)
