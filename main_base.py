@@ -36,7 +36,8 @@ from kivy.uix.scrollview import ScrollView
 from kivy.uix.tabbedpanel import TabbedPanel, TabbedPanelItem, TabbedPanelContent, TabbedPanelHeader
 import config
 import building
-from data_center import *
+import data_center
+
 
 
 def base_energy():
@@ -159,3 +160,8 @@ class GenImage(BoxLayout, ButtonBehavior):
         menu.add_widget(close_b)
         scatter.add_widget(menu)
         return scatter
+
+class DevScrollView(ScrollView):
+    def __init__(self, **kwargs):
+        super(DevScrollView, self).__init__(**kwargs)
+
