@@ -42,7 +42,7 @@ def inside_building(building_grid, build_name, building, build_place, scatter, *
     test_lay = BoxLayout(size_hint=(1, .8), pos_hint=({'center_y': .5}), padding=15)
     for i, res_cost in enumerate(building[2]):
         if res_cost > 0:
-            res_list = list(config.resourses.keys()) #TODO:
+            res_list = list(config.resourses.keys())  # TODO:
             res_icon = Image(source=f'{config.resourses[res_list[i]][2]}', size=(30, 30),
                              pos_hint=({'right': 1}),
                              size_hint=(None, 1))
@@ -158,7 +158,6 @@ def prod_menu(build_place):
     return scatter
 
 
-
 def base_window(build_place):  # Шаблон
     scatter = ScatterLayout()
     menu = MenuLayout()
@@ -230,14 +229,13 @@ class BuildingButt(ButtonBehavior, BoxLayout):
             if i == 2:
                 if config.resourses['Сырьевые ресурсы'][0] - res_cost[2][i] <= 0:
                     self.disabled = True
-                    box_horizontal.opacity=.3
+                    box_horizontal.opacity = .3
             else:
-                if config.resourses['Еда'][0] + res_cost[2][i] >= config.resourses['Еда'][3] or config.resourses['Электричество'][
-                    0] + res_cost[2][i] >= config.resourses['Электричество'][3]:
+                if config.resourses['Еда'][0] + res_cost[2][i] >= config.resourses['Еда'][3] or \
+                        config.resourses['Электричество'][
+                            0] + res_cost[2][i] >= config.resourses['Электричество'][3]:
                     self.disabled = True
                     box_horizontal.opacity = .3
-
-
 
     def on_size(self, *args):
         self.bg.size = self.size
@@ -249,9 +247,9 @@ class BuildingButt(ButtonBehavior, BoxLayout):
     def on_release(self):
         self.build_place.create_building(self.build_name)
         self.build_place.parent.remove_widget(self.scatter)
-        i=0
+        i = 0
         for res in config.resourses:
-            if res=='Сырьевые ресурсы':
+            if res == 'Сырьевые ресурсы':
                 buildres = config.buildings[self.build_name][2]
                 config.resourses[res][0] -= buildres[i]
             else:
@@ -372,15 +370,12 @@ class BuildResLabel(Label):
         self.build_name = build_name
         self.build_place = build_place
         self.scatter = scatter
-        self.text= text
+        self.text = text
+
 
 class BuildNameLabel(Label):
     pass
 
+
 class BuildButton(Button):
-    pass
-
-
-
-class BuildResLabel(Label):
     pass
