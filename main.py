@@ -94,7 +94,7 @@ class MainScreen(Screen):
         terminal_top.add_widget(TerminalIcon(pos_hint=({'x': .005, 'top': 1}), size_hint_x=.04))
         terminal_top.add_widget(TerminalTitleLabel(text=r'C:\JARVIS\Terminal [Version 7.1.2336]',
                                                    pos_hint=({'x': .05, 'top': 1}), size_hint_x=.992))
-        terminal_top.add_widget(TerminalClose(pos_hint=({'right': .99, 'top': 1}), size_hint_x=.04))
+        terminal_top.add_widget(TerminalClose(parent_lay=self.layout, close_lay=scatter_terminal, pos_hint=({'right': .99, 'top': 1}), size_hint_x=.04))
         terminal_main = TerminalGridLayout(cols=1, size_hint_y=None, padding=3, spacing=5)
         terminal_main.bind(minimum_height=terminal_main.setter('height'))
         terminal_main.add_widget(TerminalLabel(text='JARVIS Terminal (c) Corporation JARVIS, 2044. All rights reserved'))
