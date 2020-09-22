@@ -36,7 +36,7 @@ from kivy.uix.scrollview import ScrollView
 from kivy.uix.tabbedpanel import TabbedPanel, TabbedPanelItem, TabbedPanelContent, TabbedPanelHeader
 import config
 import building
-from data_center import DevScrollView, ProgramsRelativeLayout
+#from data_center import ProgramsRelativeLayout
 
 
 
@@ -162,4 +162,9 @@ class GenImage(BoxLayout, ButtonBehavior):
         scatter.add_widget(menu)
         return scatter
 
+
+
+class DevScrollView(ScrollView):
+    def __init__(self, **kwargs):
+        super(DevScrollView, self).__init__(**kwargs)
     
