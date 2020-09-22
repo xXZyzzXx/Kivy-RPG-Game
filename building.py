@@ -46,7 +46,7 @@ def inside_building(building_grid, build_name, building, build_place, scatter, *
             res_icon = Image(source=f'{config.resourses[res_list[i]][2]}', size=(30, 30),
                              pos_hint=({'right': 1}),
                              size_hint=(None, 1))
-            test = BuildResLabel(text=f'{res_cost}')
+            test = BuildResLabel(build_name, build_place, scatter, text=f'{res_cost}')
             res_box = BoxLayout(orientation='horizontal', size_hint_x=.5)
             help_lay_res = RelativeLayout()
             help_lay_res.add_widget(res_icon)
@@ -366,9 +366,16 @@ class BuildingBoxLayout(BoxLayout):
     pass
 
 
+class BuildResLabel(Label):
+    def __init__(self, build_name, build_place, scatter, text, **kwargs):
+        super(BuildResLabel, self).__init__(**kwargs)
+        self.build_name = build_name
+        self.build_place = build_place
+        self.scatter = scatter
+        self.text= text
+
 class BuildNameLabel(Label):
     pass
-
 
 class BuildButton(Button):
     pass
