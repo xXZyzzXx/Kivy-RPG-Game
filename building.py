@@ -64,8 +64,7 @@ def inside_building(building_grid, build_name, building, build_place, scatter, *
     test_lay = BoxLayout(size_hint=(1, .8), pos_hint=({'center_y': .5}), padding=15)
     for i, res_cost in enumerate(building[2]):
         if res_cost > 0:
-            res_list = list(config.resourses.keys())
-
+            res_list = list(config.resourses.keys()) #TODO:
             res_icon = Image(source=f'{config.resourses[res_list[i]][2]}', size=(30, 30),
                              pos_hint=({'right': 1}),
                              size_hint=(None, 1))
