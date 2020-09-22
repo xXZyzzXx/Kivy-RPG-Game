@@ -79,7 +79,7 @@ def inside_building(building_grid, build_name, building, build_place, scatter, *
             res_box.add_widget(add_lay)
             test_lay.add_widget(res_box)
     help_box = BoxLayout(size_hint_x=.1, padding=1)
-    butt_lay = BuildingButt(build_name, build_place, scatter)
+    butt_lay = BuildingButt(build_name, build_place, scatter, box_horizontal)
     help_box.add_widget(butt_lay)
     res_box_lay.add_widget(test_lay)
     res_layout.add_widget(res_box_lay)
@@ -244,23 +244,24 @@ class CloseMenuButton(ButtonBehavior, Image):
 
 
 class BuildingButt(ButtonBehavior, BoxLayout):
-    def __init__(self, build_name, build_place, scatter, **kwargs):
+    def __init__(self, build_name, build_place, scatter, box_horizontal, **kwargs):
         super(BuildingButt, self).__init__(**kwargs)
         self.build_name = build_name
         self.build_place = build_place
         self.scatter = scatter
         with self.canvas.before:
             self.bg = Rectangle(pos=self.pos, size=self.size, source='data/images/gui_elements/build_button.png')
-        res=config.resourses.keys()
         res_cost = config.buildings[build_name]
         for i in range(3):
             if i == 2:
                 if config.resourses['Сырьевые ресурсы'][0] - res_cost[2][i] <= 0:
                     self.disabled = True
+                    box_horizontal.opacity=.3
             else:
                 if config.resourses['Еда'][0] + res_cost[2][i] >= config.resourses['Еда'][3] or config.resourses['Электричество'][
                     0] + res_cost[2][i] >= config.resourses['Электричество'][3]:
                     self.disabled = True
+                    box_horizontal.opacity = .3
 
 
 
