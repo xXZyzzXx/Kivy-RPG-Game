@@ -1,6 +1,7 @@
 import building
 import config
 from additional import *
+from gui import *
 from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
@@ -67,12 +68,39 @@ def tab_hack_row(programs_grid, program_name, program, lay_list):
     top_box = ProgramLayout(orientation='horizontal', height=80, size_hint_y=None, upper_lay=upper_lay,
                             program=program, programs_grid=programs_grid)
     lay_list.append(top_box)
-    image_lay = BoxLayout(size_hint_x=.20, padding=5)
-    image_lay.add_widget(Image(source=program[0]))
-    title_box = BoxLayout(orientation='vertical', size_hint_x=.60)
-    title_label = Label(text=f'{program_name}')
+    image_lay = HackIconBoxLayout(size_hint_x=.15, padding=5)
+    image_lay.add_widget(Image(source=program[0], size_hint=(.6, .6), pos_hint=({'center_x': .5, 'center_y': .5})))
+    title_box = BoxLayout(orientation='vertical', size_hint_x=.65)
+    title_label = ProgramTitleLabel(text=f'{program_name}', pos_hint=({'top': 1}), size_hint_y=.3)
+    cost_info_grid = BoxLayout(orientation='horizontal', size_hint_y=.7)
+    res_cost_lay = BoxLayout(orientation='horizontal', padding=10)
+    res_list = list(config.resourses.keys())
+    for i, res_cost in enumerate(program[1]):
+        if res_cost > 0:
+            res_box = BoxLayout(orientation='horizontal', size_hint_x=.5)
+            help_lay_res = RelativeLayout()
+            help_lay_res.add_widget(Image(source=f'{config.resourses[res_list[i]][2]}', size=(25, 25),
+                                          pos_hint=({'right': 1}), size_hint=(None, 1)))
+            add_lay = GridLayout(cols=2, size_hint=(1, 1), pos_hint=({'center_x': .5, 'center_y': .5}))
+            add_lay.add_widget(help_lay_res)
+            add_lay.add_widget(BuildResLabel(text=f'{res_cost}'))
+            res_box.add_widget(add_lay)
+            res_cost_lay.add_widget(res_box)
+    # ===
+    res_box = BoxLayout(orientation='horizontal', size_hint_x=.5)
+    help_lay_res = RelativeLayout()
+    help_lay_res.add_widget(Image(source=r'data/images/gui_elements/disketa.png', size=(18, 18),
+                                  pos_hint=({'right': .95}), size_hint=(None, 1)))
+    add_lay = GridLayout(cols=2, size_hint=(1, 1), pos_hint=({'center_x': .5, 'center_y': .5}))
+    add_lay.add_widget(help_lay_res)
+    add_lay.add_widget(BuildResLabel(text=f'{program[3]}'))
+    res_box.add_widget(add_lay)
+    res_cost_lay.add_widget(res_box)
+    # ===
+    cost_info_grid.add_widget(res_cost_lay)
     title_box.add_widget(title_label)
-    upgrade_button = Button(text='Up', size_hint_x=.1)
+    title_box.add_widget(cost_info_grid)
+    upgrade_button = CompileProgramButton(size_hint=(.1, .7), pos_hint=({'center_y': .5}))
     top_box.add_widget(image_lay)
     top_box.add_widget(title_box)
     top_box.add_widget(upgrade_button)
@@ -112,7 +140,9 @@ def tab_defence_content(defence_tab):
         image_lay = BoxLayout(size_hint_x=.20, padding=5)
         image_rel = RelativeLayout()
         image_rel.add_widget(Image(source=antimalware_upgrade[0]))
-        image_rel.add_widget(Label(text=f'{str(antimalware_upgrade[3])}', size=(10, 10), pos_hint=({'right': 1, 'y':0}), size_hint=(None, None)))
+        image_rel.add_widget(
+            Label(text=f'{str(antimalware_upgrade[3])}', size=(10, 10), pos_hint=({'right': 1, 'y': 0}),
+                  size_hint=(None, None)))
         image_lay.add_widget(image_rel)
         title_box = BoxLayout(orientation='vertical', size_hint_x=.60)
         title_label = Label(
@@ -209,7 +239,7 @@ class DefToggleButton(ToggleButton):  # TODO: заменить на картин
         cyberdef_base = config.data_center['Защита']
         if self.text == 'Скрытный' and self.state == 'down':
             total_percent = cyberdef_base[1][2] + config.percent_amount
-            cur_stealh_defence = int(cyberdef_base[1][1] + (cyberdef_base[1][1] * (total_percent/100)))
+            cur_stealh_defence = int(cyberdef_base[1][1] + (cyberdef_base[1][1] * (total_percent / 100)))
             cyberdef_base[1][0] = cur_stealh_defence
             self.defence_tab.stealth_label.text = f"Стелс защита: {str(cur_stealh_defence)}(+{str(total_percent)}%)"
         else:
@@ -217,7 +247,7 @@ class DefToggleButton(ToggleButton):  # TODO: заменить на картин
             self.defence_tab.stealth_label.text = f"Стелс защита: {str(cyberdef_base[1][1])}"
         if self.text == 'Видимый' and self.state == 'down':
             total_percent = cyberdef_base[2][2] + config.percent_amount
-            cur_active_defence = int(cyberdef_base[2][1] + (cyberdef_base[2][1] * (total_percent/100)))
+            cur_active_defence = int(cyberdef_base[2][1] + (cyberdef_base[2][1] * (total_percent / 100)))
             cyberdef_base[2][0] = cur_active_defence
             self.defence_tab.active_def_label.text = f"Активная защита: {str(cur_active_defence)}(+{str(total_percent)}%)"
         else:
@@ -258,13 +288,28 @@ class HackPanelItem(TabbedPanelItem):
 
     def on_press(self):
         self.icon_box.clear_widgets()
-        self.icon_box.add_widget(Image(source=config.data_center[self.text][0]))  # TODO: добавить анимацию перехода
+        self.icon_box.add_widget(Image(source=config.data_center[self.text][0], allow_stretch=True,
+                                       keep_ratio=False))  # TODO: добавить анимацию перехода
         self.statistic_grid.clear_widgets()
-        queue_box = BoxLayout(orientation='horizontal', size_hint_y=.4)  # TODO: кастомизировать очередь
-        queue_box.add_widget(Label(text='Очередь: '))
+        queue_box = BoxLayout(orientation='vertical', size_hint_y=.4)  # TODO: кастомизировать очередь
+        queue_scroll = ScrollView(do_scroll_y=False, do_scroll_x=True, size_hint_y=.6)
+        queue_grid = QueueGridLayout(rows=1, size_hint_x=None, spacing=5)
+        queue_grid.bind(minimum_width=queue_grid.setter('width'))
+        for program in config.queue_program:
+            prgm_box = QueueSlotHack(size_hint=(None, None), width=45, height=45, pos_hint=({'center_y': .5}))
+            queue_grid.add_widget(prgm_box)
+        queue_scroll.add_widget(queue_grid)
+        queue_box.add_widget(Label(text='Очередь: ', size_hint_y=.4))
+        queue_box.add_widget(queue_scroll)
         compile_box = GridLayout(cols=2, size_hint_y=.6)  # TODO: кастомизировать слоты компиляции
-        for i in range(4):
-            compile_box.add_widget(Image(source=r'data/images/gui_elements/empty_icon.png'))
+        slot1 = HackSlotImage(unlocked=True)
+        slot2 = HackSlotImage()
+        slot3 = HackSlotImage()
+        slot4 = HackSlotImage()
+        compile_box.add_widget(slot1)
+        compile_box.add_widget(slot2)
+        compile_box.add_widget(slot3)
+        compile_box.add_widget(slot4)
         self.statistic_grid.add_widget(queue_box)
         self.statistic_grid.add_widget(compile_box)
 
@@ -335,8 +380,6 @@ class UpgradePanelItem(TabbedPanelItem):
         self.icon_box.add_widget(Image(source=config.data_center[self.text][0]))  # TODO: добавить анимацию перехода
         self.statistic_grid.clear_widgets()
 
-        # self.statistic_grid.add_widget()
-
 
 class ProgramLayout(ButtonBehavior, BoxLayout):  # TODO: обновить on_release для открытия доп. информации
     def __init__(self, upper_lay, program, programs_grid, **kwargs):
@@ -347,24 +390,6 @@ class ProgramLayout(ButtonBehavior, BoxLayout):  # TODO: обновить on_rel
         self.active = False
 
     def on_release(self):
-        '''
-        upgrade_bottom_box = UpBoxLayout(orientation='horizontal')
-        upgrade_bottom_layout = GridLayout(cols=1, size_hint_x=.8, pos_hint=({'center_x': .5}))
-        upgrade_bottom_label = Label(text=str(self.upgrade_info[0]))
-        upgrade_bottom_layout.add_widget(upgrade_bottom_label)
-        for lay in self.upgrade_grid.lay_list:
-            if lay.active:
-                anim_height_down = HeightAnimation(lay, height=80, duration=.3)
-                anim_height_down.start(lay.upper_lay)
-
-        if not self.active:
-            anim_height_up = Animation(height=200, duration=.6)
-            anim_height_up.start(self.upper_lay)
-            self.pos_hint = ({'top': 1})
-            upgrade_bottom_box.add_widget(upgrade_bottom_layout)
-            self.upper_lay.add_widget(upgrade_bottom_box)
-            self.active = True
-        '''
         pass
 
 
@@ -432,9 +457,51 @@ class InfoImage(ButtonBehavior, Image, HoverBehavior):
         self.source = r'data/images/gui_elements/info.png'
 
 
+class HackSlotImage(ButtonBehavior, Image):
+    def __init__(self, unlocked=False, **kwargs):
+        super().__init__(**kwargs)
+        self.unlocked = unlocked
+        self.default = r'data/images/gui_elements/icon_lock.png'
+        if self.unlocked:
+            self.source = r'data/images/gui_elements/icon_empty.png'
+        else:
+            self.source = self.default
+
+    def on_release(self):
+        print('click')
+        if self.unlocked:
+            pass
+        else:
+            self.source = r'data/images/gui_elements/icon_empty.png'
+
+
+class QueueSlotHack(ButtonBehavior, Image):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.source = r'data/images/gui_elements/icon_empty.png'
+
+
+class CompileProgramButton(ButtonBehavior, Image):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.source = r'data/images/gui_elements/compile.png'
+
+
+class ProgramTitleLabel(Label):
+    pass
+
+
+class HackIconBoxLayout(BoxLayout):
+    pass
+
+
 class InfoLabel(Label):
     pass
 
 
 class DefAmountLabel(Label):
+    pass
+
+
+class QueueGridLayout(GridLayout):
     pass

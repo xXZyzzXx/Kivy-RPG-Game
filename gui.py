@@ -613,6 +613,10 @@ class TerminalScrollView(ScrollView):
     pass
 
 
+class BuildResLabel(Label):
+    pass
+
+
 class TerminalTextInput(TextInput):
     def __init__(self, grid, **kwargs):
         super(TerminalTextInput, self).__init__(**kwargs)

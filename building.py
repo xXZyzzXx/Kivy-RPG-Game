@@ -121,8 +121,6 @@ def prod_upgrade_content():
     return scroll
 
 
-
-
 def prod_menu(build_place):
     scatter = ScatterLayout()
     menu = MenuLayout()
@@ -159,11 +157,14 @@ def prod_menu(build_place):
     scatter.add_widget(menu)
     return scatter
 
+
 def base_energy():
     pass
 
+
 def base_food():
     pass
+
 
 def main_base_menu(build_place):
     scatter = ScatterLayout()
@@ -178,18 +179,18 @@ def main_base_menu(build_place):
 
     # Вывод производства ресурсов
     res_gen = BoxLayout(orientation='horizontal', height=40, size_hint_y=None)
-    res_gen.add_widget(Label(text='Производит ресурсов',size_hint_x=.8))
+    res_gen.add_widget(Label(text='Производит ресурсов', size_hint_x=.8))
     statistic_grid.add_widget(res_gen)
     for r in config.resourses:
         res = config.resourses[r]
-        build_name=config.resourses_generation['main_base']
-        if build_name[r]>0:
+        build_name = config.resourses_generation['main_base']
+        if build_name[r] > 0:
             stat_box = BoxLayout(orientation='horizontal', height=40, size_hint_y=None)
             stat_box.add_widget(Image(source=res[2], size_hint_x=.2))
             stat_box.add_widget(Label(text=f'{build_name[r]}', size_hint_x=.8))
             statistic_grid.add_widget(stat_box)
 
-    #Добавление вкладок Здания
+    # Добавление вкладок Здания
     tb = TabbedPanel(do_default_tab=False, tab_width=130)
     base_e = TabbedPanelItem(text='Энергия')
     base_e.content = base_energy()
@@ -213,7 +214,6 @@ def main_base_menu(build_place):
     return scatter
 
 
-
 def base_window(build_place):  # Шаблон
     scatter = ScatterLayout()
     menu = MenuLayout()
@@ -222,7 +222,7 @@ def base_window(build_place):  # Шаблон
     left_box = BoxLayout(orientation='vertical', size_hint_x=.3)
     right_box = BoxLayout(size_hint_x=.7)
     bottom_box = BoxLayout(size_hint=(.9, .8))
-    icon_box = BoxLayout(orientation='vertical', size_hint_y=.4)
+    icon_box = FrameBoxLayout(orientation='vertical', size_hint_y=.4)
     statistic_grid = GridLayout(cols=1, spacing=10, padding=5)
     icon_box.add_widget(Image(source=config.empty_icon))
     left_box.add_widget(icon_box)
@@ -371,6 +371,10 @@ class UpgradeGridLayout(GridLayout):
         self.lay_list = None
 
 
+class FrameBoxLayout(BoxLayout):
+    pass
+
+
 class UpBoxLayout(BoxLayout):
     pass
 
@@ -403,5 +407,4 @@ class BuildButton(Button):
     pass
 
 
-class BuildResLabel(Label):
-    pass
+
