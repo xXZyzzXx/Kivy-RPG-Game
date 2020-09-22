@@ -51,7 +51,7 @@ def create_building_list(build_type, build_place, scatter):
     return scroll
 
 
-def inside_building(self, building_grid, build_name, building, build_place, scatter, *args):
+def inside_building(building_grid, build_name, building, build_place, scatter, *args):
     b_layout = BuildingBoxLayout(orientation='vertical', size_hint_y=None)
     box_horizontal = BoxLayout(orientation='horizontal')
     icon_layout = BoxLayout(orientation='vertical', size_hint_x=.2, padding=3)
@@ -65,12 +65,6 @@ def inside_building(self, building_grid, build_name, building, build_place, scat
     for i, res_cost in enumerate(building[2]):
         if res_cost > 0:
             res_list = list(config.resourses.keys())
-            if i==2:
-                if config.resourses['Сырьевые ресурсы'][0]-res_cost<=0:
-                    res_box.disabled=True
-            else:
-                if config.resourses['Еда'][0]+res_cost>=config.resourses['Еда'][3] or config.resourses['Электричество'][0]+res_cost>=config.resourses['Электричество'][3]:
-                    res_box.disabled = True
             res_icon = Image(source=f'{config.resourses[res_list[i]][2]}', size=(30, 30),
                              pos_hint=({'right': 1}),
                              size_hint=(None, 1))
