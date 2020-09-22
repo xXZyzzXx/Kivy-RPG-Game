@@ -1,5 +1,4 @@
 import re
-
 import main_base
 import building
 import config
@@ -18,6 +17,8 @@ from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.scatterlayout import ScatterLayout
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.textinput import TextInput
+from kivy.uix.checkbox import CheckBox
+from kivy.uix.slider import Slider
 
 
 res_list = list(config.resourses.keys())
@@ -611,6 +612,10 @@ class TerminalLabel(Label):
 
 
 class TerminalScrollView(ScrollView):
+    pass
+
+
+class BuildResLabel(Label):
     pass
 
 
