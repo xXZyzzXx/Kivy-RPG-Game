@@ -34,7 +34,7 @@ money = [20000, 20, r'data/images/res_icons/money.png']
 
 resourses = {'Электричество': [200, 0, r'data/images/res_icons/lighting.png', 500],
              'Еда': [250, 0, r'data/images/res_icons/food.png', 500],
-             'Сырьевые ресурсы': [3000, 15, r'data/images/res_icons/iron.png', 6000],
+             'Сырьевые ресурсы': [1000, 15, r'data/images/res_icons/iron.png', 6000],
              }
 
 prod_upgrades = {'Ирригация': [[250, 0, 0, 0], r'data/images/gui_elements/irrigation.jpg'],
