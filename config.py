@@ -62,7 +62,7 @@ percent_amount = 10
 
 data_center = {'Защита': [r'data/images/gui_elements/data_center.png', [stealh_default, stealh_default, 5],
                           [active_default, active_default, 0]],
-               'Взлом': [r'data/images/gui_elements/hack.png'],
+               'Взлом': [r'data/images/gui_elements/malvare_icon.zip'],
                'Разработка': [r'data/images/gui_elements/malware_main.png'],
                'Улучшения': [r'data/images/gui_elements/robots.png']}
 
