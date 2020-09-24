@@ -621,5 +621,4 @@ class DefAmountLabel(Label):
     pass
 
 
-class RightLabel(Label):
-    pass
+
