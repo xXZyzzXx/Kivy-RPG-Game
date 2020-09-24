@@ -642,5 +642,10 @@ class ProgramSidebarLabel(Label):
 class RightLabel(Label):
     pass
 
+
 class LeftLabel(Label):
+    pass
+
+
+class TopLabel(Label):
     pass

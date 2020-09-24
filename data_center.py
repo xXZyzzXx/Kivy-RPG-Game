@@ -2,6 +2,7 @@ import building
 import config
 from additional import *
 from gui import *
+from kivy.utils import get_color_from_hex
 from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
@@ -305,7 +306,7 @@ class HackPanelItem(TabbedPanelItem):
         self.queue_grid = QueueGridLayout(rows=1, size_hint_x=None, spacing=5)
         self.queue_grid.bind(minimum_width=self.queue_grid.setter('width'))
         for program in range(len(config.programs.keys())):
-            prgm_box = QueueSlotHack(size_hint=(None, None), width=45, height=45)
+            prgm_box = QueueSlotHack(size_hint=(None, None), width=55, height=55)
             self.queue_grid.add_widget(prgm_box)
         queue_scroll.add_widget(self.queue_grid)
         queue_top = BoxLayout(orientation='horizontal', size_hint_y=.4, padding=5)
@@ -481,17 +482,22 @@ class InfoImage(ButtonBehavior, Image, HoverBehavior):
 class QueueSlotHack(ButtonBehavior, BoxLayout):
     def __init__(self, **kwargs):
         super(QueueSlotHack, self).__init__(**kwargs)
+        self.orientation = 'vertical'
+        self.padding = 2
         self.program = None
         self.count = 0
 
     def on_release(self):
-        print('here')
+        pass
 
 
 class HackSlotImage(ButtonBehavior, BoxLayout):  # TODO: change to relativeLayout для избежания size_hint_x = 1
     def __init__(self, unlocked=False, **kwargs):  # Добавить счётчик программ в очереди
         super(HackSlotImage, self).__init__(**kwargs)
         self.unlocked = unlocked
+        self.orientation = 'vertical'
+        self.padding = 3
+        self.compile_time = 0
         self.lock = r'data/images/gui_elements/icon_lock.png'
         self.empty = r'data/images/gui_elements/icon_empty.png'
         if self.unlocked:
@@ -500,6 +506,7 @@ class HackSlotImage(ButtonBehavior, BoxLayout):  # TODO: change to relativeLayou
         else:
             with self.canvas.before:
                 self.bg = Rectangle(pos=self.pos, size=self.size, source=self.lock)
+        self.program_time_label = None
         self.program = None
 
     def on_size(self, *args):
@@ -520,8 +527,11 @@ class HackSlotImage(ButtonBehavior, BoxLayout):  # TODO: change to relativeLayou
             self.program = program
             self.add_widget(Image(source=config.programs[program][0], size_hint=(.9, .9),
                                   pos_hint=({'center_x': .5, 'center_y': .5})))
+            self.program_time_label = ProgramTimeLabel(text='', size_hint_y=.3)
+            self.add_widget(self.program_time_label)
+            Clock.schedule_once(partial(self.time_update, program))
             Clock.schedule_once(partial(self.end_compilation, program, hack_tab), config.programs[program][3])
-            print('start compilation')
+            self.compile_time = config.programs[program][3]
 
     def end_compilation(self, program, hack_tab, dt):
         config.player_programs[program] += 1
@@ -541,11 +551,15 @@ class HackSlotImage(ButtonBehavior, BoxLayout):  # TODO: change to relativeLayou
             # deleting
             if first_queue_slot[1] > 1:
                 first_queue_slot[1] -= 1
-                print(f'Осталось: {first_queue_slot}')
             else:
                 config.queue_list.remove(first_queue_slot)
-                print(f'Текущий список: {config.queue_list}')
             hack_tab.queue_grid.update_queue()
+
+    def time_update(self, program, dt):
+        self.compile_time -= 1
+        self.program_time_label.text = f'{int(self.compile_time)} ходов'
+        if self.compile_time >= 1:
+            Clock.schedule_once(partial(self.time_update, program), 1)
 
 
 class CompileProgramButton(ButtonBehavior, Image):
@@ -600,8 +614,10 @@ class QueueGridLayout(GridLayout):
         for i, program_in_list in enumerate(config.queue_list):
             if i + 1 <= len(self.children):  # Ограничение на места для очереди
                 slot = list(reversed(self.children))[i]
-                slot.add_widget(Image(source=config.programs[program_in_list[0]][0], size_hint=(.9, .9),
-                                      pos_hint=({'center_x': .5, 'center_y': .5})))
+                slot.add_widget(Image(source=config.programs[program_in_list[0]][0], size_hint=(.9, .7),
+                                      pos_hint=({'center_x': .5})))
+                slot.add_widget(TopLabel(text=f'{program_in_list[1]}', size_hint_y=.3, font_size=14, bold=True,
+                                         color=get_color_from_hex('#A5260A')))
                 slot.program = program_in_list[0]
 
 
@@ -621,4 +637,5 @@ class DefAmountLabel(Label):
     pass
 
 
-
+class ProgramTimeLabel(Label):
+    pass
