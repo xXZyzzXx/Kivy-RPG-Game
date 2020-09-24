@@ -27,11 +27,15 @@ class MainScreen(Screen):
         self.timer_event = None
         self.money_label = None
         self.res_grid = None
+        self.programs_grid = None
+        self.res_label_list = None
+        self.main_base = None
+        self.total_programs_label = None
+        self.pb_list = None
 
     def on_enter(self, *args):
         self.layout = RelativeLayout()
         canvas = CityCanvas()
-
         # Выбор окна в главном меню
         mainmenu = BoxLayout(orientation='vertical', size_hint=(.1, .1), pos_hint=({'x': 0, 'top': 0.5}))
         stackscreens = GridLayout(rows=3, spacing=5)
@@ -39,10 +43,8 @@ class MainScreen(Screen):
         data_center_screen = Button(size_hint_x=.1, text='data_center',
                                     on_release=lambda x: self.data_center_newscreen())
         terminal_button = Button(size_hint_x=.1, text='terminal', on_release=lambda x: self.open_terminal())
-
-        #Главное здание базы
+        # Главное здание базы
         self.main_base = BuildingBase(id='main_base', pos_hint=({'center_x': .5, 'center_y': .6}), size_hint=(0.3, 0.3))
-
         stackscreens.add_widget(prod_menu_screen)
         stackscreens.add_widget(data_center_screen)
         stackscreens.add_widget(terminal_button)
@@ -76,9 +78,8 @@ class MainScreen(Screen):
         # empty_space.active = True
         # self.layout.add_widget(empty_space.building_content(build_place=self, build='Казармы'))  # For testing
         # self.layout.add_widget(building.prod_menu(empty_space2))
-
         self.timer_event = Clock.schedule_interval(
-            lambda dt: self.update_resources(self.res_label_list, self.pb_list, buildings), 1)
+            lambda dt: self.update_resources(buildings), 1)
 
     def data_center_newscreen(self):
         self.layout.add_widget(data_center.data_center_content(self.empty_space))
@@ -86,26 +87,52 @@ class MainScreen(Screen):
     def prod_menu_newscreen(self):
         self.layout.add_widget(building.prod_menu(self.empty_space2))
 
-    def open_terminal(self):
-        scatter_terminal = ScatterLayout(size_hint=(.4, .5))
-        terminal_lay = TerminalRelativeLayout()
-        scroll_terminal = TerminalScrollView(size_hint=(.97, .87), pos_hint=({'center_x': .5, 'top': .9}))
-        terminal_top = RelativeLayout(size_hint=(.97, .1), pos_hint=({'center_x': .5, 'top': 1}))
-        terminal_top.add_widget(TerminalIcon(pos_hint=({'x': .005, 'top': 1}), size_hint_x=.04))
-        terminal_top.add_widget(TerminalTitleLabel(text=r'C:\JARVIS\Terminal [Version 7.1.2336]',
-                                                   pos_hint=({'x': .05, 'top': 1}), size_hint_x=.992))
-        terminal_top.add_widget(TerminalClose(parent_lay=self.layout, close_lay=scatter_terminal, pos_hint=({'right': .99, 'top': 1}), size_hint_x=.04))
-        terminal_main = TerminalGridLayout(cols=1, size_hint_y=None, padding=3, spacing=5)
-        terminal_main.bind(minimum_height=terminal_main.setter('height'))
-        terminal_main.add_widget(TerminalLabel(text='JARVIS Terminal (c) Corporation JARVIS, 2044. All rights reserved'))
-        terminal_main.add_widget(TerminalTextInput(grid=terminal_main))
-        terminal_lay.add_widget(terminal_top)
-        scroll_terminal.add_widget(terminal_main)
-        terminal_lay.add_widget(scroll_terminal)
-        scatter_terminal.add_widget(terminal_lay)
-        self.layout.add_widget(scatter_terminal)
+    # Добавление и обновление ресурсов
+    def right_sidebar_content(self):
+        right_sidebar = RightSidebar(orientation='vertical', size_hint=(.17, .6),
+                                     pos_hint=({'center_y': .5, 'right': 1}))
+        rel_res = GridLayout(cols=2, size_hint_y=.25, padding=5)
+        self.res_label_list = []
+        self.pb_list = []
+        money = config.money
+        money_box = TestBoxLayout(orientation='vertical', spacing=2, padding=2)
+        self.money_label = ResLabel(id='Деньги', text=f'{money[0]} [size=13]+{money[1]}[/size]')
+        self.programs_grid = GridLayout(cols=1, row_default_height=30)
+        money_box.add_widget(self.money_label)
+        rel_res.add_widget(MoneyImage(size=(30, 30), size_hint_x=.2, source=money[2]))
+        rel_res.add_widget(money_box)
+        self.create_resources()
+        self.update_programs()
+        right_sidebar.add_widget(Label(text='Ресурсы', size_hint_y=.15, color=(0, 0, 0, 1)))
+        right_sidebar.add_widget(rel_res)
+        right_sidebar.add_widget(Image(source='data/images/gui_elements/line.png', size_hint_y=.05))
+        right_sidebar.add_widget(self.res_grid)
+        right_sidebar.add_widget(Image(source='data/images/gui_elements/line.png', size_hint_y=.05))
+        right_sidebar.add_widget(self.create_programs_lay())
+        right_sidebar.add_widget(self.programs_grid)
+        return right_sidebar
 
-    def update_resources(self, res_label_list, pb_list, buildings):
+    def create_resources(self):
+        self.res_grid = GridLayout(rows=5, row_default_height=40)
+        for res in config.resourses:
+            resource = config.resourses[res]
+            rel_ress = GridLayout(cols=3, size_hint_y=None, padding=5, height=40)
+            resource_box = TestBoxLayout(orientation='vertical', spacing=2, padding=2)
+            resource_label = ResLabel(id=f'{res}', text=f'{int(resource[0])} [size=13]+{resource[1]}[/size]')
+            resource_progress = ProgressBar(id=f'p_{res}', size_hint=(1, .1), max=resource[3])
+            resource_box.add_widget(resource_label)
+            resource_box.add_widget(resource_progress)
+            rel_ress.add_widget(MoneyImage(size_hint_x=.25, source=resource[2]))
+            rel_ress.add_widget(resource_box)
+            max_ress = BoxLayout(orientation='horizontal', height=20, size_hint=(0.3, 1), pos_hint=({'center_y': .5}))
+            max_ress.add_widget(
+                LeftLabel(text=f'{resource[3]}', color=(0, 0, 0, 0.3), size_hint=(0.5, 0.5), font_size=12))
+            rel_ress.add_widget(max_ress)
+            self.res_grid.add_widget(rel_ress)
+            self.res_label_list.append(resource_label)
+            self.pb_list.append(resource_progress)
+
+    def update_resources(self, buildings):
         money = config.money
         money[0] += money[1]
         if money[1] > 0:
@@ -115,59 +142,76 @@ class MainScreen(Screen):
         # Обновление для сырьевых ресурсов
         for i, resource in enumerate(config.resourses):
             res = config.resourses[resource]
-            if res[0]<=res[3] and res[0] + res[1] <= res[3]:
+            if res[0] <= res[3] and res[0] + res[1] <= res[3]:
                 res[0] += res[1]
             else:
                 res[0] = res[3]
             if res[1] > 0:
-                res_label_list[i].text = f'{int(res[0])} [size=13]+{res[1]}[/size]'
+                self.res_label_list[i].text = f'{int(res[0])} [size=13]+{res[1]}[/size]'
             else:
-                res_label_list[i].text = f'{int(res[0])}'
+                self.res_label_list[i].text = f'{int(res[0])}'
             sklad_coefficient = res[0] / res[3]
-            pb_list[i].value_normalized = sklad_coefficient
-
+            self.pb_list[i].value_normalized = sklad_coefficient
+        # Обновление для текущих программ
+        self.programs_grid.clear_widgets()
+        self.update_programs()
+        self.update_total_programs_label()
         for b in buildings:
             if b.active:
                 b.update_available_units()
 
-                
-    # Добавление и обовление ресурсов
-    def right_sidebar_content(self):
-        right_sidebar = RightSidebar(orientation='vertical', size_hint=(.17, .6),
-                                     pos_hint=({'center_y': .5, 'right': 1}))
-        rel_res = GridLayout(cols=2, size_hint_y=.15, padding=5)
-        money = config.money
-        money_box = TestBoxLayout(orientation='vertical', spacing=2, padding=2)
-        self.money_label = ResLabel(id='Деньги', text=f'{money[0]} [size=13]+{money[1]}[/size]')
-        self.res_label_list = []
-        self.pb_list = []
-        money_box.add_widget(self.money_label)
-        rel_res.add_widget(MoneyImage(size=(30, 30), size_hint_x=.2, source=money[2]))
-        rel_res.add_widget(money_box)
-        self.res_grid = GridLayout(rows=5, row_default_height=30)
-        for res in config.resourses:
-            resource = config.resourses[res]
-           # sklad_coefficient = resource[0] / config.sklad
-            rel_ress = GridLayout(cols=4, size_hint_y=None, padding=5, height=40)
-            resource_box = TestBoxLayout(orientation='vertical', spacing=2, padding=2)
-            resource_label = ResLabel(id=f'{res}', text=f'{int(resource[0])} [size=13]+{resource[1]}[/size]')
-            resource_progress = ProgressBar(id=f'p_{res}', size_hint=(1, .1), max=resource[3])
-            #resource_progress.value_normalized = sklad_coefficient
-            resource_box.add_widget(resource_label)
-            resource_box.add_widget(resource_progress)
-            rel_ress.add_widget(MoneyImage(size_hint_x=.25, source=resource[2]))
-            rel_ress.add_widget(resource_box)
-            max_ress = BoxLayout(orientation='horizontal', height=20, size_hint=(0.3,None))
-            max_ress.add_widget(Label(text=f'{resource[3]}',color=(0,0,0,0.3),size_hint=(0.5,0.5)))
-            rel_ress.add_widget(max_ress)
-            self.res_grid.add_widget(rel_ress)
-            self.res_label_list.append(resource_label)
-            self.pb_list.append(resource_progress)
-        right_sidebar.add_widget(Label(text='Ресурсы', size_hint_y=.13, color=(0, 0, 0, 1)))
-        right_sidebar.add_widget(rel_res)
-        right_sidebar.add_widget(Image(source='data/images/gui_elements/line.png', size_hint_y=.05))
-        right_sidebar.add_widget(self.res_grid)
-        return right_sidebar
+    def update_programs(self):
+        for program in config.player_programs:
+            if config.player_programs[program] > 0:
+                program_ress = GridLayout(cols=3, size_hint_y=None, padding=5, spacing=5, height=40)
+                program_image = Image(source=config.programs[program][0], size_hint_x=.25)
+                program_label = ProgramSidebarLabel(text=f'{program} {config.player_programs[program]} ед.')
+                program_ress.add_widget(program_image)
+                program_ress.add_widget(program_label)
+                self.programs_grid.add_widget(program_ress)
+
+    def create_programs_lay(self):
+        programs_lay = GridLayout(cols=3, spacing=5, padding=2, size_hint_y=.2)
+        programs_layout = BoxLayout(orientation='horizontal', size_hint_x=.35)
+        programs_now = 0
+        for pr in config.player_programs:
+            programs_now += int(config.player_programs[pr]) * int(config.programs[pr][3])
+        self.total_programs_label = RightLabel(text=f'{programs_now}/{config.programs_max}', size_hint_x=.45)
+        programs_layout.add_widget(self.total_programs_label)
+        programs_layout.add_widget(Image(source=r'data/images/gui_elements/disketa.png', size_hint=(.35, .7),
+                                         pos_hint=({'center_x': .5, 'center_y': .5})))
+        programs_lay.add_widget(Image(source='data/images/gui_elements/terminal_icon.png', size_hint_x=.2))
+        programs_lay.add_widget(ProgramSidebarLabel(text='Программы', font_size=16, size_hint_x=.45))
+        programs_lay.add_widget(programs_layout)
+        return programs_lay
+
+    def update_total_programs_label(self):
+        programs_now = 0
+        for pr in config.player_programs:
+            programs_now += int(config.player_programs[pr]) * int(config.programs[pr][3])
+        self.total_programs_label.text = f'{programs_now}/{config.programs_max}'
+
+    def open_terminal(self):
+        scatter_terminal = ScatterLayout(size_hint=(.4, .5))
+        terminal_lay = TerminalRelativeLayout()
+        scroll_terminal = TerminalScrollView(size_hint=(.97, .87), pos_hint=({'center_x': .5, 'top': .9}))
+        terminal_top = RelativeLayout(size_hint=(.97, .1), pos_hint=({'center_x': .5, 'top': 1}))
+        terminal_top.add_widget(TerminalIcon(pos_hint=({'x': .005, 'top': 1}), size_hint_x=.04))
+        terminal_top.add_widget(TerminalTitleLabel(text=r'C:\JARVIS\Terminal [Version 7.1.2336]',
+                                                   pos_hint=({'x': .05, 'top': 1}), size_hint_x=.992))
+        terminal_top.add_widget(
+            TerminalClose(parent_lay=self.layout, close_lay=scatter_terminal, pos_hint=({'right': .99, 'top': 1}),
+                          size_hint_x=.04))
+        terminal_main = TerminalGridLayout(cols=1, size_hint_y=None, padding=3, spacing=5)
+        terminal_main.bind(minimum_height=terminal_main.setter('height'))
+        terminal_main.add_widget(
+            TerminalLabel(text='JARVIS Terminal (c) Corporation JARVIS, 2044. All rights reserved'))
+        terminal_main.add_widget(TerminalTextInput(grid=terminal_main))
+        terminal_lay.add_widget(terminal_top)
+        scroll_terminal.add_widget(terminal_main)
+        terminal_lay.add_widget(scroll_terminal)
+        scatter_terminal.add_widget(terminal_lay)
+        self.layout.add_widget(scatter_terminal)
 
     def on_leave(self, *args):
         self.clear_widgets()

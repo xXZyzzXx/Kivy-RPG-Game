@@ -2,13 +2,18 @@ import building
 import config
 from additional import *
 from gui import *
+from kivy.utils import get_color_from_hex
 from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
+from kivy.clock import Clock
+from functools import partial
 from kivy.uix.gridlayout import GridLayout
+from kivy.graphics import Color, Rectangle
 from kivy.uix.image import Image
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
+from kivy.animation import Animation
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.tabbedpanel import TabbedPanel, TabbedPanelItem
@@ -22,7 +27,7 @@ def data_center_content(build_place):
     defence_tab = DefPanelItem(icon_box, statistic_grid, text='Защита')
     defence_tab.content = tab_defence_content(defence_tab)
     hack_tab = HackPanelItem(icon_box, statistic_grid, text='Взлом')
-    hack_tab.content = tab_hack_content()
+    hack_tab.content = tab_hack_content(hack_tab)
     dev_tab = DevPanelItem(icon_box, statistic_grid, text='Разработка')
     dev_tab.content = tab_dev_content()
     upgrade_tab = UpgradePanelItem(icon_box, statistic_grid, text='Улучшения')
@@ -36,7 +41,7 @@ def data_center_content(build_place):
 
 
 #  TAB HACK CONTENT =====================================================================
-def tab_hack_content():
+def tab_hack_content(hack_tab):
     lay_list = []  # TODO: добавить по нажатию на слой ProgramLayout открытие инфы
     scroll = ScrollView()
     top_program_box = BoxLayout(orientation='vertical', spacing=10)
@@ -46,9 +51,9 @@ def tab_hack_content():
     filter_title = Label(text='Фильтр: ')
     toggles_layout = BoxLayout(orientation='horizontal', padding=7, spacing=5)
     # TODO: заменить на картинки с toggle_behavior
-    tg1 = HackToggleButton(programs_grid, lay_list, text='Видимый', group='hack_filter')
-    tg2 = HackToggleButton(programs_grid, lay_list, text='Скрытный', group='hack_filter')
-    tg3 = HackToggleButton(programs_grid, lay_list, text='Все', group='hack_filter', state='down')
+    tg1 = HackToggleButton(programs_grid, lay_list, hack_tab, text='Видимый', group='hack_filter')
+    tg2 = HackToggleButton(programs_grid, lay_list, hack_tab, text='Скрытный', group='hack_filter')
+    tg3 = HackToggleButton(programs_grid, lay_list, hack_tab, text='Все', group='hack_filter', state='down')
     toggles_layout.add_widget(tg1)
     toggles_layout.add_widget(tg2)
     toggles_layout.add_widget(tg3)
@@ -63,7 +68,7 @@ def tab_hack_content():
     return top_program_box
 
 
-def tab_hack_row(programs_grid, program_name, program, lay_list):
+def tab_hack_row(programs_grid, program_name, program, lay_list, hack_tab):
     upper_lay = BoxLayout(orientation='vertical', height=80, size_hint_y=None)
     top_box = ProgramLayout(orientation='horizontal', height=80, size_hint_y=None, upper_lay=upper_lay,
                             program=program, programs_grid=programs_grid)
@@ -100,7 +105,8 @@ def tab_hack_row(programs_grid, program_name, program, lay_list):
     cost_info_grid.add_widget(res_cost_lay)
     title_box.add_widget(title_label)
     title_box.add_widget(cost_info_grid)
-    upgrade_button = CompileProgramButton(size_hint=(.1, .7), pos_hint=({'center_y': .5}))
+    upgrade_button = CompileProgramButton(program=program_name, hack_tab=hack_tab, size_hint=(.1, .7),
+                                          pos_hint=({'center_y': .5}))
     top_box.add_widget(image_lay)
     top_box.add_widget(title_box)
     top_box.add_widget(upgrade_button)
@@ -255,19 +261,20 @@ class DefToggleButton(ToggleButton):  # TODO: заменить на картин
 
 
 class HackToggleButton(ToggleButton):  # TODO: заменить на картинку с ToggleBehavior
-    def __init__(self, programs_grid, lay_list, **kwargs):
+    def __init__(self, programs_grid, lay_list, hack_tab, **kwargs):
         super(HackToggleButton, self).__init__(**kwargs)
         self.programs_grid = programs_grid
         self.lay_list = lay_list
+        self.hack_tab = hack_tab
 
     def on_press(self):
         self.programs_grid.clear_widgets()
         for program_name in config.programs:
             program = config.programs[program_name]
             if self.text == 'Все':
-                tab_hack_row(self.programs_grid, program_name, program, self.lay_list)
+                tab_hack_row(self.programs_grid, program_name, program, self.lay_list, hack_tab=self.hack_tab)
             elif program[2] == self.text:
-                tab_hack_row(self.programs_grid, program_name, program, self.lay_list)
+                tab_hack_row(self.programs_grid, program_name, program, self.lay_list, hack_tab=self.hack_tab)
         # TODO: добавить отображение недоступных программ внизу списка
         self.programs_grid.lay_list = self.lay_list
 
@@ -285,27 +292,42 @@ class HackPanelItem(TabbedPanelItem):
         super(HackPanelItem, self).__init__(**kwargs)
         self.icon_box = icon_box
         self.statistic_grid = statistic_grid
+        self.programs_count_label = None
+        self.queue_grid = None
+        self.slots = None
 
     def on_press(self):
         self.icon_box.clear_widgets()
         self.icon_box.add_widget(Image(source=config.data_center[self.text][0], allow_stretch=True,
-                                       keep_ratio=False))  # TODO: добавить анимацию перехода
+                                       keep_ratio=False))
         self.statistic_grid.clear_widgets()
-        queue_box = BoxLayout(orientation='vertical', size_hint_y=.4)  # TODO: кастомизировать очередь
+        queue_box = BoxLayout(orientation='vertical', size_hint_y=.4)
         queue_scroll = ScrollView(do_scroll_y=False, do_scroll_x=True, size_hint_y=.6)
-        queue_grid = QueueGridLayout(rows=1, size_hint_x=None, spacing=5)
-        queue_grid.bind(minimum_width=queue_grid.setter('width'))
-        for program in config.queue_program:
-            prgm_box = QueueSlotHack(size_hint=(None, None), width=45, height=45, pos_hint=({'center_y': .5}))
-            queue_grid.add_widget(prgm_box)
-        queue_scroll.add_widget(queue_grid)
-        queue_box.add_widget(Label(text='Очередь: ', size_hint_y=.4))
+        self.queue_grid = QueueGridLayout(rows=1, size_hint_x=None, spacing=5)
+        self.queue_grid.bind(minimum_width=self.queue_grid.setter('width'))
+        for program in range(len(config.programs.keys())):
+            prgm_box = QueueSlotHack(size_hint=(None, None), width=55, height=55)
+            self.queue_grid.add_widget(prgm_box)
+        queue_scroll.add_widget(self.queue_grid)
+        queue_top = BoxLayout(orientation='horizontal', size_hint_y=.4, padding=5)
+        programs_layout = BoxLayout(orientation='horizontal', size_hint_x=.4)
+        programs_now = 0
+        for pr in config.player_programs:
+            programs_now += int(config.player_programs[pr]) * int(config.programs[pr][3])
+        self.programs_count_label = RightLabel(text=f'{programs_now}/{config.programs_max}')
+        programs_layout.add_widget(self.programs_count_label)
+        programs_layout.add_widget(Image(source=r'data/images/gui_elements/disketa.png', size_hint=(.45, .45),
+                                         pos_hint=({'center_x': .5, 'center_y': .5})))
+        queue_top.add_widget(Label(text='Очередь: ', size_hint_x=.6))
+        queue_top.add_widget(programs_layout)
+        queue_box.add_widget(queue_top)
         queue_box.add_widget(queue_scroll)
-        compile_box = GridLayout(cols=2, size_hint_y=.6)  # TODO: кастомизировать слоты компиляции
+        compile_box = GridLayout(cols=2, size_hint_y=.6, spacing=7)
         slot1 = HackSlotImage(unlocked=True)
         slot2 = HackSlotImage()
         slot3 = HackSlotImage()
         slot4 = HackSlotImage()
+        self.slots = [slot1, slot2, slot3, slot4]
         compile_box.add_widget(slot1)
         compile_box.add_widget(slot2)
         compile_box.add_widget(slot3)
@@ -324,7 +346,7 @@ class DefPanelItem(TabbedPanelItem):
 
     def on_press(self):
         self.icon_box.clear_widgets()
-        self.icon_box.add_widget(Image(source=config.data_center[self.text][0]))  # TODO: добавить анимацию перехода
+        self.icon_box.add_widget(Image(source=config.data_center[self.text][0]))
         self.statistic_grid.clear_widgets()
         stat_grid = GridLayout(cols=1, size_hint_y=.4)
         cyberdef_base = config.data_center['Защита']
@@ -351,7 +373,7 @@ class DevPanelItem(TabbedPanelItem):
 
     def on_press(self):
         self.icon_box.clear_widgets()
-        self.icon_box.add_widget(Image(source=config.data_center[self.text][0]))  # TODO: добавить анимацию перехода
+        self.icon_box.add_widget(Image(source=config.data_center[self.text][0]))
         self.statistic_grid.clear_widgets()
         stat_grid = GridLayout(cols=1, size_hint_y=.4)
         stealth_label = Label(text=f"Знаний в час: 28")
@@ -377,7 +399,7 @@ class UpgradePanelItem(TabbedPanelItem):
 
     def on_press(self):
         self.icon_box.clear_widgets()
-        self.icon_box.add_widget(Image(source=config.data_center[self.text][0]))  # TODO: добавить анимацию перехода
+        self.icon_box.add_widget(Image(source=config.data_center[self.text][0]))
         self.statistic_grid.clear_widgets()
 
 
@@ -457,34 +479,146 @@ class InfoImage(ButtonBehavior, Image, HoverBehavior):
         self.source = r'data/images/gui_elements/info.png'
 
 
-class HackSlotImage(ButtonBehavior, Image):
-    def __init__(self, unlocked=False, **kwargs):
-        super().__init__(**kwargs)
-        self.unlocked = unlocked
-        self.default = r'data/images/gui_elements/icon_lock.png'
-        if self.unlocked:
-            self.source = r'data/images/gui_elements/icon_empty.png'
-        else:
-            self.source = self.default
+class QueueSlotHack(ButtonBehavior, BoxLayout):
+    def __init__(self, **kwargs):
+        super(QueueSlotHack, self).__init__(**kwargs)
+        self.orientation = 'vertical'
+        self.padding = 2
+        self.program = None
+        self.count = 0
 
     def on_release(self):
-        print('click')
+        pass
+
+
+class HackSlotImage(ButtonBehavior, BoxLayout):  # TODO: change to relativeLayout для избежания size_hint_x = 1
+    def __init__(self, unlocked=False, **kwargs):  # Добавить счётчик программ в очереди
+        super(HackSlotImage, self).__init__(**kwargs)
+        self.unlocked = unlocked
+        self.orientation = 'vertical'
+        self.padding = 3
+        self.compile_time = 0
+        self.lock = r'data/images/gui_elements/icon_lock.png'
+        self.empty = r'data/images/gui_elements/icon_empty.png'
         if self.unlocked:
-            pass
+            with self.canvas.before:
+                self.bg = Rectangle(pos=self.pos, size=self.size, source=self.empty)
         else:
-            self.source = r'data/images/gui_elements/icon_empty.png'
+            with self.canvas.before:
+                self.bg = Rectangle(pos=self.pos, size=self.size, source=self.lock)
+        self.program_time_label = None
+        self.program = None
 
+    def on_size(self, *args):
+        self.bg.size = self.size
+        self.bg.pos = self.pos
 
-class QueueSlotHack(ButtonBehavior, Image):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.source = r'data/images/gui_elements/icon_empty.png'
+    def on_release(self):
+        if self.unlocked:
+            pass  # TODO: add info about compilation
+        else:
+            self.canvas.before.clear()
+            with self.canvas.before:
+                self.bg = Rectangle(pos=self.pos, size=self.size, source=self.empty)
+            self.unlocked = True
+
+    def new_compilation(self, program, hack_tab):
+        if self.program is None:
+            self.program = program
+            self.add_widget(Image(source=config.programs[program][0], size_hint=(.9, .9),
+                                  pos_hint=({'center_x': .5, 'center_y': .5})))
+            self.program_time_label = ProgramTimeLabel(text='', size_hint_y=.3)
+            self.add_widget(self.program_time_label)
+            Clock.schedule_once(partial(self.time_update, program))
+            Clock.schedule_once(partial(self.end_compilation, program, hack_tab), config.programs[program][3])
+            self.compile_time = config.programs[program][3]
+
+    def end_compilation(self, program, hack_tab, dt):
+        config.player_programs[program] += 1
+        self.program = None
+        self.clear_widgets()
+        programs_now = 0
+        for pr in config.player_programs:  # Обновить кол-во свободного места
+            programs_now += int(config.player_programs[pr]) * int(config.programs[pr][3])
+        hack_tab.programs_count_label.text = f'{programs_now}/{config.programs_max}'
+        print(config.player_programs)
+        self.next_queue_slot(hack_tab)
+
+    def next_queue_slot(self, hack_tab):
+        if len(config.queue_list) > 0:
+            first_queue_slot = config.queue_list[0]  # 2 вариант: list(reversed(hack_tab.queue_grid))[-1]
+            self.new_compilation(first_queue_slot[0], hack_tab)
+            # deleting
+            if first_queue_slot[1] > 1:
+                first_queue_slot[1] -= 1
+            else:
+                config.queue_list.remove(first_queue_slot)
+            hack_tab.queue_grid.update_queue()
+
+    def time_update(self, program, dt):
+        self.compile_time -= 1
+        self.program_time_label.text = f'{int(self.compile_time)} ходов'
+        if self.compile_time >= 1:
+            Clock.schedule_once(partial(self.time_update, program), 1)
 
 
 class CompileProgramButton(ButtonBehavior, Image):
-    def __init__(self, **kwargs):
+    def __init__(self, program, hack_tab, **kwargs):
         super().__init__(**kwargs)
         self.source = r'data/images/gui_elements/compile.png'
+        self.program = program
+        self.hack_tab = hack_tab
+
+    def on_release(self):
+        allow_queue = True
+        programs_now = 0
+        for pr in config.player_programs:  # Обновить кол-во свободного места для компиляции новой программы
+            programs_now += int(config.player_programs[pr]) * int(config.programs[pr][3])
+        for slot in self.hack_tab.slots:  # Добавить к этому занимаемое место программами в компиляции
+            if slot.unlocked:
+                if slot.program is not None:
+                    programs_now += config.programs[slot.program][3]
+        for grid_slot in config.queue_list:  # Добавить к этому занимаемое место программами в очереди
+            programs_now += config.programs[grid_slot[0]][3] * grid_slot[1]
+        if config.programs[self.program][3] <= config.programs_max - programs_now:  # Если есть свободное место
+            for slot in self.hack_tab.slots:
+                if slot.unlocked:
+                    if slot.program is None:
+                        slot.new_compilation(self.program, self.hack_tab)
+                        allow_queue = False
+                        break
+            if allow_queue:
+                self.add_in_queue(self.program)
+                self.hack_tab.queue_grid.update_queue()
+        else:
+            a = Animation(color=(1, 0, 0, 1), duration=.5) + Animation(color=(0, 0, 0, 1), duration=.5)  # блинк красным
+            a.start(self.hack_tab.programs_count_label)
+
+    def add_in_queue(self, program):  # Может быть статичным (вне класса)
+        if len(config.queue_list) > 0:
+            if config.queue_list[-1][0] == program:  # если последний элемент очереди такой же, как и программа
+                config.queue_list[-1][1] += 1  # добавить одну программу в очередь
+            else:
+                config.queue_list.append([program, 1])
+        else:
+            config.queue_list.append([program, 1])  # если очердь пуста, добавить элемент
+
+
+class QueueGridLayout(GridLayout):
+    def __init__(self, **kwargs):
+        super(QueueGridLayout, self).__init__(**kwargs)
+
+    def update_queue(self):
+        for c in self.children:  # Очищаем список картинок очереди
+            c.clear_widgets()
+        for i, program_in_list in enumerate(config.queue_list):
+            if i + 1 <= len(self.children):  # Ограничение на места для очереди
+                slot = list(reversed(self.children))[i]
+                slot.add_widget(Image(source=config.programs[program_in_list[0]][0], size_hint=(.9, .7),
+                                      pos_hint=({'center_x': .5})))
+                slot.add_widget(TopLabel(text=f'{program_in_list[1]}', size_hint_y=.3, font_size=14, bold=True,
+                                         color=get_color_from_hex('#A5260A')))
+                slot.program = program_in_list[0]
 
 
 class ProgramTitleLabel(Label):
@@ -503,5 +637,5 @@ class DefAmountLabel(Label):
     pass
 
 
-class QueueGridLayout(GridLayout):
+class ProgramTimeLabel(Label):
     pass

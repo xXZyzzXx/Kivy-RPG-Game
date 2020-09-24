@@ -44,7 +44,7 @@ prod_upgrades = {'Ирригация': [[250, 0, 0, 0], r'data/images/gui_elemen
 
 player = {'Население': [100, 2, r"data/images/units/worker.png"]}
 
-resourses_generation = {'main_base': {'Электричество': 500, 'Еда': 500,'Сырьевые ресурсы': 0}}
+resourses_generation = {'main_base': {'Электричество': 500, 'Еда': 500, 'Сырьевые ресурсы': 0}}
 
 res = {'Деньги': [1550, 5550],
        'Древесина': [20000, 20],
@@ -62,7 +62,7 @@ percent_amount = 10
 
 data_center = {'Защита': [r'data/images/gui_elements/data_center.png', [stealh_default, stealh_default, 5],
                           [active_default, active_default, 0]],
-               'Взлом': [r'data/images/gui_elements/hack.png'],
+               'Взлом': [r'data/images/gui_elements/malvare_icon.zip'],
                'Разработка': [r'data/images/gui_elements/malware_main.png'],
                'Улучшения': [r'data/images/gui_elements/robots.png']}
 
@@ -71,11 +71,11 @@ current_antivirus_tech = empty_antivirus_tech
 
 programs = {'Червь': [r'data/images/gui_elements/data_center.png', [250, 250], 'Видимый', 3],
             'Руткит': [r'data/images/gui_elements/microprocessor.png', [230, 22420], 'Скрытный', 2],
-            'Логическая бомба': [r'data/images/gui_elements/building_tools.png', [5250, 23250], 'Видимый', 10],
+            'Логическая бомба': [r'data/images/gui_elements/disketa.png', [5250, 23250], 'Видимый', 10],
             'Троян': [r'data/images/gui_elements/robots.png', [6333, 6322], 'Видимый', 1]}
 
 antimalware_upgrades = {'Стелс узел': [r'data/images/gui_elements/eye_crossed.png', [5350, 2230], [47, 1.8], 0],
-               'Активный узел': [r'data/images/gui_elements/eye.png', [230, 22420], [56, 1.8], 0]}
+                        'Активный узел': [r'data/images/gui_elements/eye.png', [230, 22420], [56, 1.8], 0]}
 
 descriptions = {'Защита от взлома': 'При защите от хакерских атак  противников предусмотрено два режима работы '
                                     'фаервола: для обнаружения скрытных атак и для противодействия прямому вторжению '
@@ -86,19 +86,18 @@ descriptions = {'Защита от взлома': 'При защите от ха
                                     'улучшением выбранной области. При смене режимов бонус фаервола сбрасывается до '
                                     'нуля и восстанавливается заново.'}
 
-queue_program = []
+
+player_programs = {'Червь': 1,
+                   'Руткит': 0,
+                   'Логическая бомба': 0,
+                   'Троян': 0}
+
+programs_max = 15
+
+queue_list = []
 
 
-class Worm:
-    def __init__(self):
-        self.damage = 10
-
-
-for i in range(10):
-    queue_program.append(Worm())
-
-
-
+# TODO: Добавить словари со стоимостью, харастеристикой и прочим в словаре всех юнитов и программ
 
 '''
 <BoxLayout>

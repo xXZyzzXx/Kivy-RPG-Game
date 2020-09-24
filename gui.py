@@ -633,3 +633,19 @@ class TerminalTextInput(TextInput):
                 self.grid.add_widget(TerminalTextInput(grid=self.grid, text=self.start_text))
             else:
                 self.text = self.start_text
+
+
+class ProgramSidebarLabel(Label):
+    pass
+
+
+class RightLabel(Label):
+    pass
+
+
+class LeftLabel(Label):
+    pass
+
+
+class TopLabel(Label):
+    pass
