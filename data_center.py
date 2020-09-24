@@ -315,7 +315,7 @@ class HackPanelItem(TabbedPanelItem):
             programs_now += int(config.player_programs[pr]) * int(config.programs[pr][3])
         self.programs_count_label = RightLabel(text=f'{programs_now}/{config.programs_max}')
         programs_layout.add_widget(self.programs_count_label)
-        programs_layout.add_widget(Image(source=r'data/images/gui_elements/disketa.png', size_hint=(.4, .4),
+        programs_layout.add_widget(Image(source=r'data/images/gui_elements/disketa.png', size_hint=(.45, .45),
                                          pos_hint=({'center_x': .5, 'center_y': .5})))
         queue_top.add_widget(Label(text='Очередь: ', size_hint_x=.6))
         queue_top.add_widget(programs_layout)
@@ -564,6 +564,8 @@ class CompileProgramButton(ButtonBehavior, Image):
             if slot.unlocked:
                 if slot.program is not None:
                     programs_now += config.programs[slot.program][3]
+        for grid_slot in config.queue_list:  # Добавить к этому занимаемое место программами в очереди
+            programs_now += config.programs[grid_slot[0]][3] * grid_slot[1]
         if config.programs[self.program][3] <= config.programs_max - programs_now:  # Если есть свободное место
             for slot in self.hack_tab.slots:
                 if slot.unlocked:
