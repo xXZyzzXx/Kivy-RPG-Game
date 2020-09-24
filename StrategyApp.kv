@@ -27,11 +27,13 @@
         Rectangle:
             pos: self.pos
             size: self.size
+
 <TotalResLabel>
     opacity: 0
     text_size: self.size
     halign: 'left'
     valign: 'middle'
+
 <BuildResLabel>
     text_size: self.size
     font_size: 14
@@ -54,7 +56,7 @@
         Rectangle:
             pos: self.pos
             size: self.size
-            source: 'data/images/background-min.jpg'
+            source: 'data/images/base-bg.png'
 
 <RightSidebar>
     canvas.before:
@@ -69,8 +71,6 @@
             pos: self.pos
             size: self.size
             source: 'data/images/gui_elements/rect2.png'
-
-
 
 <MenuLayout>
     canvas.before:
@@ -111,6 +111,21 @@
             source: 'data/images/gui_elements/rect2.png'
 
 
+<GenImage>
+    opacity: 0.3
+    size_hint_x: .15
+    size_hint_y: None
+    height: self.width
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/main_base/generator_lvl1.png'
+    Button:
+        pos: self.pos
+        size: self.size
+        on_release:
+            root.gen_set()
 
 <BuildButton>
     canvas:
@@ -118,6 +133,7 @@
             pos: self.pos
             size: self.size
             source: 'data/images/gui_elements/hammer.png'
+
 
 <UpperBoxLayout>
     canvas.before:
@@ -133,18 +149,6 @@
             pos: self.pos
             size: self.size
             source: 'data/images/gui_elements/scroll_2.png'
-
-<BoxLayout>
-    canvas.before:
-        Color:
-            rgba: 1, 1, 1, 1
-        Line:
-            width: 1
-            rectangle: self.x, self.y, self.width, self.height
-
-
-<Label>
-    color: (0, 0, 0, 1)
 
 
 <DevItemIcon>
@@ -163,4 +167,123 @@
             source: 'data/images/gui_elements/dev_item_back.png'
 
 
+<InfoLabel>
+    color: utils.get_color_from_hex('#A9A9A9')
+    text_size: self.size
+    valign: 'middle'
 
+<DefAmountLabel>
+    halign: 'left'  # doesn't work, need to add text_size: self.size
+
+<TerminalRelativeLayout>
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/gui_elements/terminal1.png'
+
+<TerminalScrollView>
+    canvas.before:
+        Color:
+            rgba: 0, 0, 0, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+        Color:
+            rgba: 1, 1, 1, 1
+        Line:
+            width: 1
+            rectangle: self.x, self.y, self.width, self.height
+
+<TerminalTitleLabel>
+    text_size: self.size
+    halign: 'left'
+    valign: 'middle'
+
+<TerminalLabel>
+    color: (1, 1, 1, 1)
+    font_name: 'data/fonts/LucidaConsole.ttf'
+    font_size: 12
+    text_size: self.size
+    height: 30
+    size_hint_y: None
+    halign: 'left'
+    valign: 'middle'
+
+<TerminalTextInput>
+    color: (1, 1, 1, 1)
+    font_name: 'data/fonts/LucidaConsole.ttf'
+    font_size: 12
+    multiline: False
+    height: 30
+    size_hint_y: None
+    text_size: self.size
+    halign: 'left'
+    valign: 'middle'
+
+
+<FrameBoxLayout>
+    canvas.after:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/gui_elements/frame.png'
+
+<ProgramTitleLabel>
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/gui_elements/Brown.png'
+
+<HackIconBoxLayout>
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/gui_elements/terminal_icon.png'
+
+
+<BoxLayout>
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+        Line:
+            width: 1
+            rectangle: self.x, self.y, self.width, self.height
+
+<Label>
+    color: (0, 0, 0, 1)
+
+<TerminalLabel>
+    color: (1, 1, 1, 1)
+
+<QueueSlotHack>
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/gui_elements/icon_empty.png'
+
+<RightLabel>
+    text_size: self.size
+    halign: 'right'
+    valign: 'middle'
+
+<LeftLabel>
+    text_size: self.size
+    halign: 'left'
+    valign: 'middle'
+<LeftLabel>
+    text_size: self.size
+    halign: 'left'
+    valign: 'middle'
+<TopLabel>
+    text_size: self.size
+    halign: 'center'
+    valign: 'top'
+
+<ProgramSidebarLabel>
+    text_size: self.size
+    halign: 'left'
+    valign: 'middle'

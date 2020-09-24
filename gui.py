@@ -1,30 +1,25 @@
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.relativelayout import RelativeLayout
-from kivy.uix.anchorlayout import AnchorLayout
-from kivy.uix.floatlayout import FloatLayout
-from kivy.core.image import Image as CoreImage
-from kivy.uix.image import Image
-from kivy.uix.behaviors import ButtonBehavior
-from kivy.app import App
-from kivy.uix.button import Button
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.gridlayout import GridLayout
-from kivy.uix.stacklayout import StackLayout
-from kivy.uix.relativelayout import RelativeLayout
-from kivy.uix.scatterlayout import ScatterLayout
-from kivy.uix.anchorlayout import AnchorLayout
-from kivy.uix.label import Label
-from kivy.uix.image import Image
-from kivy.uix.behaviors import ButtonBehavior
-from kivy.graphics import Color, Rectangle
-from kivy.properties import BooleanProperty, ObjectProperty
-from kivy.core.window import Window
-from kivy.animation import Animation
-from kivy.factory import Factory
-from building import *
 import re
+import main_base
 import building
 import config
+from additional import *
+from building import *
+from kivy.utils import get_color_from_hex
+from kivy.animation import Animation
+from kivy.graphics import Rectangle
+from kivy.uix.behaviors import ButtonBehavior
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
+from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.gridlayout import GridLayout
+from kivy.uix.image import Image
+from kivy.uix.label import Label
+from kivy.uix.relativelayout import RelativeLayout
+from kivy.uix.scatterlayout import ScatterLayout
+from kivy.uix.scrollview import ScrollView
+from kivy.uix.textinput import TextInput
+from kivy.uix.checkbox import CheckBox
+from kivy.uix.slider import Slider
 
 res_list = list(config.resourses.keys())
 anim_opacity_up = Animation(opacity=1, duration=.5)
@@ -66,53 +61,6 @@ def on_checkbox_active(checkbox, value):
                 anim.start(b)
 
 
-class HoverBehavior(object):
-    """Hover behavior.
-    :Events:
-        `on_enter`
-            Fired when mouse enter the bbox of the widget.
-        `on_leave`
-            Fired when the mouse exit the widget
-    """
-
-    hovered = BooleanProperty(False)
-    border_point = ObjectProperty(None)
-    '''Contains the last relevant point received by the Hoverable. This can
-    be used in `on_enter` or `on_leave` in order to know where was dispatched the event.
-    '''
-
-    def __init__(self, **kwargs):
-        self.register_event_type('on_enter')
-        self.register_event_type('on_leave')
-        Window.bind(mouse_pos=self.on_mouse_pos)
-        super(HoverBehavior, self).__init__(**kwargs)
-
-    def on_mouse_pos(self, *args):
-        if not self.get_root_window():
-            return  # do proceed if I'm not displayed <=> If have no parent
-        pos = args[1]
-        # Next line to_widget allow to compensate for relative layout
-        inside = self.collide_point(*self.to_widget(*pos))
-        if self.hovered == inside:
-            # We have already done what was needed
-            return
-        self.border_point = pos
-        self.hovered = inside
-        if inside:
-            self.dispatch('on_enter')
-        else:
-            self.dispatch('on_leave')
-
-    def on_enter(self):
-        pass
-
-    def on_leave(self):
-        pass
-
-
-Factory.register('HoverBehavior', HoverBehavior)
-
-
 class MoneyImage(Image):
     def __init__(self, **kwargs):
         super(MoneyImage, self).__init__(**kwargs)
@@ -140,6 +88,22 @@ class MailButton(ButtonBehavior, Image):
     def __init__(self, **kwargs):
         super(MailButton, self).__init__(**kwargs)
         self.source = 'data/images/navigation/letter.png'
+
+
+# Инициализация базы
+class BuildingBase(ButtonBehavior, Image):
+    def __init__(self, **kwargs):
+        super(BuildingBase, self).__init__(**kwargs)
+        self.source = 'data/images/buildings/main-base.png'
+        self.free_space = False
+        self.active = False
+        self.name = 'main_base'
+        self.unit_grid = None
+        self.slider = None
+        self.available_list = None
+
+    def on_release(self):
+        self.parent.add_widget(main_base.main_base_menu(build_place=self))
 
 
 class Building(ButtonBehavior, Image):
@@ -604,4 +568,84 @@ class TotalTimeLabel(Label):
 
 
 class TotalResLabel(Label):
+    pass
+
+
+class TerminalRelativeLayout(RelativeLayout):
+    pass
+
+
+class TerminalGridLayout(GridLayout):
+    pass
+
+
+class TerminalClose(ButtonBehavior, Image, HoverBehavior):
+    def __init__(self, parent_lay, close_lay, **kwargs):
+        super().__init__(**kwargs)
+        self.source = 'data/images/gui_elements/terminal_close_normal.png'
+        self.parent_lay = parent_lay
+        self.close_lay = close_lay
+
+    def on_enter(self):
+        self.source = 'data/images/gui_elements/terminal_close_hovered.png'
+
+    def on_leave(self):
+        self.source = 'data/images/gui_elements/terminal_close_normal.png'
+
+    def on_press(self):
+        self.source = 'data/images/gui_elements/terminal_close_pressed.png'
+
+    def on_release(self):
+        self.source = 'data/images/gui_elements/terminal_close_hovered.png'
+        self.parent_lay.remove_widget(self.close_lay)
+
+
+class TerminalIcon(ButtonBehavior, Image):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.source = 'data/images/gui_elements/terminal_icon.png'
+
+
+class TerminalTitleLabel(Label):
+    pass
+
+
+class TerminalLabel(Label):
+    pass
+
+
+class TerminalScrollView(ScrollView):
+    pass
+
+
+class TerminalTextInput(TextInput):
+    def __init__(self, grid, **kwargs):
+        super(TerminalTextInput, self).__init__(**kwargs)
+        self.grid = grid
+        self.start_text = 'C:\JARVIS\Terminal>'
+        self.text = self.start_text
+
+    def keyboard_on_key_down(self, window, keycode, text, modifiers):
+        if keycode[1] == 'enter':
+            if self.text[:19] == 'C:\JARVIS\Terminal>':
+                self.grid.remove_widget(self)
+                self.grid.add_widget(TerminalLabel(text=self.start_text + self.text[19:]))
+                self.grid.add_widget(TerminalTextInput(grid=self.grid, text=self.start_text))
+            else:
+                self.text = self.start_text
+
+
+class ProgramSidebarLabel(Label):
+    pass
+
+
+class RightLabel(Label):
+    pass
+
+
+class LeftLabel(Label):
+    pass
+
+
+class TopLabel(Label):
     pass
