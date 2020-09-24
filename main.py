@@ -29,13 +29,13 @@ class MainScreen(Screen):
         self.res_grid = None
         self.programs_grid = None
         self.res_label_list = None
+        self.main_base = None
         self.total_programs_label = None
         self.pb_list = None
 
     def on_enter(self, *args):
         self.layout = RelativeLayout()
         canvas = CityCanvas()
-
         # Выбор окна в главном меню
         mainmenu = BoxLayout(orientation='vertical', size_hint=(.1, .1), pos_hint=({'x': 0, 'top': 0.5}))
         stackscreens = GridLayout(rows=3, spacing=5)
@@ -43,10 +43,8 @@ class MainScreen(Screen):
         data_center_screen = Button(size_hint_x=.1, text='data_center',
                                     on_release=lambda x: self.data_center_newscreen())
         terminal_button = Button(size_hint_x=.1, text='terminal', on_release=lambda x: self.open_terminal())
-
         # Главное здание базы
         self.main_base = BuildingBase(id='main_base', pos_hint=({'center_x': .5, 'center_y': .6}), size_hint=(0.3, 0.3))
-
         stackscreens.add_widget(prod_menu_screen)
         stackscreens.add_widget(data_center_screen)
         stackscreens.add_widget(terminal_button)
@@ -80,7 +78,6 @@ class MainScreen(Screen):
         # empty_space.active = True
         # self.layout.add_widget(empty_space.building_content(build_place=self, build='Казармы'))  # For testing
         # self.layout.add_widget(building.prod_menu(empty_space2))
-
         self.timer_event = Clock.schedule_interval(
             lambda dt: self.update_resources(buildings), 1)
 
@@ -89,56 +86,6 @@ class MainScreen(Screen):
 
     def prod_menu_newscreen(self):
         self.layout.add_widget(building.prod_menu(self.empty_space2))
-
-    def open_terminal(self):
-        scatter_terminal = ScatterLayout(size_hint=(.4, .5))
-        terminal_lay = TerminalRelativeLayout()
-        scroll_terminal = TerminalScrollView(size_hint=(.97, .87), pos_hint=({'center_x': .5, 'top': .9}))
-        terminal_top = RelativeLayout(size_hint=(.97, .1), pos_hint=({'center_x': .5, 'top': 1}))
-        terminal_top.add_widget(TerminalIcon(pos_hint=({'x': .005, 'top': 1}), size_hint_x=.04))
-        terminal_top.add_widget(TerminalTitleLabel(text=r'C:\JARVIS\Terminal [Version 7.1.2336]',
-                                                   pos_hint=({'x': .05, 'top': 1}), size_hint_x=.992))
-        terminal_top.add_widget(
-            TerminalClose(parent_lay=self.layout, close_lay=scatter_terminal, pos_hint=({'right': .99, 'top': 1}),
-                          size_hint_x=.04))
-        terminal_main = TerminalGridLayout(cols=1, size_hint_y=None, padding=3, spacing=5)
-        terminal_main.bind(minimum_height=terminal_main.setter('height'))
-        terminal_main.add_widget(
-            TerminalLabel(text='JARVIS Terminal (c) Corporation JARVIS, 2044. All rights reserved'))
-        terminal_main.add_widget(TerminalTextInput(grid=terminal_main))
-        terminal_lay.add_widget(terminal_top)
-        scroll_terminal.add_widget(terminal_main)
-        terminal_lay.add_widget(scroll_terminal)
-        scatter_terminal.add_widget(terminal_lay)
-        self.layout.add_widget(scatter_terminal)
-
-    def update_resources(self, buildings):
-        money = config.money
-        money[0] += money[1]
-        if money[1] > 0:
-            self.money_label.text = f'{money[0]} [size=13]+{money[1]}[/size]'
-        else:
-            self.money_label.text = f'{money[0]}'
-        # Обновление для сырьевых ресурсов
-        for i, resource in enumerate(config.resourses):
-            res = config.resourses[resource]
-            if res[0] <= res[3] and res[0] + res[1] <= res[3]:
-                res[0] += res[1]
-            else:
-                res[0] = res[3]
-            if res[1] > 0:
-                self.res_label_list[i].text = f'{int(res[0])} [size=13]+{res[1]}[/size]'
-            else:
-                self.res_label_list[i].text = f'{int(res[0])}'
-            sklad_coefficient = res[0] / res[3]
-            self.pb_list[i].value_normalized = sklad_coefficient
-        # Обновление для текущих программ
-        self.programs_grid.clear_widgets()
-        self.update_programs()
-        self.update_total_programs_label()
-        for b in buildings:
-            if b.active:
-                b.update_available_units()
 
     # Добавление и обновление ресурсов
     def right_sidebar_content(self):
@@ -178,11 +125,40 @@ class MainScreen(Screen):
             rel_ress.add_widget(MoneyImage(size_hint_x=.25, source=resource[2]))
             rel_ress.add_widget(resource_box)
             max_ress = BoxLayout(orientation='horizontal', height=20, size_hint=(0.3, 1), pos_hint=({'center_y': .5}))
-            max_ress.add_widget(LeftLabel(text=f'{resource[3]}', color=(0, 0, 0, 0.3), size_hint=(0.5, 0.5), font_size=12))
+            max_ress.add_widget(
+                LeftLabel(text=f'{resource[3]}', color=(0, 0, 0, 0.3), size_hint=(0.5, 0.5), font_size=12))
             rel_ress.add_widget(max_ress)
             self.res_grid.add_widget(rel_ress)
             self.res_label_list.append(resource_label)
             self.pb_list.append(resource_progress)
+
+    def update_resources(self, buildings):
+        money = config.money
+        money[0] += money[1]
+        if money[1] > 0:
+            self.money_label.text = f'{money[0]} [size=13]+{money[1]}[/size]'
+        else:
+            self.money_label.text = f'{money[0]}'
+        # Обновление для сырьевых ресурсов
+        for i, resource in enumerate(config.resourses):
+            res = config.resourses[resource]
+            if res[0] <= res[3] and res[0] + res[1] <= res[3]:
+                res[0] += res[1]
+            else:
+                res[0] = res[3]
+            if res[1] > 0:
+                self.res_label_list[i].text = f'{int(res[0])} [size=13]+{res[1]}[/size]'
+            else:
+                self.res_label_list[i].text = f'{int(res[0])}'
+            sklad_coefficient = res[0] / res[3]
+            self.pb_list[i].value_normalized = sklad_coefficient
+        # Обновление для текущих программ
+        self.programs_grid.clear_widgets()
+        self.update_programs()
+        self.update_total_programs_label()
+        for b in buildings:
+            if b.active:
+                b.update_available_units()
 
     def update_programs(self):
         for program in config.player_programs:
@@ -214,6 +190,28 @@ class MainScreen(Screen):
         for pr in config.player_programs:
             programs_now += int(config.player_programs[pr]) * int(config.programs[pr][3])
         self.total_programs_label.text = f'{programs_now}/{config.programs_max}'
+
+    def open_terminal(self):
+        scatter_terminal = ScatterLayout(size_hint=(.4, .5))
+        terminal_lay = TerminalRelativeLayout()
+        scroll_terminal = TerminalScrollView(size_hint=(.97, .87), pos_hint=({'center_x': .5, 'top': .9}))
+        terminal_top = RelativeLayout(size_hint=(.97, .1), pos_hint=({'center_x': .5, 'top': 1}))
+        terminal_top.add_widget(TerminalIcon(pos_hint=({'x': .005, 'top': 1}), size_hint_x=.04))
+        terminal_top.add_widget(TerminalTitleLabel(text=r'C:\JARVIS\Terminal [Version 7.1.2336]',
+                                                   pos_hint=({'x': .05, 'top': 1}), size_hint_x=.992))
+        terminal_top.add_widget(
+            TerminalClose(parent_lay=self.layout, close_lay=scatter_terminal, pos_hint=({'right': .99, 'top': 1}),
+                          size_hint_x=.04))
+        terminal_main = TerminalGridLayout(cols=1, size_hint_y=None, padding=3, spacing=5)
+        terminal_main.bind(minimum_height=terminal_main.setter('height'))
+        terminal_main.add_widget(
+            TerminalLabel(text='JARVIS Terminal (c) Corporation JARVIS, 2044. All rights reserved'))
+        terminal_main.add_widget(TerminalTextInput(grid=terminal_main))
+        terminal_lay.add_widget(terminal_top)
+        scroll_terminal.add_widget(terminal_main)
+        terminal_lay.add_widget(scroll_terminal)
+        scatter_terminal.add_widget(terminal_lay)
+        self.layout.add_widget(scatter_terminal)
 
     def on_leave(self, *args):
         self.clear_widgets()
