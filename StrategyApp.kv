@@ -258,3 +258,15 @@
 
 <TerminalLabel>
     color: (1, 1, 1, 1)
+
+<QueueSlotHack>
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/gui_elements/icon_empty.png'
+
+<RightLabel>
+    text_size: self.size
+    halign: 'right'
+    valign: 'middle'
