@@ -14,6 +14,7 @@ from kivy.uix.progressbar import ProgressBar
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.scatterlayout import ScatterLayout
 from kivy.uix.screenmanager import ScreenManager, Screen, WipeTransition
+from kivy.uix.scrollview import ScrollView
 
 
 def set_screen(name_screen, sm):
@@ -164,7 +165,7 @@ class MainScreen(Screen):
         for program in config.player_programs:
             if config.player_programs[program] > 0:
                 program_ress = GridLayout(cols=3, size_hint_y=None, padding=5, spacing=5, height=40)
-                program_image = Image(source=config.programs[program][0], size_hint_x=.25)
+                program_image = Image(source=config.programs[program][0], size_hint_x=.2)
                 program_label = ProgramSidebarLabel(text=f'{program} {config.player_programs[program]} ед.')
                 program_ress.add_widget(program_image)
                 program_ress.add_widget(program_label)
@@ -178,9 +179,11 @@ class MainScreen(Screen):
             programs_now += int(config.player_programs[pr]) * int(config.programs[pr][3])
         self.total_programs_label = RightLabel(text=f'{programs_now}/{config.programs_max}', size_hint_x=.45)
         programs_layout.add_widget(self.total_programs_label)
-        programs_layout.add_widget(Image(source=r'data/images/gui_elements/disketa.png', size_hint=(.35, .7),
+        img_box = BoxLayout(size_hint_x=.2)
+        img_box.add_widget(Image(source='data/images/gui_elements/terminal_icon.png', size_hint=(.8, .8), pos_hint=({'center_y': .5})))
+        programs_layout.add_widget(Image(source=r'data/images/gui_elements/disketa.png', size_hint=(.35, .4),
                                          pos_hint=({'center_x': .5, 'center_y': .5})))
-        programs_lay.add_widget(Image(source='data/images/gui_elements/terminal_icon.png', size_hint_x=.2))
+        programs_lay.add_widget(img_box)
         programs_lay.add_widget(ProgramSidebarLabel(text='Программы', font_size=16, size_hint_x=.45))
         programs_lay.add_widget(programs_layout)
         return programs_lay
