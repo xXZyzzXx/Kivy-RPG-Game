@@ -243,7 +243,7 @@ class IsoMapScreen(Screen):
                 #print(tile.column_index, tile.row_index, tile.center_x, tile.center_y)
                 rel_lay.add_widget(IsoTileImage(source=str('data/maps\images/tiles/desert.png'), size_hint=(1, 1)))
                 rel_lay.add_widget(Label(text=f'{tile.column_index, tile.row_index}\n{tile.center_x}, {tile.center_y}', size_hint=(.5, .5),
-                                     pos_hint=({'center_x': .5, 'center_y': .5}), color=(1,1,1,1)))
+                                     pos_hint=({'center_x': .5, 'center_y': .5}), color=(1,1,1,1), font_size=12))
                 float_lay.add_widget(rel_lay)
         navigation = BoxLayout(orientation='vertical', size_hint=(.5, None), pos_hint=({'center_x': .5, 'top': 1}),
                                height=100)
