@@ -184,7 +184,8 @@ class MainScreen(Screen):
         self.total_programs_label = RightLabel(text=f'{programs_now}/{config.programs_max}', size_hint_x=.45)
         programs_layout.add_widget(self.total_programs_label)
         img_box = BoxLayout(size_hint_x=.2)
-        img_box.add_widget(Image(source='data/images/gui_elements/terminal_icon.png', size_hint=(.8, .8), pos_hint=({'center_y': .5})))
+        img_box.add_widget(
+            Image(source='data/images/gui_elements/terminal_icon.png', size_hint=(.8, .8), pos_hint=({'center_y': .5})))
         programs_layout.add_widget(Image(source=r'data/images/gui_elements/disketa.png', size_hint=(.35, .4),
                                          pos_hint=({'center_x': .5, 'center_y': .5})))
         programs_lay.add_widget(img_box)
@@ -235,18 +236,18 @@ class IsoMapScreen(Screen):
         self.layout = RelativeLayout()
         map = MyMap()
         scatter = MyScatterLayout()
-        float_lay = IsoFloatLayout()
+        float_l = IsoFloatLayout()
         for layer in map.layers:
             for tile in layer:
-                rel_lay = RelativeLayout(pos=(tile.center_x, tile.center_y), size=(tile.width, tile.height), size_hint=(None, None))
-                rel_lay.add_widget(IsoTileImage(source=tile.image, size_hint=(1, 1)))
-                rel_lay.add_widget(Label(text=f'{tile.column_index, tile.row_index}\n{tile.center_x}, {tile.center_y}', size_hint=(.5, .5),
-                                     pos_hint=({'center_x': .5, 'center_y': .5}), color=(1,1,1,1), font_size=12))
-                float_lay.add_widget(rel_lay)
+                float_l.add_widget(IsoTileImage(source=tile.image, pos=(tile.center_x, tile.center_y),
+                                                size=(tile.width, tile.height), size_hint=(None, None)))
+                float_l.add_widget(Label(pos=(tile.center_x, tile.center_y), size=(tile.width, tile.height),
+                                         text=f'{tile.column_index, tile.row_index}\n{tile.center_x}, {tile.center_y}',
+                                         size_hint=(None, None), color=(1, 1, 1, 1), font_size=12))
         navigation = BoxLayout(orientation='vertical', size_hint=(.2, .02), pos_hint=({'center_x': .5, 'top': 1}))
         navigation.add_widget(Button(text='Переключить на город',
                                      on_press=lambda x: set_screen('main', self.manager)))
-        scatter.add_widget(float_lay)
+        scatter.add_widget(float_l)
         self.layout.add_widget(scatter)
         self.layout.add_widget(navigation)
         self.add_widget(self.layout)
@@ -285,9 +286,6 @@ class MyScatterLayout(ScatterPlaneLayout):
             self.scale += .1
         elif direction == 'up':
             self.scale -= .1
-
-
-
 
 
 if __name__ == '__main__':

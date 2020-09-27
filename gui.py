@@ -652,26 +652,27 @@ class TopLabel(Label):
 
 
 class IsoTileImage(Image):
-    pass
+    def __init__(self, **kwargs):
+        super(IsoTileImage, self).__init__(**kwargs)
 
 
 class IsoFloatLayout(FloatLayout):
     def __init__(self, **kwargs):
         super(IsoFloatLayout, self).__init__(**kwargs)
+        self.moved = False
 
     def on_touch_down(self, touch):
         touch.grab(self)
 
     def on_touch_move(self, touch):
+        if not self.moved:
+            self.moved = True
         if touch.grab_current is self:
             root_pos = self.parent.pos
-            #print(f'Touch: {self}')
-            #print(root_pos)
-            #print(touch.dx, touch.dy)
+            # print(f'Touch: {self}')
+            # print(root_pos)
             if int(root_pos[0]) < 0:
                 pass
-                #print('unbound')
-                #self.pos = (0, 0)
         else:
             pass
             # it's a normal touch
@@ -680,6 +681,42 @@ class IsoFloatLayout(FloatLayout):
         if touch.grab_current is self:
             # I receive my grabbed touch, I must ungrab it!
             touch.ungrab(self)
+            if not self.moved:
+                print('open', touch.pos)
+                screen_to_iso(touch.pos)
+            else:
+                self.moved = False
         else:
             # it's a normal touch
             pass
+
+
+class IsoRelativeLayout(RelativeLayout):
+    def __init__(self, **kwargs):
+        super(IsoRelativeLayout, self).__init__(**kwargs)
+
+
+def screen_to_iso(pos, scaling=.5):
+    import math
+    TILE_WIDTH = 256
+    TILE_HEIGHT = 149
+    mh = 50
+    mw = 25
+    cartX, cartY = pos
+    ty =cartY - (cartX/2) - TILE_HEIGHT
+    tx = cartX + ty
+    ty = math.ceil(-ty/(TILE_WIDTH/2))
+    tx = math.ceil(tx/(TILE_WIDTH/2)) + 1
+    grid_x = math.floor((tx+ty)/2)
+    grid_y = ty - tx
+    print(grid_x, grid_y)
+    return grid_x, grid_y
+
+
+'''
+def screen_to_isometric_grid(cartX, cartY):
+    screenx = mh - cartY / (TILE_HEIGHT * SPRITE_SCALING) + cartX / (TILE_WIDTH * SPRITE_SCALING) - mw / 2 - 1 / 2
+    screeny = mh - cartY / (TILE_HEIGHT * SPRITE_SCALING) - cartX / (TILE_WIDTH * SPRITE_SCALING) + mw / 2 - 1 / 2
+    screenx2 = round(screenx)
+    screeny2 = round(screeny)
+    return screenx2, screeny2'''
