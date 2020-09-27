@@ -664,14 +664,14 @@ class IsoFloatLayout(FloatLayout):
 
     def on_touch_move(self, touch):
         if touch.grab_current is self:
-            map_layout = touch.grab_current
-            root_pos = map_layout.parent.pos
-            print(f'Touch: {map_layout}')
-            print(root_pos)
+            root_pos = self.parent.pos
+            #print(f'Touch: {self}')
+            #print(root_pos)
             #print(touch.dx, touch.dy)
-            if int(root_pos[0]) > 0:
-                root_pos = (-1.5, root_pos[1])
-
+            if int(root_pos[0]) < 0:
+                pass
+                #print('unbound')
+                #self.pos = (0, 0)
         else:
             pass
             # it's a normal touch

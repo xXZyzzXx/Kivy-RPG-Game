@@ -238,20 +238,17 @@ class IsoMapScreen(Screen):
         float_lay = IsoFloatLayout()
         for layer in map.layers:
             for tile in layer:
-                #print(tile.image)
                 rel_lay = RelativeLayout(pos=(tile.center_x, tile.center_y), size=(tile.width, tile.height), size_hint=(None, None))
-                #print(tile.column_index, tile.row_index, tile.center_x, tile.center_y)
-                rel_lay.add_widget(IsoTileImage(source=str('data/maps\images/tiles/desert.png'), size_hint=(1, 1)))
+                rel_lay.add_widget(IsoTileImage(source=tile.image, size_hint=(1, 1)))
                 rel_lay.add_widget(Label(text=f'{tile.column_index, tile.row_index}\n{tile.center_x}, {tile.center_y}', size_hint=(.5, .5),
                                      pos_hint=({'center_x': .5, 'center_y': .5}), color=(1,1,1,1), font_size=12))
                 float_lay.add_widget(rel_lay)
-        navigation = BoxLayout(orientation='vertical', size_hint=(.5, None), pos_hint=({'center_x': .5, 'top': 1}),
-                               height=100)
+        navigation = BoxLayout(orientation='vertical', size_hint=(.2, .02), pos_hint=({'center_x': .5, 'top': 1}))
         navigation.add_widget(Button(text='Переключить на город',
                                      on_press=lambda x: set_screen('main', self.manager)))
-        # self.layout.add_widget(navigation)
         scatter.add_widget(float_lay)
         self.layout.add_widget(scatter)
+        self.layout.add_widget(navigation)
         self.add_widget(self.layout)
 
     def on_leave(self, *args):

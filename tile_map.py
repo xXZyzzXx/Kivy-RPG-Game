@@ -4,16 +4,6 @@ TILE_WIDTH = 256
 TILE_HEIGHT = 149
 
 
-def read_sprite_list(grid, sprite_list):
-    for row in grid:
-        for grid_location in row:
-            if grid_location.tile is not None:
-                tile_sprite = arcade.Sprite(os.getcwd() + '/' + grid_location.tile.source, SPRITE_SCALING)
-                tile_sprite.center_x = grid_location.center_x * SPRITE_SCALING
-                tile_sprite.center_y = grid_location.center_y * SPRITE_SCALING
-                sprite_list.append(tile_sprite)
-
-
 class MyMap:
     def __init__(self):
         self.tmxdata = TiledMap("data/maps/first.tmx")
@@ -34,14 +24,14 @@ class MyMap:
             tile.column_index = column_index
             tile.row_index = row_index
             if row_index % 2 == 0:
-                tile.center_x = column_index * (TILE_WIDTH * scaling) + ((TILE_WIDTH * scaling) / 2)
+                tile.center_x = column_index * (TILE_WIDTH * scaling)
                 tile.center_y = (self.map_height - row_index - 1) * ((TILE_HEIGHT * scaling) / 2)
             else:
-                tile.center_x = column_index * (TILE_WIDTH * scaling)
+                tile.center_x = column_index * (TILE_WIDTH * scaling) + ((TILE_WIDTH * scaling) / 2)
                 tile.center_y = (self.map_height - row_index-1) * ((TILE_HEIGHT * scaling) / 2)
             tile.width = self.tile_width * scaling
             tile.height = self.tile_height * scaling+10
-            tile.image = f"'{image[0]}'"
+            tile.image = str(image[0])
             tiles_list.append(tile)
         return tiles_list
 
@@ -55,6 +45,3 @@ class Tile:
         self.height = None
         self.width = None
         self.image = None
-
-
-#mymap = MyMap()
