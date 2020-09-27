@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.4" tiledversion="1.4.1" orientation="staggered" renderorder="right-down" width="25" height="50" tilewidth="256" tileheight="149" infinite="0" staggeraxis="y" staggerindex="odd" nextlayerid="4" nextobjectid="1">
+ <tileset firstgid="1" name="sss" tilewidth="256" tileheight="159" tilecount="10" columns="0">
+  <grid orientation="orthogonal" width="1" height="1"/>
+  <tile id="0">
+   <image width="256" height="159" source="images/tiles/dirt.png"/>
+  </tile>
+  <tile id="1">
+   <image width="256" height="159" source="images/tiles/ground.png"/>
+  </tile>
+  <tile id="2">
+   <image width="256" height="159" source="images/tiles/show.png"/>
+  </tile>
+  <tile id="3">
+   <image width="256" height="159" source="images/tiles/desert.png"/>
+  </tile>
+  <tile id="4">
+   <image width="256" height="159" source="images/tiles/chestClosed_S.png"/>
+  </tile>
+  <tile id="5">
+   <image width="256" height="159" source="images/tiles/chestOpen_E.png"/>
+  </tile>
+  <tile id="6">
+   <image width="256" height="159" source="images/tiles/chestOpen_S.png"/>
+  </tile>
+  <tile id="7">
+   <image width="256" height="159" source="images/tiles/woodenCrates_E.png"/>
+  </tile>
+  <tile id="8">
+   <image width="256" height="159" source="images/tiles/barrels_W.png"/>
+  </tile>
+  <tile id="9">
+   <image width="256" height="159" source="images/tiles/chestClosed_E.png"/>
+  </tile>
+ </tileset>
+ <layer id="1" name="floor" width="25" height="50">
+  <data encoding="base64" compression="zlib">
+   eJy1l0luxDAMBLX9/82ZQwzUlFtbgByIcWyJTXaTlNJLKf1j7WNDzxW/Fd+fNf33fde3qufHuIcYDeuT0ccQZpO/hm+MY4TnIeym903PDT7b5H2yVt4xMO4a/I7yrUndYJgvc+2/ySVxbmzIP2M2x8Q/xXKM5DLF0i79e79jZQ7UZxziuP7MjTlzTe3qaoZHrtg7Kc9R3rHOapj+uN/9TYxR3hrOfA/tNxZzIoeM33utmWuQeqR69T5rYm6TdlW+bObJ9VXLm3/m4fqhrxSXjVw6V/shX86BvJi/VYyew/THtau5mHo0nWlp9nm+NL03V+bGeVsvc2Ye3SOMxTGnHkxxJf9JvzR7fK76TJn1jHUyn7PaM3+M03z5286/69Szy/66cHf+XWuet6v4b3lyTSS+Vlin5nl94v8WI53dO55OY099uOqFWy3SjPsPHZJx3s3sJIekNXNLvfGXPHy+u+dXeZz09y63nRarmZ/yTHfRFZZn260uvuuc1FWadae1POt7x2GcdB75zmO+fEfzvPS6dL9lzadzndykOve61R3a3+mHZ2mXP65N54/5Sbk4Xt+TZj1pbryf+7q+9fKtub9bI+J5Bqf7o9dYO3PsWZv0HVrv/zN2te47uXNwH8xwyHPSlJheP/R7Yp5nvPeYT8+9ld8aMNIdx33LPeZhxpnruQecNFNO8rAu5NY5WmdqtcNw7RjfeT1rfgCgXQyS
+  </data>
+ </layer>
+ <layer id="2" name="items" width="25" height="50">
+  <data encoding="base64" compression="zlib">
+   eJzt18EKgCAQBFARyur/PzhvdshAq5nVnXcUZEddFEOQGS3sANlWGd+hKYpEqitcd32I6EFWnzN5XLNg1d4VecbeN0T9lhrHbykEYWUH6KD38T2Pe2jhP3f15V0+6nlazW2tV7yJHXNOa6YAqQ==
+  </data>
+ </layer>
+ <layer id="3" name="city" width="25" height="50">
+  <data encoding="base64" compression="zlib">
+   eJztwTEBAAAAwqD1T20KP6AAAAAAgLcBE4gAAQ==
+  </data>
+ </layer>
+</map>

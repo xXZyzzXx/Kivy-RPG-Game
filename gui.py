@@ -649,3 +649,15 @@ class LeftLabel(Label):
 
 class TopLabel(Label):
     pass
+
+
+class IsoTileImage(Image):
+    pass
+
+
+class IsoFloatLayout(FloatLayout):
+    def __init__(self, **kwargs):
+        super(IsoFloatLayout, self).__init__(**kwargs)
+
+        def on_touch_down(self, touch):
+            print(touch)
