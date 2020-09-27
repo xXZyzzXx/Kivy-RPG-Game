@@ -70,8 +70,8 @@ empty_antivirus_tech = 'Пусто', r'data/images/gui_elements/empty_icon.png',
 current_antivirus_tech = empty_antivirus_tech
 
 programs = {'Червь': [r'data/images/gui_elements/data_center.png', [250, 250], 'Видимый', 3],
-            'Руткит': [r'data/images/gui_elements/microprocessor.png', [230, 22420], 'Скрытный', 2],
-            'Логическая бомба': [r'data/images/gui_elements/disketa.png', [5250, 23250], 'Видимый', 10],
+            'Руткит': [r'data/images/gui_elements/microprocessor.png', [230, 22420], 'Скрытный', 5],
+            'Логическая бомба': [r'data/images/gui_elements/disketa.png', [5250, 23250], 'Видимый', 2],
             'Троян': [r'data/images/gui_elements/robots.png', [6333, 6322], 'Видимый', 1]}
 
 antimalware_upgrades = {'Стелс узел': [r'data/images/gui_elements/eye_crossed.png', [5350, 2230], [47, 1.8], 0],
@@ -87,9 +87,9 @@ descriptions = {'Защита от взлома': 'При защите от ха
                                     'нуля и восстанавливается заново.'}
 
 
-player_programs = {'Червь': 1,
+player_programs = {'Червь': 0,
                    'Руткит': 0,
-                   'Логическая бомба': 0,
+                   'Логическая бомба': 1,
                    'Троян': 0}
 
 programs_max = 15
