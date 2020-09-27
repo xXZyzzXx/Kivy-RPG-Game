@@ -12,7 +12,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
-from kivy.uix.image import Image
+from kivy.uix.image import Image, AsyncImage
 from kivy.uix.label import Label
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.scatterlayout import ScatterLayout
@@ -659,5 +659,27 @@ class IsoFloatLayout(FloatLayout):
     def __init__(self, **kwargs):
         super(IsoFloatLayout, self).__init__(**kwargs)
 
-        def on_touch_down(self, touch):
-            print(touch)
+    def on_touch_down(self, touch):
+        touch.grab(self)
+
+    def on_touch_move(self, touch):
+        if touch.grab_current is self:
+            map_layout = touch.grab_current
+            root_pos = map_layout.parent.pos
+            print(f'Touch: {map_layout}')
+            print(root_pos)
+            #print(touch.dx, touch.dy)
+            if int(root_pos[0]) > 0:
+                root_pos = (-1.5, root_pos[1])
+
+        else:
+            pass
+            # it's a normal touch
+
+    def on_touch_up(self, touch):
+        if touch.grab_current is self:
+            # I receive my grabbed touch, I must ungrab it!
+            touch.ungrab(self)
+        else:
+            # it's a normal touch
+            pass
