@@ -36,14 +36,14 @@ class MyMap:
         layer = self.tmxdata.get_layer_by_name(name)
         for column_index, row_index, image in layer.tiles():
             tile = Tile()
+            if row_index % 2 == 0:
+                tile.x = column_index * (TILE_WIDTH * scaling)
+                tile.y = (self.map_height - row_index - 1) * ((TILE_HEIGHT * scaling) / 2)
+            else:
+                tile.x = column_index * (TILE_WIDTH * scaling) + ((TILE_WIDTH * scaling) / 2)
+                tile.y = (self.map_height - row_index - 1) * ((TILE_HEIGHT * scaling) / 2)
             tile.column_index = column_index
             tile.row_index = row_index
-            if row_index % 2 == 0:
-                tile.center_x = column_index * (TILE_WIDTH * scaling)
-                tile.center_y = (self.map_height - row_index - 1) * ((TILE_HEIGHT * scaling) / 2)
-            else:
-                tile.center_x = column_index * (TILE_WIDTH * scaling) + ((TILE_WIDTH * scaling) / 2)
-                tile.center_y = (self.map_height - row_index - 1) * ((TILE_HEIGHT * scaling) / 2)
             tile.width = self.tile_width * scaling
             tile.height = self.tile_height * scaling + 10
             tile.image = str(image[0])
@@ -60,3 +60,5 @@ class Tile:
         self.height = None
         self.width = None
         self.image = None
+        self.x = None
+        self.y = None

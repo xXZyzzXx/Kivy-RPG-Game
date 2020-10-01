@@ -681,11 +681,12 @@ class IsoFloatLayout(FloatLayout):
         if touch.grab_current is self:
             # I receive my grabbed touch, I must ungrab it!
             touch.ungrab(self)
-            if not self.moved:
-                print('open', touch.pos)
-                screen_to_iso(touch.pos)
-            else:
-                self.moved = False
+            if touch.button == 'left':
+                if not self.moved:
+                    print('Pos', touch.pos)
+                    world_to_tile(touch.pos)
+                else:
+                    self.moved = False
         else:
             # it's a normal touch
             pass
@@ -696,27 +697,37 @@ class IsoRelativeLayout(RelativeLayout):
         super(IsoRelativeLayout, self).__init__(**kwargs)
 
 
-def screen_to_iso(pos, scaling=.5):
-    import math
-    TILE_WIDTH = 256
-    TILE_HEIGHT = 149
-    mh = 50
-    mw = 25
-    cartX, cartY = pos
-    ty =cartY - (cartX/2) - TILE_HEIGHT
-    tx = cartX + ty
-    ty = math.ceil(-ty/(TILE_WIDTH/2))
-    tx = math.ceil(tx/(TILE_WIDTH/2)) + 1
-    grid_x = math.floor((tx+ty)/2)
-    grid_y = ty - tx
-    print(grid_x, grid_y)
-    return grid_x, grid_y
+def subregion(px, py, r_x, r_y):
+    # print(f'{px - py:.3f}, {px + py:.3f}')
+    foo = px - py
+    bar = px + py
+    if foo < 0 and bar > 1:  # Top
+        return [r_x, r_y]
+    elif foo < 0 and bar < 1:  # Left
+        if py > 0.5:
+            return [r_x - 1, r_y + 1]
+        return [r_x - 1, r_y]
+    elif foo > 0 and bar > 1:  # Right
+        if py > 0.5:
+            return [r_x, r_y + 1]
+        return [r_x, r_y]
+    elif foo > 0 and bar < 1:  # Bottom
+        return [r_x, r_y + 1]
 
 
-'''
-def screen_to_isometric_grid(cartX, cartY):
-    screenx = mh - cartY / (TILE_HEIGHT * SPRITE_SCALING) + cartX / (TILE_WIDTH * SPRITE_SCALING) - mw / 2 - 1 / 2
-    screeny = mh - cartY / (TILE_HEIGHT * SPRITE_SCALING) - cartX / (TILE_WIDTH * SPRITE_SCALING) + mw / 2 - 1 / 2
-    screenx2 = round(screenx)
-    screeny2 = round(screeny)
-    return screenx2, screeny2'''
+def world_to_tile(pos):  # TODO: исправить верхнюю границу
+    TILE_WIDTH = config.TILE_WIDTH
+    TILE_HEIGHT = config.TILE_HEIGHT
+    mw = config.MW
+    mh = config.MH
+    x, y = pos
+    y -= 10  # height of a tile
+    r_x = int(x / TILE_WIDTH)
+    r_y = int(mh - (y / TILE_HEIGHT) * 2)
+    MouseMapX = x % TILE_WIDTH
+    MouseMapY = y % TILE_HEIGHT
+    map_x = MouseMapX / TILE_WIDTH
+    map_y = MouseMapY / TILE_HEIGHT
+    result = subregion(map_x, map_y, r_x, r_y)
+    if -1 < result[0] < mw and -1 < result[1] < mh:
+        print(result)
