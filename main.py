@@ -239,10 +239,10 @@ class IsoMapScreen(Screen):
         float_l = IsoFloatLayout()
         for layer in map.layers:
             for tile in layer:
-                float_l.add_widget(IsoTileImage(source=tile.image, pos=(tile.center_x, tile.center_y),
+                float_l.add_widget(IsoTileImage(source=tile.image, pos=(tile.x, tile.y),
                                                 size=(tile.width, tile.height), size_hint=(None, None)))
-                float_l.add_widget(Label(pos=(tile.center_x, tile.center_y), size=(tile.width, tile.height),
-                                         text=f'{tile.column_index, tile.row_index}\n{tile.center_x}, {tile.center_y}',
+                float_l.add_widget(Label(pos=(tile.x, tile.y), size=(tile.width, tile.height),
+                                         text=f'{tile.column_index, tile.row_index}\n{tile.x}, {tile.y}',
                                          size_hint=(None, None), color=(1, 1, 1, 1), font_size=12))
         navigation = BoxLayout(orientation='vertical', size_hint=(.2, .02), pos_hint=({'center_x': .5, 'top': 1}))
         navigation.add_widget(Button(text='Переключить на город',
