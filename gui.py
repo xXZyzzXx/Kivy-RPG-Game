@@ -715,19 +715,20 @@ def subregion(px, py, r_x, r_y):
         return [r_x, r_y + 1]
 
 
-def world_to_tile(pos):  # TODO: исправить верхнюю границу
+def world_to_tile(pos):  # TODO: исправить верхнюю границу (минус по оси у)
     TILE_WIDTH = config.TILE_WIDTH
     TILE_HEIGHT = config.TILE_HEIGHT
     mw = config.MW
     mh = config.MH
     x, y = pos
     y -= 10  # height of a tile
-    r_x = int(x / TILE_WIDTH)
-    r_y = int(mh - (y / TILE_HEIGHT) * 2)
-    MouseMapX = x % TILE_WIDTH
-    MouseMapY = y % TILE_HEIGHT
-    map_x = MouseMapX / TILE_WIDTH
-    map_y = MouseMapY / TILE_HEIGHT
-    result = subregion(map_x, map_y, r_x, r_y)
-    if -1 < result[0] < mw and -1 < result[1] < mh:
-        print(result)
+    r_x = x / TILE_WIDTH
+    r_y = mh - (y / TILE_HEIGHT) * 2
+    if r_x >= 0 and r_y >= -1:
+        MouseMapX = x % TILE_WIDTH
+        MouseMapY = y % TILE_HEIGHT
+        map_x = MouseMapX / TILE_WIDTH
+        map_y = MouseMapY / TILE_HEIGHT
+        result = subregion(map_x, map_y, int(r_x), int(r_y))
+        if -1 < result[0] < mw and -1 < result[1] < mh:
+            print(result)
