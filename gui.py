@@ -683,7 +683,7 @@ class IsoFloatLayout(FloatLayout):
             touch.ungrab(self)
             if touch.button == 'left':
                 if not self.moved:
-                    print('Pos', touch.pos)
+                    #print('Pos', touch.pos)
                     world_to_tile(touch.pos)
                 else:
                     self.moved = False
@@ -698,21 +698,31 @@ class IsoRelativeLayout(RelativeLayout):
 
 
 def subregion(px, py, r_x, r_y):
-    # print(f'{px - py:.3f}, {px + py:.3f}')
+    # print(f'{px - py:.3f}, {px + py:.3f} | {px, py}')
+    rx = int(r_x)
+    ry = int(r_y)
     foo = px - py
     bar = px + py
     if foo < 0 and bar > 1:  # Top
-        return [r_x, r_y]
+        return [rx, ry]
     elif foo < 0 and bar < 1:  # Left
-        if py > 0.5:
-            return [r_x - 1, r_y + 1]
-        return [r_x - 1, r_y]
+        if r_y > 0:
+            if py > 0.5:
+                return [rx - 1, ry + 1]
+            return [rx - 1, ry]
+        else:
+            return None
     elif foo > 0 and bar > 1:  # Right
-        if py > 0.5:
-            return [r_x, r_y + 1]
-        return [r_x, r_y]
+        if r_y > 0:
+            if py > 0.5:
+                return [rx, ry + 1]
+            return [rx, ry]
+        else:
+            return None
     elif foo > 0 and bar < 1:  # Bottom
-        return [r_x, r_y + 1]
+        if r_y < 0:
+            return [rx, ry]
+        return [rx, ry + 1]
 
 
 def world_to_tile(pos):  # TODO: исправить верхнюю границу (минус по оси у)
@@ -729,6 +739,7 @@ def world_to_tile(pos):  # TODO: исправить верхнюю границ�
         MouseMapY = y % TILE_HEIGHT
         map_x = MouseMapX / TILE_WIDTH
         map_y = MouseMapY / TILE_HEIGHT
-        result = subregion(map_x, map_y, int(r_x), int(r_y))
-        if -1 < result[0] < mw and -1 < result[1] < mh:
-            print(result)
+        result = subregion(map_x, map_y, r_x, r_y)
+        if result is not None:
+            if -1 < result[0] < mw and -1 < result[1] < mh:
+                print(result)
