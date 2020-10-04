@@ -2,6 +2,7 @@ import re
 import main_base
 import building
 import config
+import additional as ad
 from additional import *
 from building import *
 from kivy.utils import get_color_from_hex
@@ -13,7 +14,9 @@ from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.image import Image, AsyncImage
+from kivy.core.window import Window
 from kivy.uix.label import Label
+from kivy.uix.widget import Widget
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.scatterlayout import ScatterLayout
 from kivy.uix.scrollview import ScrollView
@@ -651,9 +654,25 @@ class TopLabel(Label):
     pass
 
 
-class IsoTileImage(Image):
-    def __init__(self, **kwargs):
+class IsoTileImage(Widget):
+    def __init__(self, source, pos, size, **kwargs):
         super(IsoTileImage, self).__init__(**kwargs)
+        with self.canvas:
+            self.image = Rectangle(source=source, pos=pos, size=size)
+
+    def on_size(self, *args):
+        self.image.size = self.size
+        self.image.pos = self.pos
+
+
+class IsoHightLightImage(Image):
+    def __init__(self, **kwargs):
+        super(IsoHightLightImage, self).__init__(**kwargs)
+        self.source = r'data/images/iso/hightlight.png'
+        self.opacity = 0
+        self.size = (config.TILE_WIDTH * config.SCALING, config.TILE_HEIGHT * config.SCALING + 10)
+        self.size_hint = (None, None)
+        self.coordinates = None
 
 
 class IsoFloatLayout(FloatLayout):
@@ -683,8 +702,8 @@ class IsoFloatLayout(FloatLayout):
             touch.ungrab(self)
             if touch.button == 'left':
                 if not self.moved:
-                    #print('Pos', touch.pos)
-                    world_to_tile(touch.pos)
+                    tiles = ad.world_to_tile(touch.pos)
+                    print(tiles)
                 else:
                     self.moved = False
         else:
@@ -695,51 +714,3 @@ class IsoFloatLayout(FloatLayout):
 class IsoRelativeLayout(RelativeLayout):
     def __init__(self, **kwargs):
         super(IsoRelativeLayout, self).__init__(**kwargs)
-
-
-def subregion(px, py, r_x, r_y):
-    # print(f'{px - py:.3f}, {px + py:.3f} | {px, py}')
-    rx = int(r_x)
-    ry = int(r_y)
-    foo = px - py
-    bar = px + py
-    if foo < 0 and bar > 1:  # Top
-        return [rx, ry]
-    elif foo < 0 and bar < 1:  # Left
-        if r_y > 0:
-            if py > 0.5:
-                return [rx - 1, ry + 1]
-            return [rx - 1, ry]
-        else:
-            return None
-    elif foo > 0 and bar > 1:  # Right
-        if r_y > 0:
-            if py > 0.5:
-                return [rx, ry + 1]
-            return [rx, ry]
-        else:
-            return None
-    elif foo > 0 and bar < 1:  # Bottom
-        if r_y < 0:
-            return [rx, ry]
-        return [rx, ry + 1]
-
-
-def world_to_tile(pos):  # TODO: исправить верхнюю границу (минус по оси у)
-    TILE_WIDTH = config.TILE_WIDTH
-    TILE_HEIGHT = config.TILE_HEIGHT
-    mw = config.MW
-    mh = config.MH
-    x, y = pos
-    y -= 10  # height of a tile
-    r_x = x / TILE_WIDTH
-    r_y = mh - (y / TILE_HEIGHT) * 2
-    if r_x >= 0 and r_y >= -1:
-        MouseMapX = x % TILE_WIDTH
-        MouseMapY = y % TILE_HEIGHT
-        map_x = MouseMapX / TILE_WIDTH
-        map_y = MouseMapY / TILE_HEIGHT
-        result = subregion(map_x, map_y, r_x, r_y)
-        if result is not None:
-            if -1 < result[0] < mw and -1 < result[1] < mh:
-                print(result)
