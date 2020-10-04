@@ -310,9 +310,11 @@ class MyScatterLayout(ScatterPlaneLayout):
 
     def zoom(self, direction):
         if direction == 'down':
-            self.scale += .1
+            config.SCALE += .1
+            self.scale = config.SCALE
         elif direction == 'up':
-            self.scale -= .1
+            config.SCALE -= .1
+            self.scale = config.SCALE
 
 
 if __name__ == '__main__':

@@ -79,7 +79,7 @@ def subregion(px, py, r_x, r_y):
         return [rx, ry + 1]
 
 
-def world_to_tile(pos):  # TODO: исправить верхнюю границу (минус по оси у)
+def world_to_tile(pos):  # TODO: добавить правильный зум
     TILE_WIDTH = config.TILE_WIDTH
     TILE_HEIGHT = config.TILE_HEIGHT
     mw = config.MW

@@ -97,6 +97,7 @@ programs_max = 15
 queue_list = []
 
 SCALING = 1
+SCALE = 1
 
 TILE_WIDTH = 256
 TILE_HEIGHT = 149
