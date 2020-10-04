@@ -56,7 +56,7 @@ def subregion(px, py, r_x, r_y):
     ry = int(r_y)
     foo = px - py
     bar = px + py
-    #print(f'{px - py:.3f}, {px + py:.3f} | {px, py} | {foo, bar}')
+    # print(f'{px - py:.3f}, {px + py:.3f} | {px, py} | {foo, bar}')
     if foo < 0 and bar > 1:  # Top
         return [rx, ry]
     elif foo < 0 and bar < 1:  # Left
@@ -85,14 +85,14 @@ def world_to_tile(pos):  # TODO: добавить правильный зум
     mw = config.MW
     mh = config.MH
     x, y = pos
-    y -= 10  # height of a tile
-    r_x = x / TILE_WIDTH
-    r_y = mh - (y / TILE_HEIGHT) * 2
+    y -= 10 * config.SCALING  # height of a tile
+    r_x = x / (TILE_WIDTH * config.SCALING)
+    r_y = mh - (y / (TILE_HEIGHT * config.SCALING)) * 2
     if r_x >= 0 and r_y >= -1:
-        MouseMapX = x % TILE_WIDTH
-        MouseMapY = y % TILE_HEIGHT
-        map_x = MouseMapX / TILE_WIDTH
-        map_y = MouseMapY / TILE_HEIGHT
+        MouseMapX = x % (TILE_WIDTH * config.SCALING)
+        MouseMapY = y % (TILE_HEIGHT * config.SCALING)
+        map_x = MouseMapX / (TILE_WIDTH * config.SCALING)
+        map_y = MouseMapY / (TILE_HEIGHT * config.SCALING)
         result = subregion(map_x, map_y, r_x, r_y)
         if result is not None:
             if -1 < result[0] < mw and -1 < result[1] < mh:
@@ -107,5 +107,5 @@ def tile_to_world(pos):
     else:
         x = column_index * (config.TILE_WIDTH * config.SCALING) + ((config.TILE_WIDTH * config.SCALING) / 2)
         y = (config.MH - row_index - 1) * ((config.TILE_HEIGHT * config.SCALING) / 2)
-    print(x, y)
+    # print(x, y)
     return x, y

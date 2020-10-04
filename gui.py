@@ -670,7 +670,7 @@ class IsoHightLightImage(Image):
         super(IsoHightLightImage, self).__init__(**kwargs)
         self.source = r'data/images/iso/hightlight.png'
         self.opacity = 0
-        self.size = (config.TILE_WIDTH * config.SCALING, config.TILE_HEIGHT * config.SCALING + 10)
+        self.size = (config.TILE_WIDTH * config.SCALING, config.TILE_HEIGHT * config.SCALING + 10 * config.SCALING)
         self.size_hint = (None, None)
         self.coordinates = None
 
@@ -703,7 +703,8 @@ class IsoFloatLayout(FloatLayout):
             if touch.button == 'left':
                 if not self.moved:
                     tiles = ad.world_to_tile(touch.pos)
-                    print(tiles)
+                    if tiles is not None:
+                        print(tiles)
                 else:
                     self.moved = False
         else:
@@ -714,3 +715,12 @@ class IsoFloatLayout(FloatLayout):
 class IsoRelativeLayout(RelativeLayout):
     def __init__(self, **kwargs):
         super(IsoRelativeLayout, self).__init__(**kwargs)
+
+
+class City(Image):
+    def __init__(self, pos, **kwargs):
+        super(City, self).__init__(**kwargs)
+        self.size = (config.TILE_WIDTH * config.SCALING, config.TILE_HEIGHT * config.SCALING)
+        self.size_hint = (None, None)
+        self.source = r"data/images/buildings/barracks.png"
+        self.pos = (pos[0], pos[1]+10 * config.SCALING)

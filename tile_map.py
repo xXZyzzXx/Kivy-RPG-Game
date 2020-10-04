@@ -45,7 +45,7 @@ class MyMap:
             tile.column_index = column_index
             tile.row_index = row_index
             tile.width = self.tile_width * scaling
-            tile.height = self.tile_height * scaling + 10
+            tile.height = self.tile_height * scaling + 10 * config.SCALING
             tile.image = str(image[0])
             tiles_list.append(tile)
         return tiles_list

@@ -235,7 +235,7 @@ class IsoMapScreen(Screen):
         self.layout = None
         self.map_lay = None
 
-    def on_mouse_pos(self, window, pos, *args):
+    def on_mouse_pos(self, window, pos):
         map_offset = self.map_scatter.pos
         cur_coords = (pos[0] - map_offset[0], pos[1] - map_offset[1])
         if cur_coords[0] > 0 and cur_coords[1] > 0:
@@ -252,7 +252,7 @@ class IsoMapScreen(Screen):
     def get_highlight(self, current_coords):
         self.hightlight.opacity = 1
         self.hightlight.pos = ad.tile_to_world(current_coords)
-        print(f'TILE: {current_coords}, pos: {self.hightlight.pos}')
+        #print(f'TILE: {current_coords}, pos: {self.hightlight.pos}')
         self.hightlight.coordinates = current_coords
 
     def on_enter(self, *args):
@@ -266,9 +266,11 @@ class IsoMapScreen(Screen):
             for tile in layer:
                 self.map_lay.add_widget(IsoTileImage(source=tile.image, pos=(tile.x, tile.y),
                                                 size=(tile.width, tile.height), size_hint=(None, None)))
-                self.map_lay.add_widget(Label(pos=(tile.x, tile.y), size=(tile.width, tile.height),
+                tile_info = Label(pos=(tile.x, tile.y), size=(tile.width, tile.height),
                                          text=f'{tile.column_index, tile.row_index}\n{tile.x}, {tile.y}',
-                                         size_hint=(None, None), color=(1, 1, 1, 1), font_size=12))
+                                         size_hint=(None, None), color=(1, 1, 1, 1), font_size=12)
+                #self.map_lay.add_widget(tile_info)
+        self.create_city((2, 46))
         navigation = BoxLayout(orientation='vertical', size_hint=(.2, .02), pos_hint=({'center_x': .5, 'top': 1}))
         navigation.add_widget(Button(text='Переключить на город',
                                      on_press=lambda x: set_screen('main', self.manager)))
@@ -281,6 +283,10 @@ class IsoMapScreen(Screen):
 
     def on_leave(self, *args):
         self.clear_widgets()
+
+    def create_city(self, pos):
+        city = City(pos=ad.tile_to_world(pos))
+        self.map_lay.add_widget(city)
 
 
 class StrategyApp(App):
@@ -310,11 +316,12 @@ class MyScatterLayout(ScatterPlaneLayout):
 
     def zoom(self, direction):
         if direction == 'down':
-            config.SCALE += .1
-            self.scale = config.SCALE
+            config.SCALING += .1
+            self.scale = config.SCALING
         elif direction == 'up':
-            config.SCALE -= .1
-            self.scale = config.SCALE
+            config.SCALING -= .1
+            self.scale = config.SCALING
+        print(config.SCALING)
 
 
 if __name__ == '__main__':
