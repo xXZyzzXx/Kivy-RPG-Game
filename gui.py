@@ -738,10 +738,11 @@ class IsoFloatLayout(FloatLayout):
                 door = city.door_tool
                 attack = city.attack_tool
                 hack = city.hack_tool
-                anim_top = DownDoorAnim(y=door.y - 20, opacity=.75, parent=self, door=door, duration=.3)
-                anim_left = DownDoorAnim(y=attack.y - 20, x=attack.x + attack.width + 3, opacity=.5, parent=self,
+                anim_top = DownDoorAnim(opacity=.75, parent=self, door=door, width=door.width/2,
+                                        height=door.height/1.5, y=door.y - 30, x=door.x+door.width/4, duration=.3)
+                anim_left = DownDoorAnim(y=attack.y - 20, x=attack.x + attack.width + 3, opacity=0, parent=self,
                                          door=attack, width=attack.width/2, height=attack.height/2, duration=.3)
-                anim_right = DownDoorAnim(y=hack.y - 20, x=door.x+hack.width/2, opacity=.5, parent=self,
+                anim_right = DownDoorAnim(y=hack.y - 20, x=door.x+hack.width/2, opacity=0, parent=self,
                                           door=hack, width=hack.width/2, height=hack.height/2, duration=.3)
                 anim_left.start(city.attack_tool)
                 anim_right.start(city.hack_tool)
@@ -795,7 +796,7 @@ class CityToolButton(Image, HoverBehavior):
         self.source = source
         self.width = (config.TILE_WIDTH * config.SCALING) / 2.4
         self.height = self.width
-        self.opacity = .75
+        self.opacity = .9
         self.city = city
         self.name = name
         self.pos = (city.pos[0] + (city.width - self.width) / 2, city.pos[1] + city.height - 30)
