@@ -58,25 +58,25 @@ def subregion(px, py, r_x, r_y):
     bar = px + py
     # print(f'{px - py:.3f}, {px + py:.3f} | {px, py} | {foo, bar}')
     if foo < 0 and bar > 1:  # Top
-        return [rx, ry]
+        return rx, ry
     elif foo < 0 and bar < 1:  # Left
         if r_y > 0:
             if py > 0.5:
-                return [rx - 1, ry + 1]
-            return [rx - 1, ry]
+                return rx - 1, ry + 1
+            return rx - 1, ry
         else:
             return None
     elif foo > 0 and bar > 1:  # Right
         if r_y > 0:
             if py > 0.5:
-                return [rx, ry + 1]
-            return [rx, ry]
+                return rx, ry + 1
+            return rx, ry
         else:
             return None
     elif foo > 0 and bar < 1:  # Bottom
         if r_y < 0 or py == 0:
-            return [rx, ry]
-        return [rx, ry + 1]
+            return rx, ry
+        return rx, ry + 1
 
 
 def world_to_tile(pos):  # TODO: добавить правильный зум

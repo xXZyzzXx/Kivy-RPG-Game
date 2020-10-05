@@ -669,6 +669,7 @@ class IsoHightLightImage(Image):
     def __init__(self, **kwargs):
         super(IsoHightLightImage, self).__init__(**kwargs)
         self.source = r'data/images/iso/hightlight.png'
+        self.enter = False
         self.opacity = 0
         self.size = (config.TILE_WIDTH * config.SCALING, config.TILE_HEIGHT * config.SCALING + 10 * config.SCALING)
         self.size_hint = (None, None)
@@ -676,9 +677,10 @@ class IsoHightLightImage(Image):
 
 
 class IsoFloatLayout(FloatLayout):
-    def __init__(self, **kwargs):
+    def __init__(self, map, **kwargs):
         super(IsoFloatLayout, self).__init__(**kwargs)
         self.moved = False
+        self.map = map
 
     def on_touch_down(self, touch):
         touch.grab(self)
@@ -704,12 +706,47 @@ class IsoFloatLayout(FloatLayout):
                 if not self.moved:
                     tiles = ad.world_to_tile(touch.pos)
                     if tiles is not None:
-                        print(tiles)
+                        self.check_press(tiles)
                 else:
                     self.moved = False
         else:
             # it's a normal touch
             pass
+
+    def check_press(self, tiles):
+        layers = [self.map.city_list, self.map.items_list, self.map.floor_list]
+        flag = False  # Для выхода из двух циклов
+        for lay in layers:
+            for tile in lay:
+                if tile.coordinates == tiles:
+                    if tile.type == 'city':
+                        print(tile)
+                        if tile.tools == False:
+                            self.remove_info()
+                            tile.get_panel()
+                    else:
+                        self.remove_info()
+                        print(tiles)
+                    flag = True
+                    break
+            if flag:
+                break
+
+    def remove_info(self):  # TODO: при удалении двери пропадает hightlight opacity
+        for city in self.map.city_list:
+            if city.door_tool is not None:
+                door = city.door_tool
+                attack = city.attack_tool
+                hack = city.hack_tool
+                anim_top = DownDoorAnim(y=door.y - 20, opacity=.75, parent=self, door=door, duration=.3)
+                anim_left = DownDoorAnim(y=attack.y - 20, x=attack.x + attack.width + 3, opacity=.5, parent=self,
+                                         door=attack, width=attack.width/2, height=attack.height/2, duration=.3)
+                anim_right = DownDoorAnim(y=hack.y - 20, x=door.x+hack.width/2, opacity=.5, parent=self,
+                                          door=hack, width=hack.width/2, height=hack.height/2, duration=.3)
+                anim_left.start(city.attack_tool)
+                anim_right.start(city.hack_tool)
+                anim_top.start(city.door_tool)
+                city.tools = False
 
 
 class IsoRelativeLayout(RelativeLayout):
@@ -718,9 +755,71 @@ class IsoRelativeLayout(RelativeLayout):
 
 
 class City(Image):
-    def __init__(self, pos, **kwargs):
+    def __init__(self, pos, coordinates, hg, name='default', **kwargs):
         super(City, self).__init__(**kwargs)
         self.size = (config.TILE_WIDTH * config.SCALING, config.TILE_HEIGHT * config.SCALING)
-        self.size_hint = (None, None)
         self.source = r"data/images/buildings/barracks.png"
-        self.pos = (pos[0], pos[1]+10 * config.SCALING)
+        self.pos = (pos[0], pos[1] + 10 * config.SCALING)
+        self.hightlight = hg
+        self.coordinates = coordinates
+        self.size_hint = (None, None)
+        self.type = 'city'
+        self.door_tool = None
+        self.attack_tool = None
+        self.hack_tool = None
+        self.tools = False
+        self.name = name
+
+    def get_panel(self):
+        door = CityToolButton(source=r'data/images/iso/doors.png', city=self, hg=self.hightlight, name='door')
+        attack = CityToolButton(source=r'data/images/iso/attack.png', city=self, hg=self.hightlight, name='attack')
+        hack = CityToolButton(source=r'data/images/iso/hack.png', city=self, hg=self.hightlight, name='hack')
+        top_anim = Animation(y=door.y + 30, opacity=1, duration=.3)
+        left_anim = Animation(y=door.y+20, x=door.x - door.width - 3, opacity=1, duration=.3)
+        right_anim = Animation(y=door.y+20, x=door.x + door.width + 3, opacity=1, duration=.3)
+        self.door_tool = door
+        self.attack_tool = attack
+        self.hack_tool = hack
+        self.parent.add_widget(attack)
+        self.parent.add_widget(hack)
+        self.parent.add_widget(door)
+        left_anim.start(attack)
+        right_anim.start(hack)
+        top_anim.start(door)
+        self.tools = True
+
+
+class CityToolButton(Image, HoverBehavior):
+    def __init__(self, source, city, hg, name, **kwargs):
+        super().__init__(**kwargs)
+        self.source = source
+        self.width = (config.TILE_WIDTH * config.SCALING) / 2.4
+        self.height = self.width
+        self.opacity = .75
+        self.city = city
+        self.name = name
+        self.pos = (city.pos[0] + (city.width - self.width) / 2, city.pos[1] + city.height - 30)
+        self.size_hint = (None, None)
+        self.hightlight = hg
+
+    def on_enter(self):
+        if self.name == 'door':
+            self.source = r'data/images/iso/doors_hover.png'
+        self.hightlight.enter = True
+        self.hightlight.opacity = 0
+
+    def on_leave(self):
+        if self.name == 'door':
+            self.source = r'data/images/iso/doors.png'
+        self.hightlight.enter = False
+        self.hightlight.opacity = 1
+
+
+class DownDoorAnim(Animation):
+    def __init__(self, parent, door, **kwargs):
+        super(DownDoorAnim, self).__init__(**kwargs)
+        self.parent = parent
+        self.door = door
+
+    def on_complete(self, widget):
+        self.parent.remove_widget(self.door)

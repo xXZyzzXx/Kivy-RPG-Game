@@ -234,6 +234,7 @@ class IsoMapScreen(Screen):
         self.map_scatter = None
         self.layout = None
         self.map_lay = None
+        self.map = None
 
     def on_mouse_pos(self, window, pos):
         map_offset = self.map_scatter.pos
@@ -245,12 +246,14 @@ class IsoMapScreen(Screen):
                 if self.hightlight.coordinates != current_coords:
                     self.get_highlight(current_coords)
                 else:
-                    self.hightlight.opacity = 1
+                    if not self.hightlight.enter:
+                        self.hightlight.opacity = 1
             else:
                 self.hightlight.opacity = 0
 
     def get_highlight(self, current_coords):
-        self.hightlight.opacity = 1
+        if not self.hightlight.enter:
+            self.hightlight.opacity = 1
         self.hightlight.pos = ad.tile_to_world(current_coords)
         #print(f'TILE: {current_coords}, pos: {self.hightlight.pos}')
         self.hightlight.coordinates = current_coords
@@ -258,11 +261,11 @@ class IsoMapScreen(Screen):
     def on_enter(self, *args):
         from tile_map import MyMap, Tile
         self.layout = RelativeLayout()
-        map = MyMap()
+        self.map = MyMap()
         self.map_scatter = MyScatterLayout()
-        self.map_lay = IsoFloatLayout()
+        self.map_lay = IsoFloatLayout(map=self.map)
         self.hightlight = IsoHightLightImage()
-        for layer in map.layers:
+        for layer in self.map.layers:
             for tile in layer:
                 self.map_lay.add_widget(IsoTileImage(source=tile.image, pos=(tile.x, tile.y),
                                                 size=(tile.width, tile.height), size_hint=(None, None)))
@@ -270,7 +273,8 @@ class IsoMapScreen(Screen):
                                          text=f'{tile.column_index, tile.row_index}\n{tile.x}, {tile.y}',
                                          size_hint=(None, None), color=(1, 1, 1, 1), font_size=12)
                 #self.map_lay.add_widget(tile_info)
-        self.create_city((2, 46))
+        self.create_city((2, 46), name='Персеполис')
+        self.create_city((3, 41), name='Научград')
         navigation = BoxLayout(orientation='vertical', size_hint=(.2, .02), pos_hint=({'center_x': .5, 'top': 1}))
         navigation.add_widget(Button(text='Переключить на город',
                                      on_press=lambda x: set_screen('main', self.manager)))
@@ -284,9 +288,10 @@ class IsoMapScreen(Screen):
     def on_leave(self, *args):
         self.clear_widgets()
 
-    def create_city(self, pos):
-        city = City(pos=ad.tile_to_world(pos))
+    def create_city(self, pos, name):
+        city = City(pos=ad.tile_to_world(pos), coordinates=pos, hg=self.hightlight, name=name)
         self.map_lay.add_widget(city)
+        self.map.city_list.append(city)
 
 
 class StrategyApp(App):
