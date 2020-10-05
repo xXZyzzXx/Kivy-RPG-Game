@@ -9,8 +9,10 @@ kivy-deps.gstreamer==0.1.18
 kivy-deps.sdl2==0.1.23
 Kivy-examples==1.11.1
 Kivy-Garden==0.1.4
-Pygments==2.6.1
+Pygments==2.7.1
 pypiwin32==223
+PyTMX==3.21.7
 pywin32==228
 requests==2.24.0
+six==1.15.0
 urllib3==1.25.10

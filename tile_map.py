@@ -42,10 +42,11 @@ class MyMap:
             else:
                 tile.x = column_index * (TILE_WIDTH * scaling) + ((TILE_WIDTH * scaling) / 2)
                 tile.y = (self.map_height - row_index - 1) * ((TILE_HEIGHT * scaling) / 2)
+            tile.coordinates = (column_index, row_index)
             tile.column_index = column_index
             tile.row_index = row_index
             tile.width = self.tile_width * scaling
-            tile.height = self.tile_height * scaling + 10
+            tile.height = self.tile_height * scaling + 10 * config.SCALING
             tile.image = str(image[0])
             tiles_list.append(tile)
         return tiles_list
@@ -53,7 +54,9 @@ class MyMap:
 
 class Tile:
     def __init__(self):
-        self.column_index = None
+        self.type = 'tile'
+        self.coordinates = None
+        self.column_index = None  # Можно убрать
         self.row_index = None
         self.center_x = None
         self.center_y = None

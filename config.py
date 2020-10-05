@@ -22,9 +22,9 @@ type_colors = {'Социальные': (1, 1, .2, .7),
                'Военные': (1, .2, .8, .7),
                'Производственные': (.3, 1, .3, .7)}
 
-units = {'Рабочий': [[None], 100, [60, 40, 0, 0], r"data/images/units/worker.png", 'Социальные'],
-         'Воин': [[None], 150, [300, 10, 10, 0], r"data/images/units/warrior.png", 'Социальные'],
-         'Стрелок': [[None], 20, [60, 20, 10, 15], r"data/images/units/shooter.png", 'Социальные']}
+units = {'Рабочий': [[None], 100, [60, 40, 0], r"data/images/units/worker.png", 'Социальные'],
+         'Воин': [[None], 150, [300, 10, 10], r"data/images/units/warrior.png", 'Социальные'],
+         'Стрелок': [[None], 20, [60, 20, 10], r"data/images/units/shooter.png", 'Социальные']}
 
 player_units = {'Рабочий': 0,
                 'Воин': 0,
@@ -96,7 +96,7 @@ programs_max = 15
 
 queue_list = []
 
-SCALING = 1
+SCALING = .5
 
 TILE_WIDTH = 256
 TILE_HEIGHT = 149
