@@ -56,7 +56,7 @@
         Rectangle:
             pos: self.pos
             size: self.size
-            source: 'data/images/base-bg.png'
+            source: 'data/images/app_back.jpg'
 
 <RightSidebar>
     canvas.before:
@@ -291,3 +291,10 @@
 <MyScatterLayout>
     do_rotation: False
     do_scale: True
+
+<CityLabelName>:
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/gui_elements/city_label.png'

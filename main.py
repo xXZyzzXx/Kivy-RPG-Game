@@ -22,6 +22,26 @@ def set_screen(name_screen, sm):
     sm.current = name_screen
 
 
+class MenuScreen(Screen):
+    def __init__(self, **kw):
+        super(MenuScreen, self).__init__(**kw)
+        self.layout = None
+
+    def on_enter(self, *args):
+        self.layout = RelativeLayout()
+        menu_box = GridLayout(cols=1, size_hint=(.5, .5), pos_hint=({'center_x': .5, 'center_y': .5}))
+        continue_button = Button(text='Продолжить', size_hint_y=.2, disabled=True)
+        start_button = Button(text='Новая игра', size_hint_y=.2)
+        load_button = Button(text='Загрузить игру', size_hint_y=.2)
+        menu_box.add_widget(continue_button)
+        menu_box.add_widget(start_button)
+        self.layout.add_widget(menu_box)
+        self.add_widget(self.layout)
+
+    def on_leave(self, *args):
+        self.layout.clear_widgets()
+
+
 class MainScreen(Screen):
     def __init__(self, **kw):
         super(MainScreen, self).__init__(**kw)
@@ -46,7 +66,7 @@ class MainScreen(Screen):
                                     on_release=lambda x: self.data_center_newscreen())
         terminal_button = Button(size_hint_x=.1, text='terminal', on_release=lambda x: self.open_terminal())
         # Главное здание базы
-        self.main_base = BuildingBase(id='main_base', pos_hint=({'center_x': .5, 'center_y': .6}), size_hint=(0.3, 0.3))
+        self.main_base = BuildingBase(id='main_base', pos_hint=({'center_x': .6, 'center_y': .42}), size_hint=(0.15, 0.15))
         stackscreens.add_widget(prod_menu_screen)
         stackscreens.add_widget(data_center_screen)
         stackscreens.add_widget(terminal_button)
@@ -290,7 +310,10 @@ class IsoMapScreen(Screen):
 
     def create_city(self, pos, name):
         city = City(pos=ad.tile_to_world(pos), coordinates=pos, hg=self.hightlight, name=name)
+        city_info = CityLabelName(text=city.name, center_x=city.center_x, y=city.y+city.height*0.8)
+        city.label = city_info
         self.map_lay.add_widget(city)
+        self.map_lay.add_widget(city_info)
         self.map.city_list.append(city)
 
 
@@ -301,9 +324,10 @@ class StrategyApp(App):
 
     def build(self):
         sm = ScreenManager(transition=WipeTransition())
+        sm.add_widget(MenuScreen(name='menu'))
         sm.add_widget(MainScreen(name='main'))
         sm.add_widget(IsoMapScreen(name='iso_map'))
-        sm.current = 'iso_map'  # temporary for testing
+        sm.current = 'menu'  # temporary for testing
         return sm
 
 

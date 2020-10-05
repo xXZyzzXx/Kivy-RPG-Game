@@ -95,6 +95,7 @@ player_programs = {'Червь': 0,
 programs_max = 15
 
 queue_list = []
+city_info_labels = []
 
 SCALING = .5
 

@@ -739,10 +739,10 @@ class IsoFloatLayout(FloatLayout):
                 attack = city.attack_tool
                 hack = city.hack_tool
                 anim_top = DownDoorAnim(opacity=.75, parent=self, door=door, width=door.width/2,
-                                        height=door.height/1.5, y=door.y - 30, x=door.x+door.width/4, duration=.3)
-                anim_left = DownDoorAnim(y=attack.y - 20, x=attack.x + attack.width + 3, opacity=0, parent=self,
+                                        height=door.height/1.5, y=door.y - door.default_pos, x=door.x+door.width/4, duration=.3)
+                anim_left = DownDoorAnim(y=attack.y - attack.default_pos/1.3, x=attack.x + attack.width + 3, opacity=0, parent=self,
                                          door=attack, width=attack.width/2, height=attack.height/2, duration=.3)
-                anim_right = DownDoorAnim(y=hack.y - 20, x=door.x+hack.width/2, opacity=0, parent=self,
+                anim_right = DownDoorAnim(y=hack.y - hack.default_pos/1.3, x=door.x+hack.width/2, opacity=0, parent=self,
                                           door=hack, width=hack.width/2, height=hack.height/2, duration=.3)
                 anim_left.start(city.attack_tool)
                 anim_right.start(city.hack_tool)
@@ -765,6 +765,7 @@ class City(Image):
         self.coordinates = coordinates
         self.size_hint = (None, None)
         self.type = 'city'
+        self.label = None
         self.door_tool = None
         self.attack_tool = None
         self.hack_tool = None
@@ -784,6 +785,7 @@ class City(Image):
         self.parent.add_widget(attack)
         self.parent.add_widget(hack)
         self.parent.add_widget(door)
+        self.label.bring_to_front()
         left_anim.start(attack)
         right_anim.start(hack)
         top_anim.start(door)
@@ -799,7 +801,8 @@ class CityToolButton(Image, HoverBehavior):
         self.opacity = .9
         self.city = city
         self.name = name
-        self.pos = (city.pos[0] + (city.width - self.width) / 2, city.pos[1] + city.height - 30)
+        self.default_pos = 20
+        self.pos = (city.pos[0] + (city.width - self.width) / 2, city.pos[1] + city.height - self.default_pos)
         self.size_hint = (None, None)
         self.hightlight = hg
 
@@ -824,3 +827,16 @@ class DownDoorAnim(Animation):
 
     def on_complete(self, widget):
         self.parent.remove_widget(self.door)
+
+
+class CityLabelName(Label):
+    def __init__(self, **kwargs):
+        super(CityLabelName, self).__init__(**kwargs)
+        self.color = (1, 1, 0, 1)
+        self.size_hint = (None, None)
+        self.size = (220 * config.SCALING, 60 * config.SCALING)
+
+    def bring_to_front(self):
+        parent = self.parent
+        parent.remove_widget(self)
+        parent.add_widget(self)
