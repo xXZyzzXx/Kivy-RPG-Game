@@ -29,12 +29,17 @@ class MenuScreen(Screen):
 
     def on_enter(self, *args):
         self.layout = RelativeLayout()
-        menu_box = GridLayout(cols=1, size_hint=(.5, .5), pos_hint=({'center_x': .5, 'center_y': .5}))
+        menu_box = GridLayout(cols=1, size_hint=(.4, .5), pos_hint=({'center_x': .5, 'center_y': .5}), spacing=10)
         continue_button = Button(text='Продолжить', size_hint_y=.2, disabled=True)
         start_button = Button(text='Новая игра', size_hint_y=.2)
         load_button = Button(text='Загрузить игру', size_hint_y=.2)
+        settings_button = Button(text='Настройки', size_hint_y=.2)
+        exit_button = Button(text='Выйти из игры', size_hint_y=.2)
         menu_box.add_widget(continue_button)
         menu_box.add_widget(start_button)
+        menu_box.add_widget(load_button)
+        menu_box.add_widget(settings_button)
+        menu_box.add_widget(exit_button)
         self.layout.add_widget(menu_box)
         self.add_widget(self.layout)
 
