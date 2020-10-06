@@ -60,12 +60,12 @@ class IsoMapScreen(Screen):
                                   text=f'{tile.column_index, tile.row_index}\n{tile.x}, {tile.y}',
                                   size_hint=(None, None), color=(1, 1, 1, 1), font_size=12)
                 # self.map_lay.add_widget(tile_info)
+        self.map_lay.add_widget(self.hightlight)
         self.create_city((2, 46), name='Персеполис')
         self.create_city((3, 41), name='Научград')
         navigation = BoxLayout(orientation='vertical', size_hint=(.2, .02), pos_hint=({'center_x': .5, 'top': 1}))
         navigation.add_widget(Button(text='Переключить на город',
                                      on_press=lambda x: set_screen('main', self.manager)))
-        self.map_lay.add_widget(self.hightlight)
         self.map_scatter.add_widget(self.map_lay)
         self.layout.add_widget(self.map_scatter)
         self.layout.add_widget(navigation)

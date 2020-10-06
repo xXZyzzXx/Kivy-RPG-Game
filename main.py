@@ -22,7 +22,7 @@ class StrategyApp(App):
         sm.add_widget(MenuScreen(name='menu'))
         sm.add_widget(MainScreen(name='main'))
         sm.add_widget(IsoMapScreen(name='iso_map'))
-        sm.current = 'iso_map'  # temporary for testing
+        sm.current = 'menu'  # temporary for testing
         return sm
 
     def on_settings_cls(self, *args):

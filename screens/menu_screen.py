@@ -36,6 +36,7 @@ class MenuScreen(Screen):
         self.add_widget(self.layout)
 
     def open_settings(self):
+        self.app.destroy_settings()
         self.app.settings_cls = SettingsWithSidebar
         self.app.open_settings()
 
