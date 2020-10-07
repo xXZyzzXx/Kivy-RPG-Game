@@ -6,9 +6,11 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
+from kivy.uix.image import Image, AsyncImage
 from kivy.uix.settings import SettingsWithSidebar
 from kivy.uix.popup import Popup
 from kivy.app import App
+from kivy.uix.effectwidget import EffectWidget, FXAAEffect
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.screenmanager import Screen
 
@@ -21,6 +23,10 @@ class MenuScreen(Screen):
 
     def on_enter(self, *args):
         self.layout = RelativeLayout()
+        w = EffectWidget()
+        bg = Image(source='data/images/animation.zip', allow_stretch=True, keep_ratio=False)
+        w.add_widget(bg)
+        w.effects = [FXAAEffect()]
         menu_box = GridLayout(cols=1, size_hint=(.4, .5), pos_hint=({'center_x': .5, 'center_y': .5}), spacing=10)
         continue_button = Button(text='Продолжить', size_hint_y=.2, disabled=True)
         start_button = Button(text='Новая игра', size_hint_y=.2)
@@ -32,6 +38,7 @@ class MenuScreen(Screen):
         menu_box.add_widget(load_button)
         menu_box.add_widget(settings_button)
         menu_box.add_widget(exit_button)
+        self.layout.add_widget(w)
         self.layout.add_widget(menu_box)
         self.add_widget(self.layout)
 

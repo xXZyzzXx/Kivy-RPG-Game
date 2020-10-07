@@ -45,7 +45,7 @@ class MainScreen(Screen):
         stackscreens.add_widget(prod_menu_screen)
         stackscreens.add_widget(data_center_screen)
         stackscreens.add_widget(terminal_button)
-        navigation = BoxLayout(size_hint=(.4, .11), pos_hint=({'center_x': .5, 'top': 1}))
+        navigation = BoxLayout(size_hint=(.37, .1), pos_hint=({'center_x': .5, 'top': 1}))
         stack = GridLayout(cols=4, spacing=5)
         map_button = RockLayout(MapButton(on_press=lambda x: set_screen('iso_map', self.manager)))
         war_button = RockLayout(WarButton(on_press=lambda x: set_screen('iso_map', self.manager)))

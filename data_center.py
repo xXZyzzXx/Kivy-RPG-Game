@@ -1,4 +1,5 @@
 import building
+from building import *
 import config
 from additional import *
 from gui import *
@@ -638,4 +639,16 @@ class DefAmountLabel(Label):
 
 
 class ProgramTimeLabel(Label):
+    pass
+
+
+class RightLabel(Label):
+    pass
+
+
+class LeftLabel(Label):
+    pass
+
+
+class TopLabel(Label):
     pass

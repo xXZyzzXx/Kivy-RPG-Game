@@ -776,7 +776,7 @@ class City(Image):
         self.name = name
 
     def get_panel(self):
-        door = CityToolButton(source=r'data/images/iso/doors.png', city=self, hg=self.hightlight, name='door', df=50)
+        door = CityToolButton(source=r'data/images/iso/doors.png', city=self, hg=self.hightlight, name='door', df=40)
         attack = CityToolButton(source=r'data/images/iso/attack.png', city=self, hg=self.hightlight, name='attack')
         hack = CityToolButton(source=r'data/images/iso/hack.png', city=self, hg=self.hightlight, name='hack')
         top_anim = Animation(y=door.y + door.default_pos, opacity=1, duration=.3)
@@ -796,7 +796,7 @@ class City(Image):
 
 
 class CityToolButton(Image, HoverBehavior):
-    def __init__(self, source, city, hg, name, df=40, **kwargs):
+    def __init__(self, source, city, hg, name, df=30, **kwargs):
         super().__init__(**kwargs)
         self.source = source
         self.width = (config.TILE_WIDTH * config.SCALING) / 2.4
@@ -805,7 +805,7 @@ class CityToolButton(Image, HoverBehavior):
         self.city = city
         self.name = name
         self.default_pos = df
-        self.pos = (city.pos[0] + (city.width - self.width) / 2, city.top - city.height / 2)
+        self.pos = (city.pos[0] + (city.width - self.width) / 2, city.top - city.height / 3)
         self.size_hint = (None, None)
         self.hightlight = hg
 

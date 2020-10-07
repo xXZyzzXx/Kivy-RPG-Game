@@ -29,9 +29,7 @@ class StrategyApp(App):
         self.destroy_settings()
 
     def display_settings(self, settings):
-        self.settings_popup = p = Popup(content=settings,
-                                        title='Settings',
-                                        size_hint=(0.8, 0.8))
+        self.settings_popup = p = Popup(content=settings, title='Settings', size_hint=(0.7, 0.8))
         if p.content is not settings:
             p.content = settings
         p.open()
