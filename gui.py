@@ -721,7 +721,7 @@ class IsoFloatLayout(FloatLayout):
                 if tile.coordinates == tiles:
                     if tile.type == 'city':
                         print(tile)
-                        if tile.tools == False:
+                        if not tile.tools:
                             self.remove_info()
                             tile.get_panel()
                     else:
@@ -738,12 +738,15 @@ class IsoFloatLayout(FloatLayout):
                 door = city.door_tool
                 attack = city.attack_tool
                 hack = city.hack_tool
-                anim_top = DownDoorAnim(opacity=.75, parent=self, door=door, width=door.width/2,
-                                        height=door.height/1.5, y=door.y - 30, x=door.x+door.width/4, duration=.3)
-                anim_left = DownDoorAnim(y=attack.y - 20, x=attack.x + attack.width + 3, opacity=0, parent=self,
-                                         door=attack, width=attack.width/2, height=attack.height/2, duration=.3)
-                anim_right = DownDoorAnim(y=hack.y - 20, x=door.x+hack.width/2, opacity=0, parent=self,
-                                          door=hack, width=hack.width/2, height=hack.height/2, duration=.3)
+                anim_top = DownDoorAnim(y=city.top - city.height / 3, x=door.x + door.width / 4, opacity=.75,
+                                        parent=self,
+                                        door=door, width=door.width / 2, height=door.height / 1.5, duration=.3)
+                anim_left = DownDoorAnim(y=city.top - city.height / 3, x=attack.x + attack.width + 3, opacity=0,
+                                         parent=self,
+                                         door=attack, width=attack.width / 2, height=attack.height / 2, duration=.3)
+                anim_right = DownDoorAnim(y=city.top - city.height / 3, x=door.x + hack.width / 2, opacity=0,
+                                          parent=self,
+                                          door=hack, width=hack.width / 2, height=hack.height / 2, duration=.3)
                 anim_left.start(city.attack_tool)
                 anim_right.start(city.hack_tool)
                 anim_top.start(city.door_tool)
@@ -765,6 +768,7 @@ class City(Image):
         self.coordinates = coordinates
         self.size_hint = (None, None)
         self.type = 'city'
+        self.label = None
         self.door_tool = None
         self.attack_tool = None
         self.hack_tool = None
@@ -772,18 +776,19 @@ class City(Image):
         self.name = name
 
     def get_panel(self):
-        door = CityToolButton(source=r'data/images/iso/doors.png', city=self, hg=self.hightlight, name='door')
+        door = CityToolButton(source=r'data/images/iso/doors.png', city=self, hg=self.hightlight, name='door', df=40)
         attack = CityToolButton(source=r'data/images/iso/attack.png', city=self, hg=self.hightlight, name='attack')
         hack = CityToolButton(source=r'data/images/iso/hack.png', city=self, hg=self.hightlight, name='hack')
-        top_anim = Animation(y=door.y + 30, opacity=1, duration=.3)
-        left_anim = Animation(y=door.y+20, x=door.x - door.width - 3, opacity=1, duration=.3)
-        right_anim = Animation(y=door.y+20, x=door.x + door.width + 3, opacity=1, duration=.3)
+        top_anim = Animation(y=door.y + door.default_pos, opacity=1, duration=.3)
+        left_anim = Animation(y=door.y + attack.default_pos, x=door.x - door.width - 3, opacity=1, duration=.3)
+        right_anim = Animation(y=door.y + hack.default_pos, x=door.x + door.width + 3, opacity=1, duration=.3)
         self.door_tool = door
         self.attack_tool = attack
         self.hack_tool = hack
         self.parent.add_widget(attack)
         self.parent.add_widget(hack)
         self.parent.add_widget(door)
+        self.label.bring_to_front()
         left_anim.start(attack)
         right_anim.start(hack)
         top_anim.start(door)
@@ -791,7 +796,7 @@ class City(Image):
 
 
 class CityToolButton(Image, HoverBehavior):
-    def __init__(self, source, city, hg, name, **kwargs):
+    def __init__(self, source, city, hg, name, df=30, **kwargs):
         super().__init__(**kwargs)
         self.source = source
         self.width = (config.TILE_WIDTH * config.SCALING) / 2.4
@@ -799,7 +804,8 @@ class CityToolButton(Image, HoverBehavior):
         self.opacity = .9
         self.city = city
         self.name = name
-        self.pos = (city.pos[0] + (city.width - self.width) / 2, city.pos[1] + city.height - 30)
+        self.default_pos = df
+        self.pos = (city.pos[0] + (city.width - self.width) / 2, city.top - city.height / 3)
         self.size_hint = (None, None)
         self.hightlight = hg
 
@@ -824,3 +830,16 @@ class DownDoorAnim(Animation):
 
     def on_complete(self, widget):
         self.parent.remove_widget(self.door)
+
+
+class CityLabelName(Label):
+    def __init__(self, **kwargs):
+        super(CityLabelName, self).__init__(**kwargs)
+        self.color = (1, 1, 0, 1)
+        self.size_hint = (None, None)
+        self.size = (220 * config.SCALING, 60 * config.SCALING)
+
+    def bring_to_front(self):
+        parent = self.parent
+        parent.remove_widget(self)
+        parent.add_widget(self)

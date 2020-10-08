@@ -56,7 +56,7 @@
         Rectangle:
             pos: self.pos
             size: self.size
-            source: 'data/images/base-bg.png'
+            source: 'data/images/app_back.jpg'
 
 <RightSidebar>
     canvas.before:
@@ -254,6 +254,9 @@
 
 <Label>
     color: (0, 0, 0, 1)
+#text_size: self.size
+   # halign: 'center'
+    #valign: 'middle'
 
 <TerminalLabel>
     color: (1, 1, 1, 1)
@@ -291,3 +294,53 @@
 <MyScatterLayout>
     do_rotation: False
     do_scale: True
+
+<CityLabelName>:
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/gui_elements/city_label.png'
+
+<DescBoxLayout>:
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/gui_elements/terminal.png'
+
+<DescLabel>:
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/gui_elements/Brown.png'
+
+<MapBoxLayout>
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/gui_elements/main_ui.png'
+
+<DescBottomLayout>
+    canvas.before:
+        Rectangle:
+            pos: (0, 0)
+            size: self.size
+            source: 'data/images/base-bg.png'
+
+<SettingsLayout>
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/gui_elements/LightBrown.png'
+
+<GridLayout>
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+        Line:
+            width: 1
+            rectangle: self.x, self.y, self.width, self.height
