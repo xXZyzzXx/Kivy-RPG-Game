@@ -20,8 +20,10 @@ def screen_to_isometric_grid(cartX, cartY):
 
 
 class MyMap:
-    def __init__(self):
-        self.tmxdata = TiledMap("data/maps/first.tmx")
+    def __init__(self, source="data/maps/first.tmx"):
+        self.source = source
+        self.players = 2
+        self.tmxdata = TiledMap(source)
         self.map_width = self.tmxdata.width
         self.map_height = self.tmxdata.height
         self.tile_width = self.tmxdata.tilewidth
@@ -29,6 +31,7 @@ class MyMap:
         self.floor_list = self.get_tile_info('floor')
         self.items_list = self.get_tile_info('items')
         self.city_list = self.get_tile_info('city')
+        self.screen = r'data/maps/map_screen.png'
         self.layers = [self.floor_list, self.items_list, self.city_list]
 
     def get_tile_info(self, name, scaling=config.SCALING):

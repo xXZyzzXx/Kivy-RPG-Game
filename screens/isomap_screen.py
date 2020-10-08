@@ -44,7 +44,7 @@ class IsoMapScreen(Screen):
     def on_enter(self, *args):
         from tile_map import MyMap, Tile
         self.layout = RelativeLayout()
-        self.map = MyMap()
+        self.map = MyMap(source="data/maps/first.tmx")
         self.map_scatter = MyScatterLayout()
         self.map_lay = IsoFloatLayout(map=self.map)
         self.hightlight = IsoHightLightImage()

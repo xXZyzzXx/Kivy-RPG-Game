@@ -302,7 +302,42 @@
             size: self.size
             source: 'data/images/gui_elements/city_label.png'
 
-<RelativeLayout>
+<DescBoxLayout>:
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/gui_elements/terminal.png'
+
+<DescLabel>:
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/gui_elements/Brown.png'
+
+<MapBoxLayout>
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/gui_elements/main_ui.png'
+
+<DescBottomLayout>
+    canvas.before:
+        Rectangle:
+            pos: (0, 0)
+            size: self.size
+            source: 'data/images/base-bg.png'
+
+<SettingsLayout>
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/gui_elements/LightBrown.png'
+
+<GridLayout>
     canvas.before:
         Color:
             rgba: 1, 1, 1, 1

@@ -1,4 +1,5 @@
 import additional as ad
+from tile_map import MyMap
 from kivy.uix.button import Button
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
@@ -50,12 +51,51 @@ class MenuScreen(Screen):
 
     def new_game(self):
         box = BoxLayout(orientation='vertical', size_hint=(.7, .8), pos_hint=({'center_x': .5, 'center_y': .5}))
-        left_box = BoxLayout(size_hint_x=.3)
-        right_box = BoxLayout(size_hint_x=.7)
+        left_box = BoxLayout(orientation='vertical', size_hint_x=.3)
+        right_box = BoxLayout(orientation='vertical', size_hint_x=.7)
         top_box = BoxLayout(orientation='horizontal', size_hint_y=.85)
-        bottom_box = RelativeLayout(size_hint_y=.15)
+        bottom_box = DescBottomLayout(size_hint_y=.15)
+        map_lay = MapBoxLayout(orientation='horizontal', size_hint_y=.5)
+        map_description = DescBoxLayout(orientation='horizontal', size_hint_y=.35)
+        # =======================================
+        map_exs = MyMap()
+        map_img = Image(source=map_exs.screen, size_hint_x=.8)
+        left_map = Button(text='<', size_hint_x=.1)  # , disabled=True
+        right_map = Button(text='>', size_hint_x=.1)  # , disabled=True
+        map_lay.add_widget(left_map)
+        map_lay.add_widget(map_img)
+        map_lay.add_widget(right_map)
+        # =======================================
+        desc_label = DescLabel(text='Описание', size_hint_y=.05, valign='bottom')
+        desc_grid_left = GridLayout(cols=1, size_hint_x=.3, padding=10)
+        desc_grid_right = GridLayout(cols=1, size_hint_x=.7, padding=10)
+        desc_grid_left.add_widget(Label(text='Название карты:'))
+        desc_grid_right.add_widget(Label(text=f'{map_exs.source.split("/")[-1]}'))
+        desc_grid_left.add_widget(Label(text='Размер карты:'))
+        desc_grid_right.add_widget(Label(text=f'{map_exs.map_width}x{map_exs.map_height}'))
+        desc_grid_left.add_widget(Label(text='Игроков:'))
+        desc_grid_right.add_widget(Label(text=f'{map_exs.players}'))
+        map_description.add_widget(desc_grid_left)
+        map_description.add_widget(desc_grid_right)
+        # =======================================
+        right_box.add_widget(DescLabel(text='Выбор карты', size_hint_y=.1))
+        right_box.add_widget(map_lay)
+        right_box.add_widget(desc_label)
+        right_box.add_widget(map_description)
+        # =======================================
+        left_box.add_widget(DescLabel(text='Настройки игры', size_hint_y=.1))
+        settings_box = SettingsLayout(size_hint_y=.9)
+        left_box.add_widget(settings_box)
+        # =======================================
+        bottom_box.add_widget(Button(size_hint=(.2, .7), pos_hint=({'x': 0, 'center_y': .5}),
+                                     on_release=lambda x: self.carousel.load_previous(), text='<= Назад'))
+
         bottom_box.add_widget(Button(size_hint=(.3, .7), pos_hint=({'center_x': .5, 'center_y': .5}),
-                              on_release=lambda x: self.carousel.load_previous(), text='Начать игру'))
+                              on_release=lambda x: ad.set_screen('main', self.manager), text='Начать игру'))
+
+        bottom_box.add_widget(Button(size_hint=(.2, .7), pos_hint=({'right': 1, 'center_y': .5}),
+                                     on_release=lambda x: self.map_settings(), text='Настройки карты'))
+        # =======================================
         top_box.add_widget(left_box)
         top_box.add_widget(right_box)
         box.add_widget(top_box)
@@ -66,6 +106,10 @@ class MenuScreen(Screen):
         self.app.destroy_settings()
         self.app.settings_cls = SettingsWithSidebar
         self.app.open_settings()
+
+    def map_settings(self):
+        popup = Popup(title='Настройки карты', content=Label(text='В разработке'), size_hint=(.4, .5))
+        popup.open()
 
     def close_app(self):
         self.app.stop()
@@ -80,3 +124,23 @@ class MenuCarousel(Carousel):
 
     def on_touch_move(self, touch):  # Переопределение (не разрешать двигать табуретками)
         pass
+
+
+class DescBoxLayout(BoxLayout):
+    pass
+
+
+class DescLabel(Label):
+    pass
+
+
+class MapBoxLayout(BoxLayout):
+    pass
+
+
+class DescBottomLayout(RelativeLayout):
+    pass
+
+
+class SettingsLayout(BoxLayout):
+    pass
