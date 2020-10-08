@@ -1,3 +1,4 @@
+import additional as ad
 import config
 import data_center
 from gui import *
@@ -10,10 +11,6 @@ from kivy.uix.progressbar import ProgressBar
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.scatterlayout import ScatterLayout
 from kivy.uix.screenmanager import Screen
-
-
-def set_screen(name_screen, sm):
-    sm.current = name_screen
 
 
 class MainScreen(Screen):
@@ -47,10 +44,10 @@ class MainScreen(Screen):
         stackscreens.add_widget(terminal_button)
         navigation = BoxLayout(size_hint=(.37, .1), pos_hint=({'center_x': .5, 'top': 1}))
         stack = GridLayout(cols=4, spacing=5)
-        map_button = RockLayout(MapButton(on_press=lambda x: set_screen('iso_map', self.manager)))
-        war_button = RockLayout(WarButton(on_press=lambda x: set_screen('iso_map', self.manager)))
-        report_button = RockLayout(ReportButton(on_press=lambda x: set_screen('iso_map', self.manager)))
-        letter_button = RockLayout(MailButton(on_press=lambda x: set_screen('iso_map', self.manager)))
+        map_button = RockLayout(MapButton(on_press=lambda x: ad.set_screen('iso_map', self.manager)))
+        war_button = RockLayout(WarButton(on_press=lambda x: ad.set_screen('iso_map', self.manager)))
+        report_button = RockLayout(ReportButton(on_press=lambda x: ad.set_screen('iso_map', self.manager)))
+        letter_button = RockLayout(MailButton(on_press=lambda x: ad.set_screen('iso_map', self.manager)))
         stack.add_widget(war_button)
         stack.add_widget(map_button)
         stack.add_widget(report_button)

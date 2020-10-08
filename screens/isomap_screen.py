@@ -10,10 +10,6 @@ from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.screenmanager import Screen
 
 
-def set_screen(name_screen, sm):
-    sm.current = name_screen
-
-
 class IsoMapScreen(Screen):
     def __init__(self, **kw):
         super(IsoMapScreen, self).__init__(**kw)
@@ -65,7 +61,7 @@ class IsoMapScreen(Screen):
         self.create_city((3, 41), name='Научград')
         navigation = BoxLayout(orientation='vertical', size_hint=(.2, .02), pos_hint=({'center_x': .5, 'top': 1}))
         navigation.add_widget(Button(text='Переключить на город',
-                                     on_press=lambda x: set_screen('main', self.manager)))
+                                     on_press=lambda x: ad.set_screen('main', self.manager)))
         self.map_scatter.add_widget(self.map_lay)
         self.layout.add_widget(self.map_scatter)
         self.layout.add_widget(navigation)

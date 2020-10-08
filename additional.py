@@ -109,3 +109,7 @@ def tile_to_world(pos):
         y = (config.MH - row_index - 1) * ((config.TILE_HEIGHT * config.SCALING) / 2)
     # print(x, y)
     return x, y
+
+
+def set_screen(name_screen, sm):
+    sm.current = name_screen

@@ -301,3 +301,11 @@
             pos: self.pos
             size: self.size
             source: 'data/images/gui_elements/city_label.png'
+
+<RelativeLayout>
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+        Line:
+            width: 1
+            rectangle: self.x, self.y, self.width, self.height
