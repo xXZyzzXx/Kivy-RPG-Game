@@ -337,10 +337,10 @@
             size: self.size
             source: 'data/images/gui_elements/LightBrown.png'
 
-<GridLayout>
+<RelativeLayout>
     canvas.before:
         Color:
             rgba: 1, 1, 1, 1
         Line:
             width: 1
-            rectangle: self.x, self.y, self.width, self.height
+            rectangle: 0, 0, self.width, self.height

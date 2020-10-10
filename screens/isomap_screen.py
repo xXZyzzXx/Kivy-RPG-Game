@@ -94,9 +94,7 @@ class MyScatterLayout(ScatterPlaneLayout):  # MAIN LAYOUT in ISO
 
     def zoom(self, direction):
         if direction == 'down':
-            config.SCALING += .1
-            self.scale = config.SCALING
+            self.scale += .1
         elif direction == 'up':
-            config.SCALING -= .1
-            self.scale = config.SCALING
-        print(config.SCALING)
+            self.scale -= .1
+        # print(config.SCALING)
