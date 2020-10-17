@@ -1,6 +1,7 @@
 import config
 import additional as ad
 from iso import *
+from tile_map import MyMap, Tile
 from kivy.uix.scatterlayout import ScatterPlaneLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
@@ -43,11 +44,10 @@ class IsoMapScreen(Screen):
         self.hightlight.coordinates = current_coords
 
     def on_enter(self, *args):
-        from tile_map import MyMap, Tile
         self.layout = RelativeLayout()
         self.map = MyMap(source="data/maps/first.tmx")
         self.map_scatter = MyScatterLayout()
-        self.map_lay = IsoFloatLayout(map=self.map)
+        self.map_lay = IsoFloatLayout(mymap=self.map)
         self.hightlight = IsoHightLightImage()
         for layer in self.map.layers:
             for tile in layer:
@@ -82,11 +82,10 @@ class IsoMapScreen(Screen):
         self.clear_widgets()
 
     def create_city(self, pos, name, player, owner=False):
-        city = IsoCity(pos=ad.tile_to_world(pos), coordinates=pos, hg=self.hightlight, name=name)  # TODO: add player
+        city = IsoCity(pos=ad.tile_to_world(pos), coordinates=pos, hg=self.hightlight, name=name, player=player)
         city_info = CityLabelName(text=city.name, center_x=city.center_x, y=city.y + city.height * 0.8)
         if not owner:
-            city_info = CityLabelName(text=f'{city.name} (Вр)', center_x=city.center_x, y=city.y + city.height * 0.8,
-                                      color=(1, 0, 0, 1))
+            city_info.color = (1, 0, 0, 1)
         city.label = city_info
         player.cities.append(city)
         config.city_list.append(city)  # Для навигации
@@ -124,6 +123,3 @@ class MyScatterLayout(ScatterPlaneLayout):  # MAIN LAYOUT in ISO
             self.scale -= .1
 
         # print(config.SCALING)
-
-
-

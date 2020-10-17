@@ -91,23 +91,26 @@ class IsoFloatLayout(FloatLayout):
 
     def remove_info(self):  # TODO: при удалении двери пропадает hightlight opacity
         for city in self.map.city_list:
-            if city.door_tool is not None:
+            if city.player == config.current_player:
                 door = city.door_tool
+                if door is not None:
+                    anim_top = DownDoorAnim(y=city.top - city.height / 3, x=door.x + door.width / 4, opacity=.75,
+                                            parent=self,
+                                            door=door, width=door.width / 2, height=door.height / 1.5, duration=.3)
+                    anim_top.start(city.door_tool)
+            else:
                 attack = city.attack_tool
                 hack = city.hack_tool
-                anim_top = DownDoorAnim(y=city.top - city.height / 3, x=door.x + door.width / 4, opacity=.75,
-                                        parent=self,
-                                        door=door, width=door.width / 2, height=door.height / 1.5, duration=.3)
-                anim_left = DownDoorAnim(y=city.top - city.height / 3, x=attack.x + attack.width + 3, opacity=0,
-                                         parent=self,
-                                         door=attack, width=attack.width / 2, height=attack.height / 2, duration=.3)
-                anim_right = DownDoorAnim(y=city.top - city.height / 3, x=door.x + hack.width / 2, opacity=0,
-                                          parent=self,
-                                          door=hack, width=hack.width / 2, height=hack.height / 2, duration=.3)
-                anim_left.start(city.attack_tool)
-                anim_right.start(city.hack_tool)
-                anim_top.start(city.door_tool)
-                city.tools = False
+                if attack is not None and hack is not None:
+                    anim_left = DownDoorAnim(y=city.top - city.height / 3, x=attack.x + attack.width + 3, opacity=0,
+                                             parent=self,
+                                             door=attack, width=attack.width / 2, height=attack.height / 2, duration=.3)
+                    anim_right = DownDoorAnim(y=city.top - city.height / 3, x=city.x + city.width / 2, opacity=0,
+                                              parent=self,
+                                              door=hack, width=hack.width / 2, height=hack.height / 2, duration=.3)
+                    anim_left.start(city.attack_tool)
+                    anim_right.start(city.hack_tool)
+            city.tools = False
 
 
 class CityViewButton(Button):
@@ -127,7 +130,7 @@ class IsoRelativeLayout(RelativeLayout):
 
 
 class IsoCity(Image):
-    def __init__(self, pos, coordinates, hg, name='default', **kwargs):
+    def __init__(self, pos, coordinates, hg, player, name='default', **kwargs):
         super(IsoCity, self).__init__(**kwargs)
         self.size = (config.TILE_WIDTH * config.SCALING, config.TILE_HEIGHT * config.SCALING)
         self.source = r"data/images/buildings/barracks.png"
@@ -142,29 +145,35 @@ class IsoCity(Image):
         self.hack_tool = None
         self.tools = False
         self.name = name
+        self.player = player
 
     def get_panel(self):
-        door = CityToolButton(source=r'data/images/iso/doors.png', city=self, hg=self.hightlight, name='door', df=40)
-        attack = CityToolButton(source=r'data/images/iso/attack.png', city=self, hg=self.hightlight, name='attack')
-        hack = CityToolButton(source=r'data/images/iso/hack.png', city=self, hg=self.hightlight, name='hack')
-        top_anim = Animation(y=door.y + door.default_pos, opacity=1, duration=.3)
-        left_anim = Animation(y=door.y + attack.default_pos, x=door.x - door.width - 3, opacity=1, duration=.3)
-        right_anim = Animation(y=door.y + hack.default_pos, x=door.x + door.width + 3, opacity=1, duration=.3)
-        self.door_tool = door
-        self.attack_tool = attack
-        self.hack_tool = hack
-        self.parent.add_widget(attack)
-        self.parent.add_widget(hack)
-        self.parent.add_widget(door)
+        if self.player == config.current_player:
+            door = CityToolButton(source=r'data/images/iso/doors.png', city=self, hl=self.hightlight, name='door',
+                                  df=40)
+            top_anim = Animation(y=door.y + door.default_pos, opacity=1, duration=.3)
+            self.door_tool = door
+            self.parent.add_widget(door)
+            top_anim.start(door)
+        else:
+            attack = CityToolButton(source=r'data/images/iso/attack.png', city=self, hl=self.hightlight, name='attack')
+            hack = CityToolButton(source=r'data/images/iso/hack.png', city=self, hl=self.hightlight, name='hack')
+            left_anim = Animation(y=attack.y + attack.default_pos, x=attack.x - attack.width - 3, opacity=1,
+                                  duration=.3)
+            right_anim = Animation(y=hack.y + hack.default_pos, x=hack.x + hack.width + 3, opacity=1, duration=.3)
+            self.attack_tool = attack
+            self.hack_tool = hack
+            self.parent.add_widget(attack)
+            self.parent.add_widget(hack)
+            left_anim.start(attack)
+            right_anim.start(hack)
+
         self.label.bring_to_front()
-        left_anim.start(attack)
-        right_anim.start(hack)
-        top_anim.start(door)
         self.tools = True
 
 
 class CityToolButton(Image, HoverBehavior):
-    def __init__(self, source, city, hg, name, df=30, **kwargs):
+    def __init__(self, source, city, hl, name, df=30, **kwargs):
         super().__init__(**kwargs)
         self.source = source
         self.width = (config.TILE_WIDTH * config.SCALING) / 2.4
@@ -175,7 +184,7 @@ class CityToolButton(Image, HoverBehavior):
         self.default_pos = df
         self.pos = (city.pos[0] + (city.width - self.width) / 2, city.top - city.height / 3)
         self.size_hint = (None, None)
-        self.hightlight = hg
+        self.hightlight = hl
 
     def on_enter(self):
         if self.name == 'door':
