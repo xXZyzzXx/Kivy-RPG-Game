@@ -2,10 +2,12 @@ import config
 import additional as ad
 from gui import *
 from kivy.core.window import Window
+from kivy.uix.gridlayout import GridLayout
 from kivy.uix.scatterlayout import ScatterPlaneLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
+
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.screenmanager import Screen
 
@@ -57,16 +59,20 @@ class IsoMapScreen(Screen):
                                   size_hint=(None, None), color=(1, 1, 1, 1), font_size=12)
                 # self.map_lay.add_widget(tile_info)
         self.map_lay.add_widget(self.hightlight)
-        self.create_city((2, 46), name='Персеполис')
+        config.city_list.clear()
+        self.create_city((17, 17), name='Персеполис')
         self.create_city((3, 41), name='Научград')
+        ad.change_current_city(config.city_list[0])
         navigation = BoxLayout(orientation='vertical', size_hint=(.2, .02), pos_hint=({'center_x': .5, 'top': 1}))
         navigation.add_widget(Button(text='Переключить на город',
                                      on_press=lambda x: ad.set_screen('main', self.manager)))
         self.map_scatter.add_widget(self.map_lay)
         self.layout.add_widget(self.map_scatter)
         self.layout.add_widget(navigation)
+        self.layout.add_widget(self.city_view())
         self.add_widget(self.layout)
         Window.bind(mouse_pos=self.on_mouse_pos)
+        ad.change_view(config.current_city, self.map_scatter, quick=True)
 
     def on_leave(self, *args):
         self.clear_widgets()
@@ -75,9 +81,16 @@ class IsoMapScreen(Screen):
         city = City(pos=ad.tile_to_world(pos), coordinates=pos, hg=self.hightlight, name=name)
         city_info = CityLabelName(text=city.name, center_x=city.center_x, y=city.y + city.height * 0.8)
         city.label = city_info
+        config.city_list.append(city)
         self.map_lay.add_widget(city)
         self.map_lay.add_widget(city_info)
         self.map.city_list.append(city)
+
+    def city_view(self):
+        city_view = GridLayout(rows=1, size_hint=(.2, .05), pos_hint=({'top': 1}))
+        for city in config.city_list:
+            city_view.add_widget(CityViewButton(city=city, root=self.map_scatter))
+        return city_view
 
 
 class MyScatterLayout(ScatterPlaneLayout):  # MAIN LAYOUT in ISO
@@ -95,6 +108,19 @@ class MyScatterLayout(ScatterPlaneLayout):  # MAIN LAYOUT in ISO
     def zoom(self, direction):
         if direction == 'down':
             self.scale += .1
+
         elif direction == 'up':
             self.scale -= .1
+
         # print(config.SCALING)
+
+
+class CityViewButton(Button):
+    def __init__(self, city, root, **kwargs):
+        super(CityViewButton, self).__init__(**kwargs)
+        self.city = city
+        self.root_scatter = root
+        self.text = city.name
+
+    def on_release(self):
+        ad.change_view(self.city, self.root_scatter)

@@ -1,5 +1,6 @@
 from kivy.core.window import Window
 from kivy.factory import Factory
+from kivy.animation import Animation
 from kivy.properties import BooleanProperty, ObjectProperty
 import config
 
@@ -113,3 +114,17 @@ def tile_to_world(pos):
 
 def set_screen(name_screen, sm):
     sm.current = name_screen
+
+
+def change_view(obj, root, quick=False):
+    if quick:
+        root.pos = -(obj.pos[0] - Window.width / 2 + obj.width / 2), -(obj.pos[1] - Window.height / 2 + obj.height / 2)
+    else:
+        anim = Animation(
+            pos=(-(obj.pos[0] - Window.width / 2 + obj.width / 2), -(obj.pos[1] - Window.height / 2 + obj.height / 2)),
+            duration=.5)
+        anim.start(root)
+
+
+def change_current_city(city):
+    config.current_city = city

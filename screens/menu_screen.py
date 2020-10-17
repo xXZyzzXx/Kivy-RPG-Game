@@ -20,7 +20,6 @@ class MenuScreen(Screen):
         super(MenuScreen, self).__init__(**kw)
         self.layout = None
         self.carousel = None
-        self.menu = None
         self.app = App.get_running_app()
 
     def on_enter(self, *args):
@@ -30,8 +29,7 @@ class MenuScreen(Screen):
         bg = Image(source='data/images/animation.zip', allow_stretch=True, keep_ratio=False)
         w.add_widget(bg)
         w.effects = [FXAAEffect()]
-        self.menu = self.adv_menu()
-        self.carousel.add_widget(self.menu)
+        self.carousel.add_widget(self.menu())
         self.carousel.add_widget(self.new_game())
         self.layout.add_widget(w)
         self.layout.add_widget(self.carousel)
@@ -138,6 +136,7 @@ class MenuScreen(Screen):
         self.app.stop()
 
     def on_mouse_pos(self, window, pos):
+        '''
         x, y = self.menu.pos
         menuX, menuY = pos
         posX = menuX-x
@@ -145,6 +144,8 @@ class MenuScreen(Screen):
         cellX = self.menu.width / 3
         cellY = self.menu.height / 3
         print(f'{posX, posY} | {posX % cellX} | {posY % cellY}')
+        '''
+        pass
 
     def on_leave(self, *args):
         self.layout.clear_widgets()

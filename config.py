@@ -92,6 +92,9 @@ player_programs = {'Червь': 0,
                    'Логическая бомба': 1,
                    'Троян': 0}
 
+city_list = []
+current_city = None
+
 programs_max = 15
 
 queue_list = []
