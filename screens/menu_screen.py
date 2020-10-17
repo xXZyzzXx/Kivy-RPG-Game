@@ -1,5 +1,7 @@
 import additional as ad
 from tile_map import MyMap
+import config
+from game import Game, Player
 from kivy.core.window import Window
 from kivy.uix.button import Button
 from kivy.uix.gridlayout import GridLayout
@@ -30,7 +32,7 @@ class MenuScreen(Screen):
         w.add_widget(bg)
         w.effects = [FXAAEffect()]
         self.carousel.add_widget(self.menu())
-        self.carousel.add_widget(self.new_game())
+        self.carousel.add_widget(self.new_game_menu())
         self.layout.add_widget(w)
         self.layout.add_widget(self.carousel)
         self.add_widget(self.layout)
@@ -70,7 +72,7 @@ class MenuScreen(Screen):
         menu_box.add_widget(exit_button)
         return menu_box
 
-    def new_game(self):
+    def new_game_menu(self):
         box = BoxLayout(orientation='vertical', size_hint=(.7, .8), pos_hint=({'center_x': .5, 'center_y': .5}))
         left_box = BoxLayout(orientation='vertical', size_hint_x=.3)
         right_box = BoxLayout(orientation='vertical', size_hint_x=.7)
@@ -112,7 +114,7 @@ class MenuScreen(Screen):
                                      on_release=lambda x: self.carousel.load_previous(), text='<= Назад'))
 
         bottom_box.add_widget(Button(size_hint=(.3, .7), pos_hint=({'center_x': .5, 'center_y': .5}),
-                              on_release=lambda x: ad.set_screen('main', self.manager), text='Начать игру'))
+                              on_release=lambda x: self.new_game(), text='Начать игру'))
 
         bottom_box.add_widget(Button(size_hint=(.2, .7), pos_hint=({'right': 1, 'center_y': .5}),
                                      on_release=lambda x: self.map_settings(), text='Настройки карты'))
@@ -122,6 +124,17 @@ class MenuScreen(Screen):
         box.add_widget(top_box)
         box.add_widget(bottom_box)
         return box
+
+    def new_game(self):
+        game = Game()
+        player1 = Player(player=True)  # TODO: город добавить тут
+        player1.add_city((17, 17), name='Персеполис')
+        player2 = Player()
+        player2.add_city((3, 41), name='Научград')
+        game.players = [player1, player2]
+        config.game = game
+        config.current_player = player1
+        ad.set_screen('main', self.manager)
 
     def open_settings(self):
         self.app.destroy_settings()

@@ -25,8 +25,10 @@ class MainScreen(Screen):
         self.main_base = None
         self.total_programs_label = None
         self.pb_list = None
+        self.player = None
 
     def on_enter(self, *args):
+        self.player = config.current_player
         self.layout = RelativeLayout()
         canvas = CityCanvas()
         # Выбор окна в главном меню
@@ -88,7 +90,7 @@ class MainScreen(Screen):
         rel_res = GridLayout(cols=2, size_hint_y=.25, padding=5)
         self.res_label_list = []
         self.pb_list = []
-        money = config.money
+        money = self.player.mutantcoin
         money_box = TestBoxLayout(orientation='vertical', spacing=2, padding=2)
         self.money_label = ResLabel(id='Деньги', text=f'{money[0]} [size=13]+{money[1]}[/size]')
         self.programs_grid = GridLayout(cols=1, row_default_height=30)
@@ -112,8 +114,8 @@ class MainScreen(Screen):
 
     def create_resources(self):
         self.res_grid = GridLayout(rows=5, row_default_height=40)
-        for res in config.resourses:
-            resource = config.resourses[res]
+        for res in self.player.resources:
+            resource = self.player.resources[res]
             rel_ress = GridLayout(cols=3, size_hint_y=None, padding=5, height=40)
             resource_box = TestBoxLayout(orientation='vertical', spacing=2, padding=2)
             resource_label = ResLabel(id=f'{res}', text=f'{int(resource[0])} [size=13]+{resource[1]}[/size]')
@@ -131,15 +133,15 @@ class MainScreen(Screen):
             self.pb_list.append(resource_progress)
 
     def update_resources(self, buildings):
-        money = config.money
+        money = self.player.mutantcoin
         money[0] += money[1]
         if money[1] > 0:
             self.money_label.text = f'{money[0]} [size=13]+{money[1]}[/size]'
         else:
             self.money_label.text = f'{money[0]}'
         # Обновление для сырьевых ресурсов
-        for i, resource in enumerate(config.resourses):
-            res = config.resourses[resource]
+        for i, resource in enumerate(self.player.resources):
+            res = self.player.resources[resource]
             if res[0] <= res[3] and res[0] + res[1] <= res[3]:
                 res[0] += res[1]
             else:
@@ -159,11 +161,12 @@ class MainScreen(Screen):
                 b.update_available_units()
 
     def update_programs(self):
-        for program in config.player_programs:
-            if config.player_programs[program] > 0:
+        programs = self.player.programs
+        for program in programs:
+            if programs[program] > 0:
                 program_ress = GridLayout(cols=3, size_hint_y=None, padding=5, spacing=5, height=40)
                 program_image = Image(source=config.programs[program][0], size_hint_x=.2)
-                program_label = ProgramSidebarLabel(text=f'{program} {config.player_programs[program]} ед.')
+                program_label = ProgramSidebarLabel(text=f'{program} {programs[program]} ед.')
                 program_ress.add_widget(program_image)
                 program_ress.add_widget(program_label)
                 self.programs_grid.add_widget(program_ress)
@@ -172,9 +175,10 @@ class MainScreen(Screen):
         programs_lay = GridLayout(cols=3, spacing=5, padding=2, size_hint_y=.2)
         programs_layout = BoxLayout(orientation='horizontal', size_hint_x=.35)
         programs_now = 0
-        for pr in config.player_programs:
-            programs_now += int(config.player_programs[pr]) * int(config.programs[pr][3])
-        self.total_programs_label = RightLabel(text=f'{programs_now}/{config.programs_max}', size_hint_x=.45)
+        programs = self.player.programs
+        for pr in programs:
+            programs_now += int(programs[pr]) * int(config.programs[pr][3])
+        self.total_programs_label = RightLabel(text=f'{programs_now}/{self.player.programs_max}', size_hint_x=.45)
         programs_layout.add_widget(self.total_programs_label)
         img_box = BoxLayout(size_hint_x=.2)
         img_box.add_widget(
@@ -188,9 +192,10 @@ class MainScreen(Screen):
 
     def update_total_programs_label(self):
         programs_now = 0
-        for pr in config.player_programs:
-            programs_now += int(config.player_programs[pr]) * int(config.programs[pr][3])
-        self.total_programs_label.text = f'{programs_now}/{config.programs_max}'
+        programs = self.player.programs
+        for pr in programs:
+            programs_now += int(programs[pr]) * int(config.programs[pr][3])
+        self.total_programs_label.text = f'{programs_now}/{self.player.programs_max}'
 
     def open_terminal(self):
         scatter_terminal = ScatterLayout(size_hint=(.4, .5))
