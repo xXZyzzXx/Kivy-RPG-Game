@@ -1,7 +1,7 @@
 import additional as ad
 import config
 import data_center
-from gui import *
+from gui_list.gamebase import *
 from kivy.clock import Clock
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
@@ -64,6 +64,10 @@ class MainScreen(Screen):
         
     def top_content(self):
         pass
+
+    def research_content(self):
+        lay = TechLay()
+        return lay
 
     def test_lay(self):
         mainmenu = BoxLayout(orientation='vertical', size_hint=(.1, .1), pos_hint=({'right': 1, 'y': 0}))
@@ -237,3 +241,5 @@ class MainScreen(Screen):
     def on_leave(self, *args):
         self.clear_widgets()
         Clock.unschedule(self.timer_event)
+
+
