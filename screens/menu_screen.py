@@ -1,5 +1,8 @@
 import additional as ad
 from tile_map import MyMap
+import config
+from game import Game, Player
+from kivy.core.window import Window
 from kivy.uix.button import Button
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
@@ -29,10 +32,30 @@ class MenuScreen(Screen):
         w.add_widget(bg)
         w.effects = [FXAAEffect()]
         self.carousel.add_widget(self.menu())
-        self.carousel.add_widget(self.new_game())
+        self.carousel.add_widget(self.new_game_menu())
         self.layout.add_widget(w)
         self.layout.add_widget(self.carousel)
         self.add_widget(self.layout)
+        Window.bind(mouse_pos=self.on_mouse_pos)
+
+    def adv_menu(self):
+        menu_box = MenuRelativeLayout(size_hint=(None, None), size=(600, 600), pos_hint=({'center_x': .5, 'center_y': .5}))
+        menu_top = Image(source=r'data/images/menu/menu_top.png', size_hint=(None, None), size=(426, 212),
+                         pos_hint=({'center_x': .5, 'top': 1}))
+        menu_left = Image(source=r'data/images/menu/menu_left.png', size_hint=(None, None), size=(212, 426),
+                         pos_hint=({'x': 0, 'center_y': .5}))
+        menu_right = Image(source=r'data/images/menu/menu_right.png', size_hint=(None, None), size=(212, 426),
+                         pos_hint=({'right': 1, 'center_y': .5}))
+        menu_bottom = Image(source=r'data/images/menu/menu_bottom.png', size_hint=(None, None), size=(426, 212),
+                         pos_hint=({'center_x': .5, 'y': 0}))
+        menu_center = Image(source=r'data/images/menu/center.png', size_hint=(None, None), size=(250, 250),
+                            pos_hint=({'center_x': .5, 'center_y': .5}))
+        menu_box.add_widget(menu_top)
+        menu_box.add_widget(menu_left)
+        menu_box.add_widget(menu_right)
+        menu_box.add_widget(menu_bottom)
+        menu_box.add_widget(menu_center)
+        return menu_box
 
     def menu(self):
         menu_box = GridLayout(cols=1, size_hint=(.4, .5), pos_hint=({'center_x': .5, 'center_y': .5}), spacing=10)
@@ -49,7 +72,7 @@ class MenuScreen(Screen):
         menu_box.add_widget(exit_button)
         return menu_box
 
-    def new_game(self):
+    def new_game_menu(self):
         box = BoxLayout(orientation='vertical', size_hint=(.7, .8), pos_hint=({'center_x': .5, 'center_y': .5}))
         left_box = BoxLayout(orientation='vertical', size_hint_x=.3)
         right_box = BoxLayout(orientation='vertical', size_hint_x=.7)
@@ -91,7 +114,7 @@ class MenuScreen(Screen):
                                      on_release=lambda x: self.carousel.load_previous(), text='<= Назад'))
 
         bottom_box.add_widget(Button(size_hint=(.3, .7), pos_hint=({'center_x': .5, 'center_y': .5}),
-                              on_release=lambda x: ad.set_screen('main', self.manager), text='Начать игру'))
+                              on_release=lambda x: self.new_game(), text='Начать игру'))
 
         bottom_box.add_widget(Button(size_hint=(.2, .7), pos_hint=({'right': 1, 'center_y': .5}),
                                      on_release=lambda x: self.map_settings(), text='Настройки карты'))
@@ -101,6 +124,17 @@ class MenuScreen(Screen):
         box.add_widget(top_box)
         box.add_widget(bottom_box)
         return box
+
+    def new_game(self):
+        game = Game()
+        player1 = Player(player=True)  # TODO: город добавить тут
+        player1.add_city((17, 17), name='Персеполис')
+        player2 = Player()
+        player2.add_city((3, 41), name='Научград')
+        game.players = [player1, player2]
+        config.game = game
+        config.current_player = player1
+        ad.set_screen('main', self.manager)
 
     def open_settings(self):
         self.app.destroy_settings()
@@ -114,6 +148,18 @@ class MenuScreen(Screen):
     def close_app(self):
         self.app.stop()
 
+    def on_mouse_pos(self, window, pos):
+        '''
+        x, y = self.menu.pos
+        menuX, menuY = pos
+        posX = menuX-x
+        posY = menuY-y
+        cellX = self.menu.width / 3
+        cellY = self.menu.height / 3
+        print(f'{posX, posY} | {posX % cellX} | {posY % cellY}')
+        '''
+        pass
+
     def on_leave(self, *args):
         self.layout.clear_widgets()
 
@@ -124,6 +170,11 @@ class MenuCarousel(Carousel):
 
     def on_touch_move(self, touch):  # Переопределение (не разрешать двигать табуретками)
         pass
+
+
+class MenuRelativeLayout(RelativeLayout):
+    def __init__(self, **kwargs):
+        super(MenuRelativeLayout, self).__init__(**kwargs)
 
 
 class DescBoxLayout(BoxLayout):

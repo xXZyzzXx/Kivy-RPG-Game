@@ -1,7 +1,7 @@
 import additional as ad
 import config
 import data_center
-from gui import *
+from gui_list.gamebase import *
 from kivy.clock import Clock
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
@@ -25,24 +25,15 @@ class MainScreen(Screen):
         self.main_base = None
         self.total_programs_label = None
         self.pb_list = None
+        self.player = None
 
     def on_enter(self, *args):
+        self.player = config.current_player
         self.layout = RelativeLayout()
         canvas = CityCanvas()
-        # Выбор окна в главном меню
-        mainmenu = BoxLayout(orientation='vertical', size_hint=(.1, .1), pos_hint=({'x': 0, 'top': 0.5}))
-        stackscreens = GridLayout(rows=3, spacing=5)
-        prod_menu_screen = Button(size_hint_x=.1, text='prod_menu', on_release=lambda x: self.prod_menu_newscreen())
-        data_center_screen = Button(size_hint_x=.1, text='data_center',
-                                    on_release=lambda x: self.data_center_newscreen())
-        terminal_button = Button(size_hint_x=.1, text='terminal', on_release=lambda x: self.open_terminal())
-        # Главное здание базы
         self.main_base = BuildingBase(id='main_base', pos_hint=({'center_x': .6, 'center_y': .42}),
                                       size_hint=(0.15, 0.15))
-        stackscreens.add_widget(prod_menu_screen)
-        stackscreens.add_widget(data_center_screen)
-        stackscreens.add_widget(terminal_button)
-        navigation = BoxLayout(size_hint=(.37, .1), pos_hint=({'center_x': .5, 'top': 1}))
+        navigation = BoxLayout(size_hint=(.4, .1), pos_hint=({'center_x': .5, 'top': 1}))
         stack = GridLayout(cols=4, spacing=5)
         map_button = RockLayout(MapButton(on_press=lambda x: ad.set_screen('iso_map', self.manager)))
         war_button = RockLayout(WarButton(on_press=lambda x: ad.set_screen('iso_map', self.manager)))
@@ -53,7 +44,6 @@ class MainScreen(Screen):
         stack.add_widget(report_button)
         stack.add_widget(letter_button)
         navigation.add_widget(stack)
-        mainmenu.add_widget(stackscreens)
         self.empty_space = Building(id='f1', pos_hint=({'center_x': .4, 'center_y': .2}), size_hint=(None, None))
         self.empty_space2 = Building(id='f2', pos_hint=({'center_x': .6, 'center_y': .2}), size_hint=(None, None))
         self.empty_space3 = Building(id='f3', pos_hint=({'center_x': .5, 'center_y': .3}), size_hint=(None, None))
@@ -64,16 +54,54 @@ class MainScreen(Screen):
         self.layout.add_widget(self.empty_space2)
         self.layout.add_widget(self.empty_space3)
         self.layout.add_widget(navigation)
-        self.layout.add_widget(mainmenu)
+        self.layout.add_widget(self.test_lay())
+        self.layout.add_widget(self.top_left_content())
+        self.layout.add_widget(self.top_right_content())
         self.layout.add_widget(self.right_sidebar_content())
+        self.layout.add_widget(self.turn_layout_content())
+        self.layout.add_widget(self.next_turn_content())
+        self.layout.add_widget(self.research_content())
+
         self.add_widget(self.layout)
-        # building.menu_content(empty_space)
-        # empty_space.name = 'Казармы'  # For testing
-        # empty_space.active = True
-        # self.layout.add_widget(empty_space.building_content(build_place=self, build='Казармы'))  # For testing
-        # self.layout.add_widget(building.prod_menu(empty_space2))
         self.timer_event = Clock.schedule_interval(
             lambda dt: self.update_resources(buildings), 1)
+        
+    def top_left_content(self):
+        lay = LeftInfoLay(size_hint=(.3, .05), pos_hint=({'top': 1, 'x': 0}))
+        lay.add_widget(Label(text='Top info text', font_size=10))
+        return lay
+
+    def top_right_content(self):
+        lay = RightInfoLay(size_hint=(.3, .05), pos_hint=({'top': 1, 'right': 1}))
+        lay.add_widget(Label(text='Top info text', font_size=10))
+        return lay
+
+    def research_content(self):
+        left_box = BoxLayout(orientation='vertical', size_hint=(.2, .4), pos_hint=({'top': .85, 'x': 0}), spacing=20)
+        tech_lay = TechLay(orientation='horizontal', size_hint_y=.5, padding=10)
+        malware_lay = TechLay(size_hint_y=.5)
+        technology_box = BoxLayout(orientation='vertical')
+        technology_box.add_widget(Label(text='Текущая технология:', size_hint_y=.3))
+        technology_box.add_widget(Label(text='Новые вирусы\n\n100/30 (3 хд)', size_hint_y=.7))
+        tech_lay.add_widget(Image(source='data/images/gui_elements/malware1.png', size_hint=(.4, .7),
+                                  pos_hint=({'center_y': .5})))
+        tech_lay.add_widget(technology_box)
+        left_box.add_widget(tech_lay)
+        left_box.add_widget(malware_lay)
+        return left_box
+
+    def test_lay(self):
+        mainmenu = BoxLayout(orientation='vertical', size_hint=(.1, .1), pos_hint=({'right': 1, 'y': 0}))
+        stackscreens = GridLayout(rows=3, spacing=5)
+        prod_menu_screen = Button(size_hint_x=.1, text='prod_menu', on_release=lambda x: self.prod_menu_newscreen())
+        data_center_screen = Button(size_hint_x=.1, text='data_center',
+                                    on_release=lambda x: self.data_center_newscreen())
+        terminal_button = Button(size_hint_x=.1, text='terminal', on_release=lambda x: self.open_terminal())
+        stackscreens.add_widget(prod_menu_screen)
+        stackscreens.add_widget(data_center_screen)
+        stackscreens.add_widget(terminal_button)
+        mainmenu.add_widget(stackscreens)
+        return mainmenu
 
     def data_center_newscreen(self):
         self.layout.add_widget(data_center.data_center_content(self.empty_space))
@@ -81,14 +109,28 @@ class MainScreen(Screen):
     def prod_menu_newscreen(self):
         self.layout.add_widget(building.prod_menu(self.empty_space2))
 
+    def next_turn_content(self):
+        next_turn_lay = NextTurnLayout(orientation='vertical', size_hint=(.12, .2), pos_hint=({'y': .15, 'x': 0}))
+        turn_button = TurnButton(size_hint=(.7, .7), pos_hint=({'center_x': .5, 'center_y': .5}))
+        next_turn_lay.add_widget(turn_button)
+        return next_turn_lay
+
+    def turn_layout_content(self):
+        turn_lay = TurnLayout(orientation='vertical', size_hint=(.2, .15), pos_hint=({'top': .95, 'right': 1}))
+        era = config.current_player.era
+        turn = config.game.turn
+        turn_label = Label(text=f'{era}\nТекущий ход: {turn}', font_size=18)
+        turn_lay.add_widget(turn_label)
+        return turn_lay
+
     # Добавление и обновление ресурсов
     def right_sidebar_content(self):
         right_sidebar = RightSidebar(orientation='vertical', size_hint=(.17, .6),
-                                     pos_hint=({'center_y': .5, 'right': 1}))
+                                     pos_hint=({'center_y': .45, 'right': 1}))
         rel_res = GridLayout(cols=2, size_hint_y=.25, padding=5)
         self.res_label_list = []
         self.pb_list = []
-        money = config.money
+        money = self.player.mutantcoin
         money_box = TestBoxLayout(orientation='vertical', spacing=2, padding=2)
         self.money_label = ResLabel(id='Деньги', text=f'{money[0]} [size=13]+{money[1]}[/size]')
         self.programs_grid = GridLayout(cols=1, row_default_height=30)
@@ -112,8 +154,8 @@ class MainScreen(Screen):
 
     def create_resources(self):
         self.res_grid = GridLayout(rows=5, row_default_height=40)
-        for res in config.resourses:
-            resource = config.resourses[res]
+        for res in self.player.resources:
+            resource = self.player.resources[res]
             rel_ress = GridLayout(cols=3, size_hint_y=None, padding=5, height=40)
             resource_box = TestBoxLayout(orientation='vertical', spacing=2, padding=2)
             resource_label = ResLabel(id=f'{res}', text=f'{int(resource[0])} [size=13]+{resource[1]}[/size]')
@@ -131,15 +173,15 @@ class MainScreen(Screen):
             self.pb_list.append(resource_progress)
 
     def update_resources(self, buildings):
-        money = config.money
+        money = self.player.mutantcoin
         money[0] += money[1]
         if money[1] > 0:
             self.money_label.text = f'{money[0]} [size=13]+{money[1]}[/size]'
         else:
             self.money_label.text = f'{money[0]}'
         # Обновление для сырьевых ресурсов
-        for i, resource in enumerate(config.resourses):
-            res = config.resourses[resource]
+        for i, resource in enumerate(self.player.resources):
+            res = self.player.resources[resource]
             if res[0] <= res[3] and res[0] + res[1] <= res[3]:
                 res[0] += res[1]
             else:
@@ -159,11 +201,12 @@ class MainScreen(Screen):
                 b.update_available_units()
 
     def update_programs(self):
-        for program in config.player_programs:
-            if config.player_programs[program] > 0:
+        programs = self.player.programs
+        for program in programs:
+            if programs[program] > 0:
                 program_ress = GridLayout(cols=3, size_hint_y=None, padding=5, spacing=5, height=40)
                 program_image = Image(source=config.programs[program][0], size_hint_x=.2)
-                program_label = ProgramSidebarLabel(text=f'{program} {config.player_programs[program]} ед.')
+                program_label = ProgramSidebarLabel(text=f'{program} {programs[program]} ед.')
                 program_ress.add_widget(program_image)
                 program_ress.add_widget(program_label)
                 self.programs_grid.add_widget(program_ress)
@@ -172,9 +215,10 @@ class MainScreen(Screen):
         programs_lay = GridLayout(cols=3, spacing=5, padding=2, size_hint_y=.2)
         programs_layout = BoxLayout(orientation='horizontal', size_hint_x=.35)
         programs_now = 0
-        for pr in config.player_programs:
-            programs_now += int(config.player_programs[pr]) * int(config.programs[pr][3])
-        self.total_programs_label = RightLabel(text=f'{programs_now}/{config.programs_max}', size_hint_x=.45)
+        programs = self.player.programs
+        for pr in programs:
+            programs_now += int(programs[pr]) * int(config.programs[pr][3])
+        self.total_programs_label = RightLabel(text=f'{programs_now}/{self.player.programs_max}', size_hint_x=.45)
         programs_layout.add_widget(self.total_programs_label)
         img_box = BoxLayout(size_hint_x=.2)
         img_box.add_widget(
@@ -188,9 +232,10 @@ class MainScreen(Screen):
 
     def update_total_programs_label(self):
         programs_now = 0
-        for pr in config.player_programs:
-            programs_now += int(config.player_programs[pr]) * int(config.programs[pr][3])
-        self.total_programs_label.text = f'{programs_now}/{config.programs_max}'
+        programs = self.player.programs
+        for pr in programs:
+            programs_now += int(programs[pr]) * int(config.programs[pr][3])
+        self.total_programs_label.text = f'{programs_now}/{self.player.programs_max}'
 
     def open_terminal(self):
         scatter_terminal = ScatterLayout(size_hint=(.4, .5))
@@ -217,3 +262,5 @@ class MainScreen(Screen):
     def on_leave(self, *args):
         self.clear_widgets()
         Clock.unschedule(self.timer_event)
+
+

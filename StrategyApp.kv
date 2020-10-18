@@ -337,10 +337,45 @@
             size: self.size
             source: 'data/images/gui_elements/LightBrown.png'
 
-<GridLayout>
+<TurnLayout>
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/gui_elements/city_label.png'
+
+<NextTurnLayout>
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/gui_elements/dialog.png'
+
+<TechLay>
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/gui_elements/dialog.png'
+
+<LeftInfoLay>
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/gui_elements/Brown.png'
+
+<RightInfoLay>
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/gui_elements/Brown.png'
+
+<RelativeLayout>
     canvas.before:
         Color:
             rgba: 1, 1, 1, 1
         Line:
             width: 1
-            rectangle: self.x, self.y, self.width, self.height
+            rectangle: 0, 0, self.width, self.height

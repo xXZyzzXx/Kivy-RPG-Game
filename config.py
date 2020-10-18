@@ -32,7 +32,7 @@ player_units = {'Рабочий': 0,
 
 money = [20000, 20, r'data/images/res_icons/money.png']
 
-resourses = {'Электричество': [200, 0, r'data/images/res_icons/lighting.png', 500],
+resources = {'Электричество': [200, 0, r'data/images/res_icons/lighting.png', 500],
              'Еда': [250, 0, r'data/images/res_icons/food.png', 500],
              'Сырьевые ресурсы': [1000, 15, r'data/images/res_icons/iron.png', 6000],
              }
@@ -92,6 +92,9 @@ player_programs = {'Червь': 0,
                    'Логическая бомба': 1,
                    'Троян': 0}
 
+city_list = []
+current_city = None
+
 programs_max = 15
 
 queue_list = []
@@ -105,6 +108,8 @@ TILE_HEIGHT = 149
 MW = 25
 MH = 50
 
+game = None
+current_player = None
 # TODO: Добавить словари со стоимостью, харастеристикой и прочим в словаре всех юнитов и программ
 
 '''

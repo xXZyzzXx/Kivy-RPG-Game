@@ -1,10 +1,12 @@
 import config
 import additional as ad
-from gui import *
-from kivy.core.window import Window
+from iso import *
+from tile_map import MyMap, Tile
 from kivy.uix.scatterlayout import ScatterPlaneLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
+from kivy.uix.gridlayout import GridLayout
+from kivy.core.window import Window
 from kivy.uix.label import Label
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.screenmanager import Screen
@@ -42,11 +44,10 @@ class IsoMapScreen(Screen):
         self.hightlight.coordinates = current_coords
 
     def on_enter(self, *args):
-        from tile_map import MyMap, Tile
         self.layout = RelativeLayout()
         self.map = MyMap(source="data/maps/first.tmx")
         self.map_scatter = MyScatterLayout()
-        self.map_lay = IsoFloatLayout(map=self.map)
+        self.map_lay = IsoFloatLayout(mymap=self.map)
         self.hightlight = IsoHightLightImage()
         for layer in self.map.layers:
             for tile in layer:
@@ -57,27 +58,49 @@ class IsoMapScreen(Screen):
                                   size_hint=(None, None), color=(1, 1, 1, 1), font_size=12)
                 # self.map_lay.add_widget(tile_info)
         self.map_lay.add_widget(self.hightlight)
-        self.create_city((2, 46), name='Персеполис')
-        self.create_city((3, 41), name='Научград')
+        config.city_list.clear()  # TODO: отрисовка городов
+        for player in config.game.players:
+            if player == config.current_player:
+                for pre_city in player.pre_cities:
+                    self.create_city(pre_city.pos, pre_city.name, player=player, owner=True)
+                ad.change_current_city(player.cities[-1])
+            else:
+                for pre_city in player.pre_cities:
+                    self.create_city(pre_city.pos, pre_city.name, player=player)
         navigation = BoxLayout(orientation='vertical', size_hint=(.2, .02), pos_hint=({'center_x': .5, 'top': 1}))
         navigation.add_widget(Button(text='Переключить на город',
                                      on_press=lambda x: ad.set_screen('main', self.manager)))
         self.map_scatter.add_widget(self.map_lay)
         self.layout.add_widget(self.map_scatter)
         self.layout.add_widget(navigation)
+        self.layout.add_widget(self.city_view())
         self.add_widget(self.layout)
         Window.bind(mouse_pos=self.on_mouse_pos)
+        ad.change_view(config.current_city, self.map_scatter, quick=True)
 
     def on_leave(self, *args):
         self.clear_widgets()
 
-    def create_city(self, pos, name):
-        city = City(pos=ad.tile_to_world(pos), coordinates=pos, hg=self.hightlight, name=name)
+    def create_city(self, pos, name, player, owner=False):
+        city = IsoCity(pos=ad.tile_to_world(pos), coordinates=pos, hg=self.hightlight, name=name, player=player)
         city_info = CityLabelName(text=city.name, center_x=city.center_x, y=city.y + city.height * 0.8)
+        if not owner:
+            city_info.color = (1, 0, 0, 1)
         city.label = city_info
+        player.cities.append(city)
+        config.city_list.append(city)  # Для навигации
         self.map_lay.add_widget(city)
         self.map_lay.add_widget(city_info)
         self.map.city_list.append(city)
+
+    def city_view(self):
+        city_view = GridLayout(rows=1, size_hint=(.2, .05), pos_hint=({'top': 1}))
+        for city in config.city_list:
+            city_view.add_widget(CityViewButton(city=city, root=self.map_scatter))
+        return city_view
+
+
+# ====================================
 
 
 class MyScatterLayout(ScatterPlaneLayout):  # MAIN LAYOUT in ISO
@@ -94,9 +117,9 @@ class MyScatterLayout(ScatterPlaneLayout):  # MAIN LAYOUT in ISO
 
     def zoom(self, direction):
         if direction == 'down':
-            config.SCALING += .1
-            self.scale = config.SCALING
+            self.scale += .1
+
         elif direction == 'up':
-            config.SCALING -= .1
-            self.scale = config.SCALING
-        print(config.SCALING)
+            self.scale -= .1
+
+        # print(config.SCALING)

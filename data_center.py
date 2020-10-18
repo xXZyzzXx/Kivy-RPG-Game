@@ -80,12 +80,12 @@ def tab_hack_row(programs_grid, program_name, program, lay_list, hack_tab):
     title_label = ProgramTitleLabel(text=f'{program_name}', pos_hint=({'top': 1}), size_hint_y=.3)
     cost_info_grid = BoxLayout(orientation='horizontal', size_hint_y=.7)
     res_cost_lay = BoxLayout(orientation='horizontal', padding=10)
-    res_list = list(config.resourses.keys())
+    res_list = list(config.resources.keys())
     for i, res_cost in enumerate(program[1]):
         if res_cost > 0:
             res_box = BoxLayout(orientation='horizontal', size_hint_x=.5)
             help_lay_res = RelativeLayout()
-            help_lay_res.add_widget(Image(source=f'{config.resourses[res_list[i]][2]}', size=(25, 25),
+            help_lay_res.add_widget(Image(source=f'{config.resources[res_list[i]][2]}', size=(25, 25),
                                           pos_hint=({'right': 1}), size_hint=(None, 1)))
             add_lay = GridLayout(cols=2, size_hint=(1, 1), pos_hint=({'center_x': .5, 'center_y': .5}))
             add_lay.add_widget(help_lay_res)

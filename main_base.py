@@ -124,8 +124,8 @@ def res_generation(id_build):
     res_gen = BoxLayout(orientation='horizontal', height=40, size_hint_y=None)
     res_gen.add_widget(Label(text='Производит ресурсов', size_hint_x=.8))
     statistic_grid.add_widget(res_gen)
-    for r in config.resourses:
-        res = config.resourses[r]
+    for r in config.resources:
+        res = config.resources[r]
         build_name = config.resourses_generation[id_build]
         if build_name[r] > 0:
             stat_box = BoxLayout(orientation='horizontal', height=40, size_hint_y=None)
