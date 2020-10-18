@@ -131,6 +131,40 @@ class UpgradeGridLayout(GridLayout):
         self.lay_list = None
 
 
+class MenuLayout(FloatLayout):
+    def __init__(self, **kwargs):
+        super(MenuLayout, self).__init__(**kwargs)
+        self.size_hint = (.55, .7)
+        self.pos_hint = ({'center_x': .5, 'center_y': .5})
+
+
+class InsideMenuLayout(BoxLayout):
+    def __init__(self, **kwargs):
+        super(InsideMenuLayout, self).__init__(**kwargs)
+        self.orientation = 'vertical'
+        self.size_hint = (.9, .87)
+        self.pos_hint = ({'center_x': .5, 'center_y': .5})
+
+
+class CloseMenuButton(ButtonBehavior, Image):
+    def __init__(self, building, close_lay, **kwargs):
+        super(CloseMenuButton, self).__init__(**kwargs)
+        self.source = 'data/images/gui_elements/close.png'
+        self.size = (20, 20)
+        self.size_hint = (None, None)
+        self.pos_hint = {"right": .98, "top": .98}
+        self.close_lay = close_lay
+        self.building = building
+
+    def on_press(self):
+        self.source = 'data/images/gui_elements/close.png'
+
+    def on_release(self):  # Закрывает окно, сделать красивее
+        self.source = 'data/images/gui_elements/close.png'
+        self.building.parent.remove_widget(self.close_lay)
+        self.building.active = False
+
+
 class FrameBoxLayout(BoxLayout):
     pass
 
@@ -169,37 +203,3 @@ class BuildButton(Button):
 
 class PlaceLabel(Label):
     pass
-
-
-class MenuLayout(FloatLayout):
-    def __init__(self, **kwargs):
-        super(MenuLayout, self).__init__(**kwargs)
-        self.size_hint = (.6, .7)
-        self.pos_hint = ({'center_x': .5, 'center_y': .5})
-
-
-class InsideMenuLayout(BoxLayout):
-    def __init__(self, **kwargs):
-        super(InsideMenuLayout, self).__init__(**kwargs)
-        self.orientation = 'vertical'
-        self.size_hint = (.9, .87)
-        self.pos_hint = ({'center_x': .5, 'center_y': .5})
-
-
-class CloseMenuButton(ButtonBehavior, Image):
-    def __init__(self, building, close_lay, **kwargs):
-        super(CloseMenuButton, self).__init__(**kwargs)
-        self.source = 'data/images/gui_elements/close.png'
-        self.size = (20, 20)
-        self.size_hint = (None, None)
-        self.pos_hint = {"right": .98, "top": .98}
-        self.close_lay = close_lay
-        self.building = building
-
-    def on_press(self):
-        self.source = 'data/images/gui_elements/close.png'
-
-    def on_release(self):  # Закрывает окно, сделать красивее
-        self.source = 'data/images/gui_elements/close.png'
-        self.building.parent.remove_widget(self.close_lay)
-        self.building.active = False

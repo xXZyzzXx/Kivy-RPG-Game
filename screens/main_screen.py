@@ -33,7 +33,7 @@ class MainScreen(Screen):
         canvas = CityCanvas()
         self.main_base = BuildingBase(id='main_base', pos_hint=({'center_x': .6, 'center_y': .42}),
                                       size_hint=(0.15, 0.15))
-        navigation = BoxLayout(size_hint=(.37, .1), pos_hint=({'center_x': .5, 'top': 1}))
+        navigation = BoxLayout(size_hint=(.4, .1), pos_hint=({'center_x': .5, 'top': 1}))
         stack = GridLayout(cols=4, spacing=5)
         map_button = RockLayout(MapButton(on_press=lambda x: ad.set_screen('iso_map', self.manager)))
         war_button = RockLayout(WarButton(on_press=lambda x: ad.set_screen('iso_map', self.manager)))
@@ -55,19 +55,40 @@ class MainScreen(Screen):
         self.layout.add_widget(self.empty_space3)
         self.layout.add_widget(navigation)
         self.layout.add_widget(self.test_lay())
+        self.layout.add_widget(self.top_left_content())
+        self.layout.add_widget(self.top_right_content())
         self.layout.add_widget(self.right_sidebar_content())
         self.layout.add_widget(self.turn_layout_content())
         self.layout.add_widget(self.next_turn_content())
+        self.layout.add_widget(self.research_content())
+
         self.add_widget(self.layout)
         self.timer_event = Clock.schedule_interval(
             lambda dt: self.update_resources(buildings), 1)
         
-    def top_content(self):
-        pass
+    def top_left_content(self):
+        lay = LeftInfoLay(size_hint=(.3, .05), pos_hint=({'top': 1, 'x': 0}))
+        lay.add_widget(Label(text='Top info text', font_size=10))
+        return lay
+
+    def top_right_content(self):
+        lay = RightInfoLay(size_hint=(.3, .05), pos_hint=({'top': 1, 'right': 1}))
+        lay.add_widget(Label(text='Top info text', font_size=10))
+        return lay
 
     def research_content(self):
-        lay = TechLay()
-        return lay
+        left_box = BoxLayout(orientation='vertical', size_hint=(.2, .4), pos_hint=({'top': .85, 'x': 0}), spacing=20)
+        tech_lay = TechLay(orientation='horizontal', size_hint_y=.5, padding=10)
+        malware_lay = TechLay(size_hint_y=.5)
+        technology_box = BoxLayout(orientation='vertical')
+        technology_box.add_widget(Label(text='Текущая технология:', size_hint_y=.3))
+        technology_box.add_widget(Label(text='Новые вирусы\n\n100/30 (3 хд)', size_hint_y=.7))
+        tech_lay.add_widget(Image(source='data/images/gui_elements/malware1.png', size_hint=(.4, .7),
+                                  pos_hint=({'center_y': .5})))
+        tech_lay.add_widget(technology_box)
+        left_box.add_widget(tech_lay)
+        left_box.add_widget(malware_lay)
+        return left_box
 
     def test_lay(self):
         mainmenu = BoxLayout(orientation='vertical', size_hint=(.1, .1), pos_hint=({'right': 1, 'y': 0}))
@@ -95,7 +116,7 @@ class MainScreen(Screen):
         return next_turn_lay
 
     def turn_layout_content(self):
-        turn_lay = TurnLayout(orientation='vertical', size_hint=(.25, .19), pos_hint=({'top': 1, 'right': 1}))
+        turn_lay = TurnLayout(orientation='vertical', size_hint=(.2, .15), pos_hint=({'top': .95, 'right': 1}))
         era = config.current_player.era
         turn = config.game.turn
         turn_label = Label(text=f'{era}\nТекущий ход: {turn}', font_size=18)

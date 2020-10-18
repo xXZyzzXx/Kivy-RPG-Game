@@ -13,7 +13,6 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.image import Image
 from kivy.uix.label import Label
-from kivy.core.window import Window
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.scatterlayout import ScatterLayout
 from kivy.uix.scrollview import ScrollView
@@ -672,3 +671,12 @@ class NextTurnLayout(BoxLayout):
 class TechLay(BoxLayout):
     def __init__(self, **kwargs):
         super(TechLay, self).__init__(**kwargs)
+
+
+class LeftInfoLay(BoxLayout):
+    def __init__(self, **kwargs):
+        super(LeftInfoLay, self).__init__(**kwargs)
+
+class RightInfoLay(BoxLayout):
+    def __init__(self, **kwargs):
+        super(RightInfoLay, self).__init__(**kwargs)
