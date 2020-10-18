@@ -31,19 +31,8 @@ class MainScreen(Screen):
         self.player = config.current_player
         self.layout = RelativeLayout()
         canvas = CityCanvas()
-        # Выбор окна в главном меню
-        mainmenu = BoxLayout(orientation='vertical', size_hint=(.1, .1), pos_hint=({'x': 0, 'top': 0.5}))
-        stackscreens = GridLayout(rows=3, spacing=5)
-        prod_menu_screen = Button(size_hint_x=.1, text='prod_menu', on_release=lambda x: self.prod_menu_newscreen())
-        data_center_screen = Button(size_hint_x=.1, text='data_center',
-                                    on_release=lambda x: self.data_center_newscreen())
-        terminal_button = Button(size_hint_x=.1, text='terminal', on_release=lambda x: self.open_terminal())
-        # Главное здание базы
         self.main_base = BuildingBase(id='main_base', pos_hint=({'center_x': .6, 'center_y': .42}),
                                       size_hint=(0.15, 0.15))
-        stackscreens.add_widget(prod_menu_screen)
-        stackscreens.add_widget(data_center_screen)
-        stackscreens.add_widget(terminal_button)
         navigation = BoxLayout(size_hint=(.37, .1), pos_hint=({'center_x': .5, 'top': 1}))
         stack = GridLayout(cols=4, spacing=5)
         map_button = RockLayout(MapButton(on_press=lambda x: ad.set_screen('iso_map', self.manager)))
@@ -55,7 +44,6 @@ class MainScreen(Screen):
         stack.add_widget(report_button)
         stack.add_widget(letter_button)
         navigation.add_widget(stack)
-        mainmenu.add_widget(stackscreens)
         self.empty_space = Building(id='f1', pos_hint=({'center_x': .4, 'center_y': .2}), size_hint=(None, None))
         self.empty_space2 = Building(id='f2', pos_hint=({'center_x': .6, 'center_y': .2}), size_hint=(None, None))
         self.empty_space3 = Building(id='f3', pos_hint=({'center_x': .5, 'center_y': .3}), size_hint=(None, None))
@@ -66,16 +54,29 @@ class MainScreen(Screen):
         self.layout.add_widget(self.empty_space2)
         self.layout.add_widget(self.empty_space3)
         self.layout.add_widget(navigation)
-        self.layout.add_widget(mainmenu)
+        self.layout.add_widget(self.test_lay())
         self.layout.add_widget(self.right_sidebar_content())
+        self.layout.add_widget(self.turn_layout_content())
+        self.layout.add_widget(self.next_turn_content())
         self.add_widget(self.layout)
-        # building.menu_content(empty_space)
-        # empty_space.name = 'Казармы'  # For testing
-        # empty_space.active = True
-        # self.layout.add_widget(empty_space.building_content(build_place=self, build='Казармы'))  # For testing
-        # self.layout.add_widget(building.prod_menu(empty_space2))
         self.timer_event = Clock.schedule_interval(
             lambda dt: self.update_resources(buildings), 1)
+        
+    def top_content(self):
+        pass
+
+    def test_lay(self):
+        mainmenu = BoxLayout(orientation='vertical', size_hint=(.1, .1), pos_hint=({'right': 1, 'y': 0}))
+        stackscreens = GridLayout(rows=3, spacing=5)
+        prod_menu_screen = Button(size_hint_x=.1, text='prod_menu', on_release=lambda x: self.prod_menu_newscreen())
+        data_center_screen = Button(size_hint_x=.1, text='data_center',
+                                    on_release=lambda x: self.data_center_newscreen())
+        terminal_button = Button(size_hint_x=.1, text='terminal', on_release=lambda x: self.open_terminal())
+        stackscreens.add_widget(prod_menu_screen)
+        stackscreens.add_widget(data_center_screen)
+        stackscreens.add_widget(terminal_button)
+        mainmenu.add_widget(stackscreens)
+        return mainmenu
 
     def data_center_newscreen(self):
         self.layout.add_widget(data_center.data_center_content(self.empty_space))
@@ -83,10 +84,24 @@ class MainScreen(Screen):
     def prod_menu_newscreen(self):
         self.layout.add_widget(building.prod_menu(self.empty_space2))
 
+    def next_turn_content(self):
+        next_turn_lay = NextTurnLayout(orientation='vertical', size_hint=(.12, .2), pos_hint=({'y': .15, 'x': 0}))
+        turn_button = TurnButton(size_hint=(.7, .7), pos_hint=({'center_x': .5, 'center_y': .5}))
+        next_turn_lay.add_widget(turn_button)
+        return next_turn_lay
+
+    def turn_layout_content(self):
+        turn_lay = TurnLayout(orientation='vertical', size_hint=(.25, .19), pos_hint=({'top': 1, 'right': 1}))
+        era = config.current_player.era
+        turn = config.game.turn
+        turn_label = Label(text=f'{era}\nТекущий ход: {turn}', font_size=18)
+        turn_lay.add_widget(turn_label)
+        return turn_lay
+
     # Добавление и обновление ресурсов
     def right_sidebar_content(self):
         right_sidebar = RightSidebar(orientation='vertical', size_hint=(.17, .6),
-                                     pos_hint=({'center_y': .5, 'right': 1}))
+                                     pos_hint=({'center_y': .45, 'right': 1}))
         rel_res = GridLayout(cols=2, size_hint_y=.25, padding=5)
         self.res_label_list = []
         self.pb_list = []

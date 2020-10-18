@@ -15,6 +15,7 @@ class Player:
         self.name = None
         self.current_city = None
         self.team = None
+        self.era = 'Эпоха упадка'
         self.pre_cities = []
         self.cities = []
         self.technologies = []

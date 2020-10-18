@@ -102,7 +102,7 @@ class IsoFloatLayout(FloatLayout):
                 attack = city.attack_tool
                 hack = city.hack_tool
                 if attack is not None and hack is not None:
-                    anim_left = DownDoorAnim(y=city.top - city.height / 3, x=attack.x + attack.width + 3, opacity=0,
+                    anim_left = DownDoorAnim(y=city.top - city.height / 3, x=city.x + city.width/3, opacity=0,
                                              parent=self,
                                              door=attack, width=attack.width / 2, height=attack.height / 2, duration=.3)
                     anim_right = DownDoorAnim(y=city.top - city.height / 3, x=city.x + city.width / 2, opacity=0,
@@ -149,8 +149,7 @@ class IsoCity(Image):
 
     def get_panel(self):
         if self.player == config.current_player:
-            door = CityToolButton(source=r'data/images/iso/doors.png', city=self, hl=self.hightlight, name='door',
-                                  df=40)
+            door = CityToolButton(source=r'data/images/iso/doors.png', city=self, hl=self.hightlight, name='door')
             top_anim = Animation(y=door.y + door.default_pos, opacity=1, duration=.3)
             self.door_tool = door
             self.parent.add_widget(door)
@@ -158,13 +157,13 @@ class IsoCity(Image):
         else:
             attack = CityToolButton(source=r'data/images/iso/attack.png', city=self, hl=self.hightlight, name='attack')
             hack = CityToolButton(source=r'data/images/iso/hack.png', city=self, hl=self.hightlight, name='hack')
-            left_anim = Animation(y=attack.y + attack.default_pos, x=attack.x - attack.width - 3, opacity=1,
+            left_anim = Animation(y=attack.y + attack.default_pos, x=attack.x - attack.width/2 - 3, opacity=1,
                                   duration=.3)
-            right_anim = Animation(y=hack.y + hack.default_pos, x=hack.x + hack.width + 3, opacity=1, duration=.3)
+            right_anim = Animation(y=hack.y + hack.default_pos, x=hack.x + hack.width/2 + 3, opacity=1, duration=.3)
             self.attack_tool = attack
             self.hack_tool = hack
-            self.parent.add_widget(attack)
             self.parent.add_widget(hack)
+            self.parent.add_widget(attack)
             left_anim.start(attack)
             right_anim.start(hack)
 
@@ -173,7 +172,7 @@ class IsoCity(Image):
 
 
 class CityToolButton(Image, HoverBehavior):
-    def __init__(self, source, city, hl, name, df=30, **kwargs):
+    def __init__(self, source, city, hl, name, df=40, **kwargs):
         super().__init__(**kwargs)
         self.source = source
         self.width = (config.TILE_WIDTH * config.SCALING) / 2.4

@@ -14,6 +14,7 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.image import Image
 from kivy.uix.label import Label
+from kivy.core.window import Window
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.scatterlayout import ScatterLayout
 from kivy.uix.scrollview import ScrollView
@@ -651,6 +652,16 @@ class TopLabel(Label):
     pass
 
 
+class TurnLayout(BoxLayout):
+    pass
 
 
+class TurnButton(ButtonBehavior, Image):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.source = 'data/images/gui_elements/compile.png'
 
+
+class NextTurnLayout(BoxLayout):
+    def __init__(self, **kwargs):
+        super(NextTurnLayout, self).__init__(**kwargs)
