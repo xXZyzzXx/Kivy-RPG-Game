@@ -1,9 +1,11 @@
 import config
 import additional as ad
 from additional import HoverBehavior
+from kivy.uix.behaviors import ButtonBehavior
 from kivy.animation import Animation
 from kivy.graphics import Rectangle
 from kivy.uix.button import Button
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.image import Image
 from kivy.uix.label import Label
@@ -219,3 +221,30 @@ class CityLabelName(Label):
         parent = self.parent
         parent.remove_widget(self)
         parent.add_widget(self)
+
+
+class IsoToggle(ButtonBehavior, Image):
+    def __init__(self, menu, **kwargs):
+        super(IsoToggle, self).__init__(**kwargs)
+        self.toggle_state = True
+        self.source = r'data/images/iso/arrows.png'
+        self.keep_ratio = False
+        self.allow_stretch = True
+        self.menu = menu
+
+    def on_release(self):
+        if self.toggle_state:
+            self.source = r'data/images/iso/arrows_back.png'
+            self.toggle_state = False
+            anim = Animation(x_hint=1.153, duration=.3)
+            anim.start(self.menu)
+
+        else:
+            self.source = r'data/images/iso/arrows.png'
+            self.toggle_state = True
+            anim = Animation(x_hint=1, duration=.3)
+            anim.start(self.menu)
+
+
+class IsoRightMenu(BoxLayout):
+    pass

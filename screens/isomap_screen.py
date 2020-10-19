@@ -45,14 +45,6 @@ class IsoMapScreen(Screen):
         self.hightlight.coordinates = current_coords
 
     def on_enter(self, *args):
-        navigationdrawer = NavigationDrawer()
-        side_panel = BoxLayout(orientation='vertical')
-        side_panel.add_widget(Label(text='Panel label'))
-        side_panel.add_widget(Button(text='A button'))
-        navigationdrawer.anim_type = 'slide_above_simple'
-        navigationdrawer.opening_transition = 'out_sine'
-        navigationdrawer.closing_transition = 'out_sine'
-
         self.layout = RelativeLayout()
         self.map = MyMap(source="data/maps/first.tmx")
         self.map_scatter = MyScatterLayout()
@@ -79,18 +71,22 @@ class IsoMapScreen(Screen):
         navigation = BoxLayout(orientation='vertical', size_hint=(.2, .05), pos_hint=({'center_x': .5, 'top': 1}))
         navigation.add_widget(Button(text='Переключить на город',
                                      on_press=lambda x: ad.set_screen('main', self.manager)))
-        buttonTest = Button(text='toggle',  size_hint_y=0.2)
-        buttonTest.bind(on_press=lambda j: navigationdrawer.toggle_state())
-        navigation.add_widget(buttonTest)
         self.map_scatter.add_widget(self.map_lay)
         self.layout.add_widget(self.map_scatter)
         self.layout.add_widget(navigation)
         self.layout.add_widget(self.city_view())
-        navigationdrawer.add_widget(side_panel)
-        navigationdrawer.add_widget(self.layout)
-        self.add_widget(navigationdrawer)
+        self.layout.add_widget(self.nav_right_content())
+        self.add_widget(self.layout)
         Window.bind(mouse_pos=self.on_mouse_pos)
         ad.change_view(config.current_city, self.map_scatter, quick=True)
+
+    def nav_right_content(self):
+        lay = IsoRightMenu(orientation='horizontal', size_hint=(.17, .5))
+        main_lay = BoxLayout(size_hint_x=.9)
+        toggle_button = IsoToggle(menu=lay, size_hint=(.1, .2), pos_hint=({'center_y': .5}))
+        lay.add_widget(toggle_button)
+        lay.add_widget(main_lay)
+        return lay
 
     def on_leave(self, *args):
         self.clear_widgets()
