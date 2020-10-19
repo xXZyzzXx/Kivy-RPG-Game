@@ -3,6 +3,7 @@ from screens.menu_screen import MenuScreen
 from screens.main_screen import MainScreen
 from screens.isomap_screen import IsoMapScreen
 import additional as ad
+from additional import PixelTransition, RippleTransition, BlurTransition, RVBTransition
 from kivy.config import ConfigParser
 from kivy.core.window import Window
 from kivy.uix.popup import Popup
@@ -23,7 +24,7 @@ class StrategyApp(App):
 
     def build(self):
         Window.bind(on_key_down=self.key_action)
-        self.sm = ScreenManager(transition=WipeTransition())
+        self.sm = ScreenManager(transition=RVBTransition())  # WipeTransition()
         self.sm.add_widget(MenuScreen(name='menu'))
         self.sm.add_widget(MainScreen(name='main'))
         self.sm.add_widget(IsoMapScreen(name='iso_map'))

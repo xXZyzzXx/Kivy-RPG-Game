@@ -23,11 +23,12 @@ class Player:
         self.units = config.player_units
         self.resources = config.resources  # resources
         self.buildings = []
-        self.science = 0
-        self.mutagen = 0
-        self.malware_points = 8
-        self.rare_materials = 5
-        self.energy_slots = 10
+        self.science = config.science
+        self.mutagen = config.mutagen
+        self.people = config.people
+        self.malware_points = config.malware_points
+        self.rare_materials = config.rare_materials
+        self.energy_slots = config.energy_slots
         self.mutantcoin = config.money
         self.programs_max = config.programs_max
         self.player = player

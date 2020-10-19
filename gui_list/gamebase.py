@@ -678,3 +678,7 @@ class LeftInfoLay(BoxLayout):
 class RightInfoLay(BoxLayout):
     def __init__(self, **kwargs):
         super(RightInfoLay, self).__init__(**kwargs)
+
+
+class TopResLabel(Label):
+    pass

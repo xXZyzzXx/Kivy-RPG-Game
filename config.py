@@ -31,6 +31,12 @@ player_units = {'Рабочий': 0,
                 'Стрелок': 0}
 
 money = [20000, 20, r'data/images/res_icons/bitcoin.png']
+people = [35, 2, r'data/images/res_icons/worker.png']
+mutagen = [220, 15, r'data/images/res_icons/malware.png']
+science = [220, 15, r'data/images/res_icons/kolba.png']
+rare_materials = [8, r'data/images/res_icons/rare.png']
+malware_points = [15, r'data/images/res_icons/malware-point.png']
+energy_slots = [20, 5, r'data/images/res_icons/slots.png']
 
 resources = {'Электричество': [200, 0, r'data/images/res_icons/lighting.png', 500],
              'Еда': [250, 0, r'data/images/res_icons/food.png', 500],
