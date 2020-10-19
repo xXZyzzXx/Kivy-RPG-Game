@@ -26,9 +26,11 @@ class MainScreen(Screen):
         self.total_programs_label = None
         self.pb_list = None
         self.player = None
+        self.turn_label = None
 
     def on_enter(self, *args):
         self.player = config.current_player
+
         self.layout = RelativeLayout()
         canvas = CityCanvas()
         self.main_base = BuildingBase(id='main_base', pos_hint=({'center_x': .6, 'center_y': .42}),
@@ -47,7 +49,7 @@ class MainScreen(Screen):
         self.empty_space = Building(id='f1', pos_hint=({'center_x': .4, 'center_y': .2}), size_hint=(None, None))
         self.empty_space2 = Building(id='f2', pos_hint=({'center_x': .6, 'center_y': .2}), size_hint=(None, None))
         self.empty_space3 = Building(id='f3', pos_hint=({'center_x': .5, 'center_y': .3}), size_hint=(None, None))
-        buildings = [self.empty_space, self.empty_space2]
+        self.buildings = [self.empty_space, self.empty_space2, self.empty_space3]
         self.layout.add_widget(canvas)
         self.layout.add_widget(self.main_base)
         self.layout.add_widget(self.empty_space)
@@ -58,14 +60,15 @@ class MainScreen(Screen):
         self.layout.add_widget(self.top_left_content())
         self.layout.add_widget(self.top_right_content())
         self.layout.add_widget(self.right_sidebar_content())
+
+        self.update_programs()
+        self.update_progressbar()
         self.layout.add_widget(self.turn_layout_content())
         self.layout.add_widget(self.next_turn_content())
         self.layout.add_widget(self.research_content())
-
         self.add_widget(self.layout)
-        self.timer_event = Clock.schedule_interval(
-            lambda dt: self.update_resources(buildings), 1)
-        
+        # self.timer_event = Clock.schedule_interval(lambda dt: self.update_resources(buildings), 1)
+
     def top_left_content(self):
         lay = LeftInfoLay(size_hint=(.3, .05), pos_hint=({'top': 1, 'x': 0}))
         lay.add_widget(Label(text='Top info text', font_size=10))
@@ -80,6 +83,7 @@ class MainScreen(Screen):
         left_box = BoxLayout(orientation='vertical', size_hint=(.2, .4), pos_hint=({'top': .85, 'x': 0}), spacing=20)
         tech_lay = TechLay(orientation='horizontal', size_hint_y=.5, padding=10)
         malware_lay = TechLay(size_hint_y=.5)
+        malware_lay.add_widget(Label(text='Очки мутации'))
         technology_box = BoxLayout(orientation='vertical')
         technology_box.add_widget(Label(text='Текущая технология:', size_hint_y=.3))
         technology_box.add_widget(Label(text='Новые вирусы\n\n100/30 (3 хд)', size_hint_y=.7))
@@ -111,16 +115,26 @@ class MainScreen(Screen):
 
     def next_turn_content(self):
         next_turn_lay = NextTurnLayout(orientation='vertical', size_hint=(.12, .2), pos_hint=({'y': .15, 'x': 0}))
-        turn_button = TurnButton(size_hint=(.7, .7), pos_hint=({'center_x': .5, 'center_y': .5}))
+        turn_button = TurnButton(size_hint=(.7, .7), pos_hint=({'center_x': .5, 'center_y': .5}),
+                                 on_release=lambda x: self.end_turn())
         next_turn_lay.add_widget(turn_button)
+
         return next_turn_lay
+
+    def end_turn(self):
+        self.update_resources(self.buildings)
+        config.game.turn += 1
+        self.update_turn_info()
+
+    def update_turn_info(self):
+        self.turn_label.text = f'{config.current_player.era}\nТекущий ход: {str(config.game.turn)}'
 
     def turn_layout_content(self):
         turn_lay = TurnLayout(orientation='vertical', size_hint=(.2, .15), pos_hint=({'top': .95, 'right': 1}))
         era = config.current_player.era
         turn = config.game.turn
-        turn_label = Label(text=f'{era}\nТекущий ход: {turn}', font_size=18)
-        turn_lay.add_widget(turn_label)
+        self.turn_label = Label(text=f'{era}\nТекущий ход: {turn}', font_size=18)
+        turn_lay.add_widget(self.turn_label)
         return turn_lay
 
     # Добавление и обновление ресурсов
@@ -138,7 +152,6 @@ class MainScreen(Screen):
         rel_res.add_widget(MoneyImage(size=(30, 30), size_hint_x=.2, source=money[2]))
         rel_res.add_widget(money_box)
         self.create_resources()
-        self.update_programs()
         res_box = BoxLayout(orientation='vertical', size_hint_y=.475)
         programs_box = BoxLayout(orientation='vertical', size_hint_y=.475)
         res_box.add_widget(rel_res)
@@ -158,7 +171,11 @@ class MainScreen(Screen):
             resource = self.player.resources[res]
             rel_ress = GridLayout(cols=3, size_hint_y=None, padding=5, height=40)
             resource_box = TestBoxLayout(orientation='vertical', spacing=2, padding=2)
-            resource_label = ResLabel(id=f'{res}', text=f'{int(resource[0])} [size=13]+{resource[1]}[/size]')
+            resource_label = ResLabel(id=f'{res}')
+            if int(resource[1]) > 0:
+                resource_label.text = f'{int(resource[0])} [size=13]+{resource[1]}[/size]'
+            else:
+                resource_label.text = f'{int(resource[0])}'
             resource_progress = ProgressBar(id=f'p_{res}', size_hint=(1, .1), max=resource[3])
             resource_box.add_widget(resource_label)
             resource_box.add_widget(resource_progress)
@@ -190,15 +207,20 @@ class MainScreen(Screen):
                 self.res_label_list[i].text = f'{int(res[0])} [size=13]+{res[1]}[/size]'
             else:
                 self.res_label_list[i].text = f'{int(res[0])}'
-            sklad_coefficient = res[0] / res[3]
-            self.pb_list[i].value_normalized = sklad_coefficient
         # Обновление для текущих программ
         self.programs_grid.clear_widgets()
         self.update_programs()
         self.update_total_programs_label()
+        self.update_progressbar()
         for b in buildings:
             if b.active:
                 b.update_available_units()
+
+    def update_progressbar(self):
+        for i, resource in enumerate(self.player.resources):
+            res = self.player.resources[resource]
+            sklad_coefficient = res[0] / res[3]
+            self.pb_list[i].value_normalized = sklad_coefficient
 
     def update_programs(self):
         programs = self.player.programs
@@ -262,5 +284,3 @@ class MainScreen(Screen):
     def on_leave(self, *args):
         self.clear_widgets()
         Clock.unschedule(self.timer_event)
-
-

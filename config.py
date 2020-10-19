@@ -30,7 +30,7 @@ player_units = {'Рабочий': 0,
                 'Воин': 0,
                 'Стрелок': 0}
 
-money = [20000, 20, r'data/images/res_icons/money.png']
+money = [20000, 20, r'data/images/res_icons/bitcoin.png']
 
 resources = {'Электричество': [200, 0, r'data/images/res_icons/lighting.png', 500],
              'Еда': [250, 0, r'data/images/res_icons/food.png', 500],

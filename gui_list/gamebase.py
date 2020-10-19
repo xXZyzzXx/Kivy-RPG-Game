@@ -74,19 +74,19 @@ class MapButton(ButtonBehavior, Image):
 class WarButton(ButtonBehavior, Image):
     def __init__(self, **kwargs):
         super(WarButton, self).__init__(**kwargs)
-        self.source = 'data/images/navigation/attack.png'
+        self.source = 'data/images/navigation/pechat.png'
 
 
 class ReportButton(ButtonBehavior, Image):
     def __init__(self, **kwargs):
         super(ReportButton, self).__init__(**kwargs)
-        self.source = 'data/images/navigation/pechat.png'
+        self.source = 'data/images/navigation/malware3.png'
 
 
 class MailButton(ButtonBehavior, Image):
     def __init__(self, **kwargs):
         super(MailButton, self).__init__(**kwargs)
-        self.source = 'data/images/navigation/letter.png'
+        self.source = 'data/images/navigation/attack.png'
 
 
 # Инициализация базы
@@ -542,9 +542,6 @@ class TestBoxLayout(BoxLayout):
     pass
 
 
-
-
-
 class ResLabel(Label):
     pass
 
@@ -676,6 +673,7 @@ class TechLay(BoxLayout):
 class LeftInfoLay(BoxLayout):
     def __init__(self, **kwargs):
         super(LeftInfoLay, self).__init__(**kwargs)
+
 
 class RightInfoLay(BoxLayout):
     def __init__(self, **kwargs):
