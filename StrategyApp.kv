@@ -2,20 +2,7 @@
 #:import utils kivy.utils
 <Label>
     color: (0, 0, 0, 1)
-<BoxLayout>
-    canvas.before:
-        Color:
-            rgba: 1, 1, 1, 1
-        Line:
-            width: 1
-            rectangle: self.x, self.y, self.width, self.height
-<RelativeLayout>
-    canvas.before:
-        Color:
-            rgba: 1, 1, 1, 1
-        Line:
-            width: 1
-            rectangle: 0, 0, self.width, self.height
+
 
 <BuildingScrollView>
     scroll_wheel_distance: 15
@@ -391,5 +378,12 @@
             source: 'data/images/gui_elements/Brown.png'
 
 <IsoRightMenu>
-    x_hint: 1
+    x_hint: 1.153
     pos_hint: {"right": self.x_hint, 'center_y': .5}
+
+<IsoNavMenu>
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/iso/nav_menu.png'

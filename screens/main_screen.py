@@ -76,7 +76,7 @@ class MainScreen(Screen):
 
     def top_left_content(self):
         top_lay = LeftInfoLay(orientation='vertical', size_hint=(.3, .05), pos_hint=({'top': 1, 'x': 0}))
-        lay = GridLayout(cols=3, size_hint_x=.95, pos_hint=({'center_x': .5}))
+        lay = GridLayout(cols=3, size_hint_x=.92, pos_hint=({'right': 1}))
         science = self.player.science
         science_box = TestBoxLayout(orientation='horizontal', spacing=2, padding=2)
         self.science_label = TopResLabel(text=f'{science[0]} [size=13]+{science[1]}[/size]')
@@ -102,7 +102,7 @@ class MainScreen(Screen):
 
     def top_right_content(self):
         top_lay = RightInfoLay(orientation='vertical', size_hint=(.3, .05), pos_hint=({'top': 1, 'right': 1}))
-        lay = GridLayout(cols=3, size_hint_x=.95, pos_hint=({'center_x': .5}))
+        lay = GridLayout(cols=3, size_hint_x=.92, pos_hint=({'right': 1}))
         people = self.player.people
         people_box = TestBoxLayout(orientation='horizontal', spacing=2, padding=2)
         self.people_label = TopResLabel(text=f'{people[0]} [size=13]+{people[1]}[/size]')

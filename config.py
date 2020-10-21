@@ -26,9 +26,9 @@ units = {'Рабочий': [[None], 100, [60, 40, 0], r"data/images/units/worker
          'Воин': [[None], 150, [300, 10, 10], r"data/images/units/warrior.png", 'Социальные'],
          'Стрелок': [[None], 20, [60, 20, 10], r"data/images/units/shooter.png", 'Социальные']}
 
-player_units = {'Рабочий': 0,
-                'Воин': 0,
-                'Стрелок': 0}
+player_units = {'Рабочий': 1,
+                'Воин': 20,
+                'Стрелок': 5}
 
 money = [20000, 20, r'data/images/res_icons/bitcoin.png']
 people = [35, 2, r'data/images/res_icons/worker.png']
@@ -100,6 +100,7 @@ player_programs = {'Червь': 0,
 
 city_list = []
 current_city = None
+map_units = []
 
 programs_max = 15
 
@@ -126,5 +127,12 @@ current_player = None
         Line:
             width: 1
             rectangle: self.x, self.y, self.width, self.height
+<RelativeLayout>
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+        Line:
+            width: 1
+            rectangle: 0, 0, self.width, self.height
 '''
 

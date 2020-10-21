@@ -1,16 +1,17 @@
-import config
 import additional as ad
+import config
 from additional import HoverBehavior
-from kivy.uix.behaviors import ButtonBehavior
 from kivy.animation import Animation
+from kivy.app import App
 from kivy.graphics import Rectangle
-from kivy.uix.button import Button
+from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.image import Image
 from kivy.uix.label import Label
-from kivy.uix.widget import Widget
 from kivy.uix.relativelayout import RelativeLayout
+from kivy.uix.widget import Widget
 
 
 class IsoTileImage(Widget):
@@ -43,23 +44,21 @@ class IsoFloatLayout(FloatLayout):
 
     def on_touch_down(self, touch):
         touch.grab(self)
+        return super(IsoFloatLayout, self).on_touch_down(touch)
 
     def on_touch_move(self, touch):
         if not self.moved:
             self.moved = True
         if touch.grab_current is self:
             root_pos = self.parent.pos
-            # print(f'Touch: {self}')
-            # print(root_pos)
             if int(root_pos[0]) < 0:
                 pass
         else:
             pass
-            # it's a normal touch
+        return super(IsoFloatLayout, self).on_touch_move(touch)
 
     def on_touch_up(self, touch):
         if touch.grab_current is self:
-            # I receive my grabbed touch, I must ungrab it!
             touch.ungrab(self)
             if touch.button == 'left':
                 if not self.moved:
@@ -69,8 +68,8 @@ class IsoFloatLayout(FloatLayout):
                 else:
                     self.moved = False
         else:
-            # it's a normal touch
             pass
+        return super(IsoFloatLayout, self).on_touch_up(touch)
 
     def check_press(self, tiles):
         layers = [self.map.city_list, self.map.items_list, self.map.floor_list]
@@ -95,16 +94,22 @@ class IsoFloatLayout(FloatLayout):
         for city in self.map.city_list:
             if city.player == config.current_player:
                 door = city.door_tool
+                expedition = city.expedition_tool
                 if door is not None:
-                    anim_top = DownDoorAnim(y=city.top - city.height / 3, x=door.x + door.width / 4, opacity=.75,
+                    anim_top = DownDoorAnim(y=city.top - city.height / 3, x=city.x + city.width / 3, opacity=.75,
                                             parent=self,
                                             door=door, width=door.width / 2, height=door.height / 1.5, duration=.3)
-                    anim_top.start(city.door_tool)
+                    anim_expedition = DownDoorAnim(y=city.top - city.height / 3, x=city.x + city.width / 2, opacity=0,
+                                                   parent=self,
+                                                   door=expedition, width=expedition.width / 2,
+                                                   height=expedition.height / 2, duration=.3)
+                    anim_top.start(door)
+                    anim_expedition.start(expedition)
             else:
                 attack = city.attack_tool
                 hack = city.hack_tool
                 if attack is not None and hack is not None:
-                    anim_left = DownDoorAnim(y=city.top - city.height / 3, x=city.x + city.width/3, opacity=0,
+                    anim_left = DownDoorAnim(y=city.top - city.height / 3, x=city.x + city.width / 3, opacity=0,
                                              parent=self,
                                              door=attack, width=attack.width / 2, height=attack.height / 2, duration=.3)
                     anim_right = DownDoorAnim(y=city.top - city.height / 3, x=city.x + city.width / 2, opacity=0,
@@ -145,6 +150,7 @@ class IsoCity(Image):
         self.door_tool = None
         self.attack_tool = None
         self.hack_tool = None
+        self.expedition_tool = None
         self.tools = False
         self.name = name
         self.player = player
@@ -152,16 +158,23 @@ class IsoCity(Image):
     def get_panel(self):
         if self.player == config.current_player:
             door = CityToolButton(source=r'data/images/iso/doors.png', city=self, hl=self.hightlight, name='door')
-            top_anim = Animation(y=door.y + door.default_pos, opacity=1, duration=.3)
+            expedition = CityToolButton(source=r'data/images/iso/expedition.png', city=self, hl=self.hightlight,
+                                        name='expedition')
+            top_anim = Animation(x=door.x - door.width / 2 - 3, y=door.y + door.default_pos, opacity=1, duration=.3)
+            expedition_anim = Animation(x=expedition.x + expedition.width / 2 + 3, y=door.y + expedition.default_pos,
+                                        opacity=1, duration=.3)
             self.door_tool = door
+            self.expedition_tool = expedition
             self.parent.add_widget(door)
+            self.parent.add_widget(expedition)
             top_anim.start(door)
+            expedition_anim.start(expedition)
         else:
             attack = CityToolButton(source=r'data/images/iso/attack.png', city=self, hl=self.hightlight, name='attack')
             hack = CityToolButton(source=r'data/images/iso/hack.png', city=self, hl=self.hightlight, name='hack')
-            left_anim = Animation(y=attack.y + attack.default_pos, x=attack.x - attack.width/2 - 3, opacity=1,
+            left_anim = Animation(y=attack.y + attack.default_pos, x=attack.x - attack.width / 2 - 3, opacity=1,
                                   duration=.3)
-            right_anim = Animation(y=hack.y + hack.default_pos, x=hack.x + hack.width/2 + 3, opacity=1, duration=.3)
+            right_anim = Animation(y=hack.y + hack.default_pos, x=hack.x + hack.width / 2 + 3, opacity=1, duration=.3)
             self.attack_tool = attack
             self.hack_tool = hack
             self.parent.add_widget(hack)
@@ -173,9 +186,9 @@ class IsoCity(Image):
         self.tools = True
 
 
-class CityToolButton(Image, HoverBehavior):
+class CityToolButton(ButtonBehavior, HoverBehavior, Image):
     def __init__(self, source, city, hl, name, df=40, **kwargs):
-        super().__init__(**kwargs)
+        super(CityToolButton, self).__init__(**kwargs)
         self.source = source
         self.width = (config.TILE_WIDTH * config.SCALING) / 2.4
         self.height = self.width
@@ -186,6 +199,13 @@ class CityToolButton(Image, HoverBehavior):
         self.pos = (city.pos[0] + (city.width - self.width) / 2, city.top - city.height / 3)
         self.size_hint = (None, None)
         self.hightlight = hl
+
+    def on_release(self):
+        if self.name == 'door':
+            app = App.get_running_app()
+            app.root.current = 'main'
+        elif self.name == 'expedition':
+            print('expedition')
 
     def on_enter(self):
         if self.name == 'door':
@@ -227,24 +247,60 @@ class IsoToggle(ButtonBehavior, Image):
     def __init__(self, menu, **kwargs):
         super(IsoToggle, self).__init__(**kwargs)
         self.toggle_state = True
-        self.source = r'data/images/iso/arrows.png'
+        self.source = r'data/images/iso/arrows_back.png'
         self.keep_ratio = False
         self.allow_stretch = True
         self.menu = menu
 
     def on_release(self):
         if self.toggle_state:
-            self.source = r'data/images/iso/arrows_back.png'
-            self.toggle_state = False
-            anim = Animation(x_hint=1.153, duration=.3)
-            anim.start(self.menu)
-
+            self.menu_close()
         else:
-            self.source = r'data/images/iso/arrows.png'
-            self.toggle_state = True
-            anim = Animation(x_hint=1, duration=.3)
-            anim.start(self.menu)
+            self.menu_open()
+
+    def menu_close(self):
+        self.source = r'data/images/iso/arrows.png'
+        self.toggle_state = False
+        anim = Animation(x_hint=1.153, duration=.3)
+        anim.start(self.menu)
+
+    def menu_open(self):
+        self.source = r'data/images/iso/arrows_back.png'
+        self.toggle_state = True
+        anim = Animation(x_hint=1, duration=.3)
+        anim.start(self.menu)
+
+
+class IsoMapUnit(ButtonBehavior, Image):
+    def __init__(self, name, hl, **kwargs):
+        super(IsoMapUnit, self).__init__(**kwargs)
+        self.source = r'data/images/Units/warrior.png'
+        self.hl = hl  # Подсветка
+        self.size_hint = (None, None)
+        self.width = config.TILE_WIDTH * config.SCALING
+        self.height = config.TILE_HEIGHT * config.SCALING
+        self.name = name
+        self.movement = 3
+
+    def on_release(self):
+        self.hl.pos = self.pos
+        self.hl.opacity = 1
+
+
+class ChoiceHightligh(Image):
+    def __init__(self, **kwargs):
+        super(ChoiceHightligh, self).__init__(**kwargs)
+        self.source = r'data/images/iso/hightlight.png'
+        self.choice = None
+        self.opacity = 0
+        self.size = (config.TILE_WIDTH * config.SCALING, config.TILE_HEIGHT * config.SCALING + 10 * config.SCALING)
+        self.size_hint = (None, None)
+        self.coordinates = None
 
 
 class IsoRightMenu(BoxLayout):
+    pass
+
+
+class IsoNavMenu(BoxLayout):
     pass
