@@ -97,7 +97,7 @@ class IsoMapScreen(Screen):
                                    on_release=lambda x: self.create_expedition(config.current_city)))
         lay.add_widget(toggle_button)
         lay.add_widget(main_lay)
-        toggle_button.menu_open()
+        #toggle_button.menu_open()
         return lay
 
     def on_leave(self, *args):
