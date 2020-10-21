@@ -1,5 +1,8 @@
 #:kivy 1.0
 #:import utils kivy.utils
+<Label>
+    color: (0, 0, 0, 1)
+
 
 <BuildingScrollView>
     scroll_wheel_distance: 15
@@ -46,6 +49,15 @@
     text_size: self.size
     font_size: 14
     color: (0, 0, 0, 1)
+    size_hint_y: .9
+    halign: 'left'
+    valign: 'middle'
+    markup: True
+
+<TopResLabel>
+    text_size: self.size
+    font_size: 14
+    color: (1, 1, 1, 1)
     size_hint_y: .9
     halign: 'left'
     valign: 'middle'
@@ -244,16 +256,9 @@
             source: 'data/images/gui_elements/terminal_icon.png'
 
 
-<BoxLayout>
-    canvas.before:
-        Color:
-            rgba: 1, 1, 1, 1
-        Line:
-            width: 1
-            rectangle: self.x, self.y, self.width, self.height
 
-<Label>
-    color: (0, 0, 0, 1)
+
+
 #text_size: self.size
    # halign: 'center'
     #valign: 'middle'
@@ -372,10 +377,13 @@
             size: self.size
             source: 'data/images/gui_elements/Brown.png'
 
-<RelativeLayout>
+<IsoRightMenu>
+    x_hint: 1.153
+    pos_hint: {"right": self.x_hint, 'center_y': .5}
+
+<IsoNavMenu>
     canvas.before:
-        Color:
-            rgba: 1, 1, 1, 1
-        Line:
-            width: 1
-            rectangle: 0, 0, self.width, self.height
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/iso/nav_menu.png'

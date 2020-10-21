@@ -63,6 +63,8 @@ class MenuScreen(Screen):
         start_button = Button(text='Новая игра', size_hint_y=.2, on_release=lambda x: self.carousel.load_next(mode='next'))
         load_button = Button(text='Загрузить игру', size_hint_y=.2,
                              on_release=lambda x: ad.set_screen('iso_map', self.manager))
+        if config.game is None:
+            load_button.disabled = True
         settings_button = Button(text='Настройки', size_hint_y=.2, on_release=lambda x: self.open_settings())
         exit_button = Button(text='Выйти из игры', size_hint_y=.2, on_release=lambda x: self.close_app())
         menu_box.add_widget(continue_button)

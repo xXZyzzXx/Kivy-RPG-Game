@@ -1,14 +1,16 @@
-import main_base
+import re
+
 import building
 import config
-from gui import *
+import main_base
 from additional import HoverBehavior
-from kivy.utils import get_color_from_hex
+from gui import *
 from kivy.animation import Animation
 from kivy.graphics import Rectangle
 from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
+from kivy.uix.checkbox import CheckBox
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.image import Image
@@ -16,9 +18,9 @@ from kivy.uix.label import Label
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.scatterlayout import ScatterLayout
 from kivy.uix.scrollview import ScrollView
-from kivy.uix.textinput import TextInput
-from kivy.uix.checkbox import CheckBox
 from kivy.uix.slider import Slider
+from kivy.uix.textinput import TextInput
+from kivy.utils import get_color_from_hex
 
 res_list = list(config.resources.keys())
 anim_opacity_up = Animation(opacity=1, duration=.5)
@@ -678,3 +680,7 @@ class LeftInfoLay(BoxLayout):
 class RightInfoLay(BoxLayout):
     def __init__(self, **kwargs):
         super(RightInfoLay, self).__init__(**kwargs)
+
+
+class TopResLabel(Label):
+    pass

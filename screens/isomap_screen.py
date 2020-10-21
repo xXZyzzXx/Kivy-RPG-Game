@@ -1,15 +1,15 @@
-import config
 import additional as ad
-from iso import *
-from tile_map import MyMap, Tile
-from kivy.uix.scatterlayout import ScatterPlaneLayout
+import config
+from gui_list.iso import *
+from kivy.core.window import Window
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.gridlayout import GridLayout
-from kivy.core.window import Window
 from kivy.uix.label import Label
 from kivy.uix.relativelayout import RelativeLayout
+from kivy.uix.scatterlayout import ScatterPlaneLayout
 from kivy.uix.screenmanager import Screen
+from tile_map import MyMap
 
 
 class IsoMapScreen(Screen):
@@ -20,6 +20,7 @@ class IsoMapScreen(Screen):
         self.layout = None
         self.map_lay = None
         self.map = None
+        self.choice_hl = None
 
     def on_mouse_pos(self, window, pos):
         map_offset = self.map_scatter.pos
@@ -49,15 +50,17 @@ class IsoMapScreen(Screen):
         self.map_scatter = MyScatterLayout()
         self.map_lay = IsoFloatLayout(mymap=self.map)
         self.hightlight = IsoHightLightImage()
+        self.choice_hl = ChoiceHightligh()  # Подсветка
         for layer in self.map.layers:
             for tile in layer:
                 self.map_lay.add_widget(IsoTileImage(source=tile.image, pos=(tile.x, tile.y),
                                                      size=(tile.width, tile.height), size_hint=(None, None)))
                 tile_info = Label(pos=(tile.x, tile.y), size=(tile.width, tile.height),
-                                  text=f'{tile.column_index, tile.row_index}\n{tile.x}, {tile.y}',
-                                  size_hint=(None, None), color=(1, 1, 1, 1), font_size=12)
-                # self.map_lay.add_widget(tile_info)
+                                  text=f'{tile.column_index, tile.row_index}',
+                                  size_hint=(None, None), color=(0, 0, 0, 1), font_size=12)  # \n{tile.x}, {tile.y}
+                self.map_lay.add_widget(tile_info)
         self.map_lay.add_widget(self.hightlight)
+        self.map_lay.add_widget(self.choice_hl)
         config.city_list.clear()  # TODO: отрисовка городов
         for player in config.game.players:
             if player == config.current_player:
@@ -67,16 +70,35 @@ class IsoMapScreen(Screen):
             else:
                 for pre_city in player.pre_cities:
                     self.create_city(pre_city.pos, pre_city.name, player=player)
-        navigation = BoxLayout(orientation='vertical', size_hint=(.2, .02), pos_hint=({'center_x': .5, 'top': 1}))
+        navigation = BoxLayout(orientation='vertical', size_hint=(.2, .05), pos_hint=({'center_x': .5, 'top': 1}))
         navigation.add_widget(Button(text='Переключить на город',
                                      on_press=lambda x: ad.set_screen('main', self.manager)))
         self.map_scatter.add_widget(self.map_lay)
         self.layout.add_widget(self.map_scatter)
         self.layout.add_widget(navigation)
         self.layout.add_widget(self.city_view())
+        self.layout.add_widget(self.nav_right_content())
         self.add_widget(self.layout)
         Window.bind(mouse_pos=self.on_mouse_pos)
         ad.change_view(config.current_city, self.map_scatter, quick=True)
+
+    def nav_right_content(self):
+        lay = IsoRightMenu(orientation='horizontal', size_hint=(.17, .5))
+        main_lay = IsoNavMenu(orientation='vertical', size_hint_x=.9)
+        toggle_button = IsoToggle(menu=lay, size_hint=(.1, .2), pos_hint=({'center_y': .5}))
+        # =============
+        main_lay.add_widget(Label(text='Управление экспедицией', size_hint_y=.1, font_size=16, pos_hint=({'top': 1})))
+        unit_label = Label(text='Доступные юниты: ', size_hint=(.8, .7))
+        main_lay.add_widget(unit_label)
+        for unit in config.current_player.units:
+            if config.current_player.units[unit] > 0:
+                unit_label.text += f'\n{unit} {config.current_player.units[unit]}'
+        main_lay.add_widget(Button(text='create', size_hint=(.8, .2), pos_hint=({'center_x': .5}),
+                                   on_release=lambda x: self.create_expedition(config.current_city)))
+        lay.add_widget(toggle_button)
+        lay.add_widget(main_lay)
+        #toggle_button.menu_open()
+        return lay
 
     def on_leave(self, *args):
         self.clear_widgets()
@@ -99,7 +121,14 @@ class IsoMapScreen(Screen):
             city_view.add_widget(CityViewButton(city=city, root=self.map_scatter))
         return city_view
 
+    def create_expedition(self, city, unit='Воин'):
+        print(city.pos)
+        self.add_obj_to_map(unit, city.pos)
 
+    def add_obj_to_map(self, obj, pos):
+        unit = IsoMapUnit(name=obj, pos=pos, hl=self.choice_hl)
+        self.map_lay.add_widget(unit)
+        config.map_units.append(obj)
 # ====================================
 
 

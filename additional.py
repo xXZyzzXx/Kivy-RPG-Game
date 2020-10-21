@@ -1,8 +1,8 @@
+import config
+from kivy.animation import Animation
 from kivy.core.window import Window
 from kivy.factory import Factory
-from kivy.animation import Animation
-from kivy.properties import BooleanProperty, ObjectProperty
-import config
+from kivy.properties import (ObjectProperty, BooleanProperty)
 
 
 class HoverBehavior(object):
@@ -128,3 +128,7 @@ def change_view(obj, root, quick=False):
 
 def change_current_city(city):
     config.current_city = city
+
+
+def to_tile_center(pos):
+    return pos[0]+config.TILE_WIDTH/2, pos[1]+config.TILE_HEIGHT/2

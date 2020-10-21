@@ -1,15 +1,16 @@
-from gui import *
-from screens.menu_screen import MenuScreen
-from screens.main_screen import MainScreen
-from screens.isomap_screen import IsoMapScreen
 import additional as ad
-from kivy.config import ConfigParser
-from kivy.core.window import Window
-from kivy.uix.popup import Popup
+from gui import *
 from kivy.app import App
 from kivy.config import Config
-from kivy.uix.screenmanager import ScreenManager, WipeTransition
+from kivy.config import ConfigParser
+from kivy.core.window import Window
 from kivy.properties import ObjectProperty
+from kivy.uix.popup import Popup
+from kivy.uix.screenmanager import ScreenManager
+from libraries.transitions import RVBTransition
+from screens.isomap_screen import IsoMapScreen
+from screens.main_screen import MainScreen
+from screens.menu_screen import MenuScreen
 
 
 class StrategyApp(App):
@@ -18,17 +19,16 @@ class StrategyApp(App):
         self.config = ConfigParser()
         Config.set('kivy', 'exit_on_escape', '0')
         self.settings_popup = None
-        self.sm = None
         settings_popup = ObjectProperty(None, allownone=True)
 
     def build(self):
         Window.bind(on_key_down=self.key_action)
-        self.sm = ScreenManager(transition=WipeTransition())
-        self.sm.add_widget(MenuScreen(name='menu'))
-        self.sm.add_widget(MainScreen(name='main'))
-        self.sm.add_widget(IsoMapScreen(name='iso_map'))
-        self.sm.current = 'menu'  # temporary for testing
-        return self.sm
+        self.root = ScreenManager(transition=RVBTransition())  # WipeTransition()
+        self.root.add_widget(MenuScreen(name='menu'))
+        self.root.add_widget(MainScreen(name='main'))
+        self.root.add_widget(IsoMapScreen(name='iso_map'))
+        self.root.current = 'menu'  # temporary for testing
+        return self.root
 
     def on_settings_cls(self, *args):
         self.destroy_settings()
@@ -46,7 +46,7 @@ class StrategyApp(App):
 
     def key_action(self, window, keycode1, keycode2, text, modifiers):
         if keycode1 == 27:
-            ad.set_screen('menu', self.sm)
+            ad.set_screen('menu', self.root)
 
 
 if __name__ == '__main__':

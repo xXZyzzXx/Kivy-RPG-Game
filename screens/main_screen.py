@@ -24,9 +24,15 @@ class MainScreen(Screen):
         self.res_label_list = None
         self.main_base = None
         self.total_programs_label = None
+        self.people_label = None
         self.pb_list = None
         self.player = None
         self.turn_label = None
+        self.mutagen_label = None
+        self.science_label = None
+        self.rare_materials_label = None
+        self.energy_slots_label = None
+        self.malware_points_label = None
 
     def on_enter(self, *args):
         self.player = config.current_player
@@ -57,27 +63,69 @@ class MainScreen(Screen):
         self.layout.add_widget(self.empty_space3)
         self.layout.add_widget(navigation)
         self.layout.add_widget(self.test_lay())
-        self.layout.add_widget(self.top_left_content())
-        self.layout.add_widget(self.top_right_content())
         self.layout.add_widget(self.right_sidebar_content())
-
         self.update_programs()
         self.update_progressbar()
         self.layout.add_widget(self.turn_layout_content())
         self.layout.add_widget(self.next_turn_content())
+        self.layout.add_widget(self.top_left_content())
+        self.layout.add_widget(self.top_right_content())
         self.layout.add_widget(self.research_content())
         self.add_widget(self.layout)
         # self.timer_event = Clock.schedule_interval(lambda dt: self.update_resources(buildings), 1)
 
     def top_left_content(self):
-        lay = LeftInfoLay(size_hint=(.3, .05), pos_hint=({'top': 1, 'x': 0}))
-        lay.add_widget(Label(text='Top info text', font_size=10))
-        return lay
+        top_lay = LeftInfoLay(orientation='vertical', size_hint=(.3, .05), pos_hint=({'top': 1, 'x': 0}))
+        lay = GridLayout(cols=3, size_hint_x=.92, pos_hint=({'right': 1}))
+        science = self.player.science
+        science_box = TestBoxLayout(orientation='horizontal', spacing=2, padding=2)
+        self.science_label = TopResLabel(text=f'{science[0]} [size=13]+{science[1]}[/size]')
+        science_box.add_widget(Image(size=(30, 30), size_hint_x=.2, source=science[2]))
+        science_box.add_widget(self.science_label)
+        # ===
+        energy_slots = self.player.energy_slots
+        energy_slots_box = TestBoxLayout(orientation='horizontal', spacing=2, padding=2)
+        self.energy_slots_label = TopResLabel(text=f'{energy_slots[0]}/{energy_slots[1]}')
+        energy_slots_box.add_widget(Image(size=(30, 30), size_hint_x=.2, source=energy_slots[2]))
+        energy_slots_box.add_widget(self.energy_slots_label)
+        # ====
+        malware_points = self.player.malware_points
+        malware_points_box = TestBoxLayout(orientation='horizontal', spacing=2, padding=2)
+        self.malware_points_label = TopResLabel(text=f'{malware_points[0]}')
+        malware_points_box.add_widget(Image(size=(30, 30), size_hint_x=.2, source=malware_points[1]))
+        malware_points_box.add_widget(self.malware_points_label)
+        lay.add_widget(malware_points_box)
+        lay.add_widget(energy_slots_box)
+        lay.add_widget(science_box)
+        top_lay.add_widget(lay)
+        return top_lay
 
     def top_right_content(self):
-        lay = RightInfoLay(size_hint=(.3, .05), pos_hint=({'top': 1, 'right': 1}))
-        lay.add_widget(Label(text='Top info text', font_size=10))
-        return lay
+        top_lay = RightInfoLay(orientation='vertical', size_hint=(.3, .05), pos_hint=({'top': 1, 'right': 1}))
+        lay = GridLayout(cols=3, size_hint_x=.92, pos_hint=({'right': 1}))
+        people = self.player.people
+        people_box = TestBoxLayout(orientation='horizontal', spacing=2, padding=2)
+        self.people_label = TopResLabel(text=f'{people[0]} [size=13]+{people[1]}[/size]')
+        people_box.add_widget(Image(size=(30, 30), size_hint_x=.2, source=people[2]))
+        people_box.add_widget(self.people_label)
+        # =========================
+        mutagen = self.player.mutagen
+        mutagen_box = TestBoxLayout(orientation='horizontal', spacing=2, padding=2)
+        self.mutagen_label = TopResLabel(text=f'{mutagen[0]} [size=13]+{mutagen[1]}[/size]')
+        mutagen_box.add_widget(Image(size=(30, 30), size_hint_x=.2, source=mutagen[2]))
+        mutagen_box.add_widget(self.mutagen_label)
+        # =========================
+        rare_materials = self.player.rare_materials
+        rare_materials_box = TestBoxLayout(orientation='horizontal', spacing=2, padding=2)
+        self.rare_materials_label = TopResLabel(text=f'{rare_materials[0]}')
+        rare_materials_box.add_widget(Image(size=(30, 30), size_hint_x=.2, source=rare_materials[1]))
+        rare_materials_box.add_widget(self.rare_materials_label)
+        # =========================
+        lay.add_widget(people_box)
+        lay.add_widget(mutagen_box)
+        lay.add_widget(rare_materials_box)
+        top_lay.add_widget(lay)
+        return top_lay
 
     def research_content(self):
         left_box = BoxLayout(orientation='vertical', size_hint=(.2, .4), pos_hint=({'top': .85, 'x': 0}), spacing=20)
@@ -130,7 +178,7 @@ class MainScreen(Screen):
         self.turn_label.text = f'{config.current_player.era}\nТекущий ход: {str(config.game.turn)}'
 
     def turn_layout_content(self):
-        turn_lay = TurnLayout(orientation='vertical', size_hint=(.2, .15), pos_hint=({'top': .95, 'right': 1}))
+        turn_lay = TurnLayout(orientation='vertical', size_hint=(.2, .15), pos_hint=({'top': .97, 'right': 1}))
         era = config.current_player.era
         turn = config.game.turn
         self.turn_label = Label(text=f'{era}\nТекущий ход: {turn}', font_size=18)
@@ -142,15 +190,17 @@ class MainScreen(Screen):
         right_sidebar = RightSidebar(orientation='vertical', size_hint=(.17, .6),
                                      pos_hint=({'center_y': .45, 'right': 1}))
         rel_res = GridLayout(cols=2, size_hint_y=.25, padding=5)
+        self.programs_grid = GridLayout(cols=1, row_default_height=30)
         self.res_label_list = []
         self.pb_list = []
+        # ==================================================== Money and people
         money = self.player.mutantcoin
-        money_box = TestBoxLayout(orientation='vertical', spacing=2, padding=2)
-        self.money_label = ResLabel(id='Деньги', text=f'{money[0]} [size=13]+{money[1]}[/size]')
-        self.programs_grid = GridLayout(cols=1, row_default_height=30)
+        money_box = TestBoxLayout(orientation='horizontal', spacing=2, padding=2)
+        self.money_label = ResLabel(text=f'{money[0]} [size=13]+{money[1]}[/size]')
+        money_box.add_widget(Image(size=(30, 30), size_hint_x=.2, source=money[2]))
         money_box.add_widget(self.money_label)
-        rel_res.add_widget(MoneyImage(size=(30, 30), size_hint_x=.2, source=money[2]))
         rel_res.add_widget(money_box)
+        # ======================================================================
         self.create_resources()
         res_box = BoxLayout(orientation='vertical', size_hint_y=.475)
         programs_box = BoxLayout(orientation='vertical', size_hint_y=.475)
