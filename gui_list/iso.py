@@ -308,7 +308,9 @@ class IsoMapUnit(ButtonBehavior, Image):
         moves_list = ad.get_moves(self.coords, self.movement)
         self.clear_move_list()
         for move in moves_list:
-            hl = ChoiceHightligh(pos=ad.tile_to_world(move), opacity=1)
+            hl = ChoiceHightligh(pos=ad.tile_to_world(move))
+            anim = Animation(opacity=1, duration=.2)
+            anim.start(hl)
             self.parent.add_widget(hl)
             self.moves_highlight_list.append(hl)
         self.bring_gui_to_front()
@@ -324,9 +326,9 @@ class IsoMapUnit(ButtonBehavior, Image):
 
 
 class ChoiceHightligh(Image):
-    def __init__(self, opacity=0, **kwargs):
+    def __init__(self, opacity=0.2, **kwargs):
         super(ChoiceHightligh, self).__init__(**kwargs)
-        self.source = r'data/images/iso/hightlight4git .png'
+        self.source = r'data/images/iso/hightlight4.png'
         self.choice = None
         self.opacity = opacity
         self.size = (config.TILE_WIDTH * config.SCALING, config.TILE_HEIGHT * config.SCALING + 10 * config.SCALING)
