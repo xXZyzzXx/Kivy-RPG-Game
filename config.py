@@ -101,6 +101,7 @@ player_programs = {'Червь': 0,
 city_list = []
 current_city = None
 map_units = []
+map_gui_list = []
 
 programs_max = 15
 
@@ -111,6 +112,7 @@ SCALING = .5
 
 TILE_WIDTH = 256
 TILE_HEIGHT = 149
+TILE_Z = 10
 
 MW = 25
 MH = 50
