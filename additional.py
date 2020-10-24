@@ -1,9 +1,10 @@
+from math import ceil
+
 import config
 from kivy.animation import Animation
 from kivy.core.window import Window
 from kivy.factory import Factory
 from kivy.properties import (ObjectProperty, BooleanProperty)
-from math import ceil
 
 
 class HoverBehavior(object):
@@ -177,3 +178,9 @@ def tile_to_world_center(pos):
         x = column_index * (config.TILE_WIDTH * config.SCALING) + ((config.TILE_WIDTH * config.SCALING) / 2)
         y = (config.MH - row_index - 1) * ((config.TILE_HEIGHT * config.SCALING) / 2)
     return x+5, y+7.5
+
+
+def gen_move_map(x, y, moves):
+    rm = 'условный массив'
+    if rm < moves:
+        rm = moves
