@@ -1,9 +1,10 @@
+from math import ceil
+
 import config
 from kivy.animation import Animation
 from kivy.core.window import Window
 from kivy.factory import Factory
 from kivy.properties import (ObjectProperty, BooleanProperty)
-from math import ceil
 
 
 class HoverBehavior(object):
