@@ -1,3 +1,5 @@
+from math import ceil
+
 import config
 from kivy.animation import Animation
 from kivy.core.window import Window
@@ -108,7 +110,6 @@ def tile_to_world(pos):
     else:
         x = column_index * (config.TILE_WIDTH * config.SCALING) + ((config.TILE_WIDTH * config.SCALING) / 2)
         y = (config.MH - row_index - 1) * ((config.TILE_HEIGHT * config.SCALING) / 2)
-    # print(x, y)
     return x, y
 
 
@@ -131,4 +132,61 @@ def change_current_city(city):
 
 
 def to_tile_center(pos):
-    return pos[0]+config.TILE_WIDTH/2, pos[1]+config.TILE_HEIGHT/2
+    return pos[0] + config.TILE_WIDTH / 2, pos[1] + config.TILE_HEIGHT / 2
+
+
+def get_moves(pos, frad):
+    moves_list = []
+    scrx, scry = pos
+    irad = ceil(frad)
+    linx, liny = screen_to_linear(scrx, scry)
+    for dx in range(-irad, irad + 1):
+        for dy in range(-irad, irad + 1):
+            # print(f'{dx, dy} | {dx * dx}, {dy * dy}, {frad * frad}')
+            if dx * dx + dy * dy <= frad * frad:
+                move = linear_to_screen(linx + dx, liny + dy)
+                if move != pos:
+                    moves_list.append(move)
+                # print((linx + dx, liny + dy))
+    return moves_list
+
+
+def screen_to_linear(scrx, scry):
+    linx = scrx - scry // 2
+    liny = -scrx - (scry + 1) // 2
+    return linx, liny
+
+
+def linear_to_screen(linx, liny):
+    rotx = (linx - liny) // 2
+    roty = (-linx - liny)
+    # print(rotx, roty)
+    return rotx, roty
+
+
+def bring_to_front(widget):
+    parent = widget.parent
+    parent.remove_widget(widget)
+    parent.add_widget(widget)
+
+
+def tile_to_world_center(pos):
+    column_index, row_index = pos
+    if row_index % 2 == 0:
+        x = column_index * (config.TILE_WIDTH * config.SCALING)
+        y = (config.MH - row_index - 1) * ((config.TILE_HEIGHT * config.SCALING) / 2)
+    else:
+        x = column_index * (config.TILE_WIDTH * config.SCALING) + ((config.TILE_WIDTH * config.SCALING) / 2)
+        y = (config.MH - row_index - 1) * ((config.TILE_HEIGHT * config.SCALING) / 2)
+    return x + 5, y + 7.5
+
+
+def generate_move_map(x, y, moves):
+    rm = 1  # 'условный массив'
+    if rm < moves:
+        #rm = moves
+        _y = -1
+        for _x in range(-1, 1):
+            _x += 1
+            print(_x)
+

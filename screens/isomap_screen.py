@@ -97,7 +97,7 @@ class IsoMapScreen(Screen):
                                    on_release=lambda x: self.create_expedition(config.current_city)))
         lay.add_widget(toggle_button)
         lay.add_widget(main_lay)
-        #toggle_button.menu_open()
+        toggle_button.menu_open()
         return lay
 
     def on_leave(self, *args):
@@ -106,6 +106,7 @@ class IsoMapScreen(Screen):
     def create_city(self, pos, name, player, owner=False):
         city = IsoCity(pos=ad.tile_to_world(pos), coordinates=pos, hg=self.hightlight, name=name, player=player)
         city_info = CityLabelName(text=city.name, center_x=city.center_x, y=city.y + city.height * 0.8)
+        config.map_gui_list.append(city_info)
         if not owner:
             city_info.color = (1, 0, 0, 1)
         city.label = city_info
@@ -123,12 +124,13 @@ class IsoMapScreen(Screen):
 
     def create_expedition(self, city, unit='Воин'):
         print(city.pos)
-        self.add_obj_to_map(unit, city.pos)
+        self.add_obj_to_map(unit, city.pos, city.coordinates)
 
-    def add_obj_to_map(self, obj, pos):
-        unit = IsoMapUnit(name=obj, pos=pos, hl=self.choice_hl)
+    def add_obj_to_map(self, obj, pos, coords):
+        unit = IsoMapUnit(name=obj, pos=pos, coords=coords, hl=self.choice_hl)
         self.map_lay.add_widget(unit)
-        config.map_units.append(obj)
+        config.map_units.append(unit)
+        config.map_gui_list.append(unit)
 # ====================================
 
 

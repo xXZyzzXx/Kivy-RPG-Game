@@ -94,13 +94,14 @@ descriptions = {'Защита от взлома': 'При защите от ха
 
 
 player_programs = {'Червь': 0,
-                   'Руткит': 0,
-                   'Логическая бомба': 1,
+                   'Руткит': 1,
+                   'Логическая бомба': 0,
                    'Троян': 0}
 
 city_list = []
 current_city = None
 map_units = []
+map_gui_list = []
 
 programs_max = 15
 
@@ -111,6 +112,7 @@ SCALING = .5
 
 TILE_WIDTH = 256
 TILE_HEIGHT = 149
+TILE_Z = 10
 
 MW = 25
 MH = 50

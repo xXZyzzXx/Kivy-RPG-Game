@@ -62,6 +62,7 @@ class IsoFloatLayout(FloatLayout):
             touch.ungrab(self)
             if touch.button == 'left':
                 if not self.moved:
+                    self.remove_units_moves()
                     tiles = ad.world_to_tile(touch.pos)
                     if tiles is not None:
                         self.check_press(tiles)
@@ -70,6 +71,10 @@ class IsoFloatLayout(FloatLayout):
         else:
             pass
         return super(IsoFloatLayout, self).on_touch_up(touch)
+
+    def remove_units_moves(self):
+        for unit in config.map_units:
+            unit.clear_move_list()
 
     def check_press(self, tiles):
         layers = [self.map.city_list, self.map.items_list, self.map.floor_list]
@@ -105,6 +110,9 @@ class IsoFloatLayout(FloatLayout):
                                                    height=expedition.height / 2, duration=.3)
                     anim_top.start(door)
                     anim_expedition.start(expedition)
+                    if door in config.map_gui_list and expedition in config.map_gui_list:
+                        config.map_gui_list.remove(door)
+                        config.map_gui_list.remove(expedition)
             else:
                 attack = city.attack_tool
                 hack = city.hack_tool
@@ -117,6 +125,9 @@ class IsoFloatLayout(FloatLayout):
                                               door=hack, width=hack.width / 2, height=hack.height / 2, duration=.3)
                     anim_left.start(city.attack_tool)
                     anim_right.start(city.hack_tool)
+                    if attack in config.map_gui_list and hack in config.map_gui_list:
+                        config.map_gui_list.remove(attack)
+                        config.map_gui_list.remove(hack)
             city.tools = False
 
 
@@ -169,6 +180,8 @@ class IsoCity(Image):
             self.parent.add_widget(expedition)
             top_anim.start(door)
             expedition_anim.start(expedition)
+            config.map_gui_list.append(door)
+            config.map_gui_list.append(expedition)
         else:
             attack = CityToolButton(source=r'data/images/iso/attack.png', city=self, hl=self.hightlight, name='attack')
             hack = CityToolButton(source=r'data/images/iso/hack.png', city=self, hl=self.hightlight, name='hack')
@@ -181,6 +194,8 @@ class IsoCity(Image):
             self.parent.add_widget(attack)
             left_anim.start(attack)
             right_anim.start(hack)
+            config.map_gui_list.append(attack)
+            config.map_gui_list.append(hack)
 
         self.label.bring_to_front()
         self.tools = True
@@ -272,27 +287,50 @@ class IsoToggle(ButtonBehavior, Image):
 
 
 class IsoMapUnit(ButtonBehavior, Image):
-    def __init__(self, name, hl, **kwargs):
+    def __init__(self, name, coords, hl, **kwargs):
         super(IsoMapUnit, self).__init__(**kwargs)
         self.source = r'data/images/Units/warrior.png'
         self.hl = hl  # Подсветка
+        self.coords = coords
         self.size_hint = (None, None)
         self.width = config.TILE_WIDTH * config.SCALING
         self.height = config.TILE_HEIGHT * config.SCALING
         self.name = name
-        self.movement = 3
+        self.movement = 2.5
+        self.moves_highlight_list = []
 
     def on_release(self):
-        self.hl.pos = self.pos
-        self.hl.opacity = 1
+        #self.hl.pos = self.pos
+        #self.hl.opacity = 1
+        self.moves_hightlight()
+
+    def moves_hightlight(self):
+        moves_list = ad.get_moves(self.coords, self.movement)
+        self.clear_move_list()
+        for move in moves_list:
+            hl = ChoiceHightligh(pos=ad.tile_to_world(move))
+            anim = Animation(opacity=1, duration=.2)
+            anim.start(hl)
+            self.parent.add_widget(hl)
+            self.moves_highlight_list.append(hl)
+        self.bring_gui_to_front()
+
+    def bring_gui_to_front(self):
+        for widget in config.map_gui_list:
+            ad.bring_to_front(widget)
+
+    def clear_move_list(self):
+        for item in self.moves_highlight_list:
+            self.parent.remove_widget(item)
+        self.moves_highlight_list.clear()
 
 
 class ChoiceHightligh(Image):
-    def __init__(self, **kwargs):
+    def __init__(self, opacity=0.2, **kwargs):
         super(ChoiceHightligh, self).__init__(**kwargs)
-        self.source = r'data/images/iso/hightlight.png'
+        self.source = r'data/images/iso/hightlight4.png'
         self.choice = None
-        self.opacity = 0
+        self.opacity = opacity
         self.size = (config.TILE_WIDTH * config.SCALING, config.TILE_HEIGHT * config.SCALING + 10 * config.SCALING)
         self.size_hint = (None, None)
         self.coordinates = None
