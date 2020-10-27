@@ -164,10 +164,11 @@ def linear_to_screen(linx, liny):
     return rotx, roty
 
 
-def bring_to_front(widget):
-    parent = widget.parent
-    parent.remove_widget(widget)
-    parent.add_widget(widget)
+def bring_to_front():
+    for widget in config.map_gui_list:
+        parent = widget.parent
+        parent.remove_widget(widget)
+        parent.add_widget(widget)
 
 
 def tile_to_world_center(pos):

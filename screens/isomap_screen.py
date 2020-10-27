@@ -1,6 +1,7 @@
 import additional as ad
 import config
 from gui_list.iso import *
+from kivy.animation import Animation
 from kivy.core.window import Window
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
@@ -21,6 +22,8 @@ class IsoMapScreen(Screen):
         self.map_lay = None
         self.map = None
         self.choice_hl = None
+        self.in_radius = False
+        self.selected_moves_list = []
 
     def on_mouse_pos(self, window, pos):
         map_offset = self.map_scatter.pos
@@ -30,12 +33,35 @@ class IsoMapScreen(Screen):
                 current_coords = ad.world_to_tile(cur_coords)
                 # print(current_coords)
                 if self.hightlight.coordinates != current_coords:
+                    self.in_radius = False
                     self.get_highlight(current_coords)
+                    if config.selected_unit is not None:
+                        if config.selected_unit.selected:
+                            for moves in config.selected_unit.possible_moves:
+                                if current_coords == moves[-1]:
+                                    self.get_road_to_tile(moves)
+                                    self.in_radius = True
+                            if not self.in_radius:
+                                self.remove_selected_moves_list()
                 else:
                     if not self.hightlight.enter:
                         self.hightlight.opacity = 1
             else:
                 self.hightlight.opacity = 0
+
+    def get_road_to_tile(self, moves):
+        self.remove_selected_moves_list()
+        for move in moves:
+            hl = MovesHightlight(pos=ad.tile_to_world(move))
+            anim = Animation(opacity=1, duration=.2)
+            anim.start(hl)
+            self.map_lay.add_widget(hl)
+            self.selected_moves_list.append(hl)
+        ad.bring_to_front()
+
+    def remove_selected_moves_list(self):
+        for m in self.selected_moves_list:
+            self.map_lay.remove_widget(m)
 
     def get_highlight(self, current_coords):
         if not self.hightlight.enter:
@@ -50,6 +76,7 @@ class IsoMapScreen(Screen):
         self.map_scatter = MyScatterLayout()
         self.map_lay = IsoFloatLayout(mymap=self.map)
         self.hightlight = IsoHightLightImage()
+        config.map_gui_list.append(self.hightlight)
         self.choice_hl = ChoiceHightligh()  # Подсветка
         for layer in self.map.layers:
             for tile in layer:
@@ -57,7 +84,7 @@ class IsoMapScreen(Screen):
                                                      size=(tile.width, tile.height), size_hint=(None, None)))
                 tile_info = Label(pos=(tile.x, tile.y), size=(tile.width, tile.height),
                                   text=f'{tile.column_index, tile.row_index}',
-                                  size_hint=(None, None), color=(0, 0, 0, 1), font_size=12)  # \n{tile.x}, {tile.y}
+                                  size_hint=(None, None), color=(1, 1, 1, 1), font_size=12)  # \n{tile.x}, {tile.y}
                 self.map_lay.add_widget(tile_info)
         self.map_lay.add_widget(self.hightlight)
         self.map_lay.add_widget(self.choice_hl)
