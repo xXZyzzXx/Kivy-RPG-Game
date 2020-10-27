@@ -22,8 +22,8 @@ class PathNode:
         return '{:3}'.format(self.value)
 
 
-fwidth = 15
-fheight = 30
+fwidth = 25
+fheight = 50
 costField = [[0 for _ in range(fheight)] for _ in range(fwidth)]
 pathField = [[PathNode() for _ in range(fheight)] for _ in range(fwidth)]
 
@@ -99,9 +99,11 @@ def generatePathField(initx, inity, initValue):
         updatePathFieldNode(x, y, pending)
 
 
-for x in range(6, 9):
-    for y in range(9, 12):
-        costField[x][y] = 20
-costField[7][13] = float('inf')
-generatePathField(7, 12, 100)
-printPathField()
+def create_move_map(posX, posY, points):
+    generatePathField(posX, posY, points)
+    #printPathField()
+    return pathField
+
+#print(create_move_map(5, 5, 35))
+
+

@@ -1,5 +1,6 @@
 import additional as ad
 import config
+import libraries.a_star as pathfind
 from additional import HoverBehavior
 from kivy.animation import Animation
 from kivy.app import App
@@ -302,7 +303,23 @@ class IsoMapUnit(ButtonBehavior, Image):
     def on_release(self):
         #self.hl.pos = self.pos
         #self.hl.opacity = 1
-        self.moves_hightlight()
+        #self.moves_hightlight()
+
+        move_map = pathfind.create_move_map(int(self.coords[0]), int(self.coords[1]), 50)
+        moves_tiles = []
+        for col in move_map:
+            for move in col:
+                if move.prev is not None:
+                    moves_tiles.append([move.prev, move.value])
+                    #print(move.prev, move.value)
+        print(moves_tiles)
+        for move in moves_tiles:
+            hl = ChoiceHightligh(pos=ad.tile_to_world(move[0]))
+            anim = Animation(opacity=1, duration=.2)
+            anim.start(hl)
+            self.parent.add_widget(hl)
+            self.moves_highlight_list.append(hl)
+        self.bring_gui_to_front()
 
     def moves_hightlight(self):
         moves_list = ad.get_moves(self.coords, self.movement)
@@ -328,7 +345,7 @@ class IsoMapUnit(ButtonBehavior, Image):
 class ChoiceHightligh(Image):
     def __init__(self, opacity=0.2, **kwargs):
         super(ChoiceHightligh, self).__init__(**kwargs)
-        self.source = r'data/images/iso/hightlight4.png'
+        self.source = r'data/images/iso/hightlight5.png'
         self.choice = None
         self.opacity = opacity
         self.size = (config.TILE_WIDTH * config.SCALING, config.TILE_HEIGHT * config.SCALING + 10 * config.SCALING)

@@ -57,7 +57,7 @@ class IsoMapScreen(Screen):
                                                      size=(tile.width, tile.height), size_hint=(None, None)))
                 tile_info = Label(pos=(tile.x, tile.y), size=(tile.width, tile.height),
                                   text=f'{tile.column_index, tile.row_index}',
-                                  size_hint=(None, None), color=(0, 0, 0, 1), font_size=12)  # \n{tile.x}, {tile.y}
+                                  size_hint=(None, None), color=(1, 1, 1, 1), font_size=12)  # \n{tile.x}, {tile.y}
                 self.map_lay.add_widget(tile_info)
         self.map_lay.add_widget(self.hightlight)
         self.map_lay.add_widget(self.choice_hl)
