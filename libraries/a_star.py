@@ -83,14 +83,24 @@ def generatePathField(initx, inity, initValue):
         updatePathFieldNode(x, y, pending)
 
 
+def buildPathTo(x, y):
+    path = []
+    current = (x, y)
+    while current is not None:
+        path.insert(0, current)
+        cx, cy = current
+        current = pathField[cx][cy].prev
+    return path
+
+
 def create_move_map(posX, posY, points):
     generatePathField(posX, posY, points)
-    for col in pathField:
-        for move in col:
-            if move.prev is not None:
-                print(move.prev, move.value)
-    return pathField
+    moves_list = []
+    for x in range(fwidth):
+        for y in range(fheight):
+            if pathField[x][y].value != 0:
+                moves_list.append(buildPathTo(x, y))
+    return moves_list
 
-create_move_map(17, 17, 50)
 
 

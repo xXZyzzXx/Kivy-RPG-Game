@@ -67,6 +67,9 @@ class IsoFloatLayout(FloatLayout):
                     tiles = ad.world_to_tile(touch.pos)
                     if tiles is not None:
                         self.check_press(tiles)
+                    if config.selected_unit:  # Снятие выделения
+                        config.selected_unit.selected = False
+                        config.selected_unit = None
                 else:
                     self.moved = False
         else:
@@ -297,55 +300,50 @@ class IsoMapUnit(ButtonBehavior, Image):
         self.width = config.TILE_WIDTH * config.SCALING
         self.height = config.TILE_HEIGHT * config.SCALING
         self.name = name
-        self.movement = 2.5
+        self.movement = 30
         self.moves_highlight_list = []
+        self.selected = False
+        self.possible_moves = []
 
     def on_release(self):
-        #self.hl.pos = self.pos
-        #self.hl.opacity = 1
-        #self.moves_hightlight()
-
-        move_map = pathfind.create_move_map(int(self.coords[0]), int(self.coords[1]), 50)
-        moves_tiles = []
-        for col in move_map:
-            for move in col:
-                if move.prev is not None:
-                    moves_tiles.append([move.prev, move.value])
-                    #print(move.prev, move.value)
-        print(moves_tiles)
-        for move in moves_tiles:
-            hl = ChoiceHightligh(pos=ad.tile_to_world(move[0]))
-            anim = Animation(opacity=1, duration=.2)
-            anim.start(hl)
-            self.parent.add_widget(hl)
-            self.moves_highlight_list.append(hl)
-        self.bring_gui_to_front()
-
-    def moves_hightlight(self):
-        moves_list = ad.get_moves(self.coords, self.movement)
         self.clear_move_list()
-        for move in moves_list:
-            hl = ChoiceHightligh(pos=ad.tile_to_world(move))
+        move_map = pathfind.create_move_map(int(self.coords[0]), int(self.coords[1]), self.movement)
+        for move in move_map:
+            if move[-1] == self.coords:
+                continue
+            self.possible_moves.append(move)
+            hl = ChoiceHightligh(pos=ad.tile_to_world(move[-1]))
             anim = Animation(opacity=1, duration=.2)
             anim.start(hl)
             self.parent.add_widget(hl)
             self.moves_highlight_list.append(hl)
-        self.bring_gui_to_front()
+        ad.bring_to_front()
+        config.selected_unit = self
+        self.selected = True
 
-    def bring_gui_to_front(self):
-        for widget in config.map_gui_list:
-            ad.bring_to_front(widget)
 
     def clear_move_list(self):
         for item in self.moves_highlight_list:
             self.parent.remove_widget(item)
         self.moves_highlight_list.clear()
+        self.possible_moves.clear()
 
 
 class ChoiceHightligh(Image):
     def __init__(self, opacity=0.2, **kwargs):
         super(ChoiceHightligh, self).__init__(**kwargs)
         self.source = r'data/images/iso/hightlight5.png'
+        self.choice = None
+        self.opacity = opacity
+        self.size = (config.TILE_WIDTH * config.SCALING, config.TILE_HEIGHT * config.SCALING + 10 * config.SCALING)
+        self.size_hint = (None, None)
+        self.coordinates = None
+
+
+class MovesHightlight(Image):
+    def __init__(self, opacity=1, **kwargs):
+        super(MovesHightlight, self).__init__(**kwargs)
+        self.source = r'data/images/iso/hightlight.png'
         self.choice = None
         self.opacity = opacity
         self.size = (config.TILE_WIDTH * config.SCALING, config.TILE_HEIGHT * config.SCALING + 10 * config.SCALING)

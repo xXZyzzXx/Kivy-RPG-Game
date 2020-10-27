@@ -117,6 +117,8 @@ TILE_Z = 10
 MW = 25
 MH = 50
 
+
+selected_unit = None
 game = None
 current_player = None
 # TODO: Добавить словари со стоимостью, харастеристикой и прочим в словаре всех юнитов и программ
