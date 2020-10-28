@@ -178,8 +178,9 @@ def linear_to_screen(linx, liny):
 def bring_to_front():
     for widget in config.map_gui_list:
         parent = widget.parent
-        parent.remove_widget(widget)
-        parent.add_widget(widget)
+        if parent is not None:
+            parent.remove_widget(widget)
+            parent.add_widget(widget)
 
 
 def widget_to_front(widget):
