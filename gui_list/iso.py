@@ -42,6 +42,7 @@ class IsoFloatLayout(FloatLayout):
         super(IsoFloatLayout, self).__init__(**kwargs)
         self.moved = False
         self.map = mymap
+        self.in_radius = False
 
     def on_touch_down(self, touch):
         touch.grab(self)
@@ -67,6 +68,7 @@ class IsoFloatLayout(FloatLayout):
                     if tiles is not None:
                         self.check_press(tiles)
                     if config.selected_unit is not None:
+                        self.in_radius = False
                         if config.selected_unit.selected:  # Снятие выделения
                             for moves in config.selected_unit.possible_moves:
                                 if tiles == moves[-1][0]:
@@ -77,22 +79,27 @@ class IsoFloatLayout(FloatLayout):
                                             continue
                                         else:
                                             config.selected_unit.movement -= move[1]
-                                            print(config.selected_unit.movement)
                                     config.hl.opacity = 0
                                     config.selected_unit.coords = moves[-1][0]
                                     self.parent.parent.parent.remove_selected_moves_list()
+                                    self.in_radius = True
                                     if config.selected_unit.movement >= 10:
                                         config.selected_unit.on_release()
                                     else:
-                                        config.selected_unit.selected = False
-                                        config.selected_unit = None
-                                        self.remove_units_moves()
+                                        self.remove_movement()
+                            if not self.in_radius:
+                                self.remove_movement()
 
                 else:
                     self.moved = False
         else:
             pass
         return super(IsoFloatLayout, self).on_touch_up(touch)
+
+    def remove_movement(self):
+        config.selected_unit.selected = False
+        config.selected_unit = None
+        self.remove_units_moves()
 
     def remove_units_moves(self):
         for unit in config.map_units:
@@ -105,7 +112,6 @@ class IsoFloatLayout(FloatLayout):
             for tile in lay:
                 if tile.coordinates == tiles:
                     if tile.type == 'city':
-                        print(tile)
                         if not tile.tools:
                             self.remove_info()
                             tile.get_panel()
@@ -347,7 +353,8 @@ class IsoMapUnit(ButtonBehavior, Image):
 
     def clear_move_list(self):
         for item in self.moves_highlight_list:
-            self.parent.remove_widget(item)
+            anim = RemoveMovesAnimation(opacity=0, duration=.3, parent=self.parent, widget=item)
+            anim.start(item)
         self.moves_highlight_list.clear()
         self.possible_moves.clear()
 
@@ -380,3 +387,13 @@ class IsoRightMenu(BoxLayout):
 
 class IsoNavMenu(BoxLayout):
     pass
+
+
+class RemoveMovesAnimation(Animation):
+    def __init__(self, parent, widget, **kwargs):
+        super(RemoveMovesAnimation, self).__init__(**kwargs)
+        self.parent = parent
+        self.widget = widget
+
+    def on_complete(self, widget):
+        self.parent.remove_widget(self.widget)

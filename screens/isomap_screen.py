@@ -86,7 +86,7 @@ class IsoMapScreen(Screen):
                 tile_info = Label(pos=(tile.x, tile.y), size=(tile.width, tile.height),
                                   text=f'{tile.column_index, tile.row_index}',
                                   size_hint=(None, None), color=(1, 1, 1, 1), font_size=12)  # \n{tile.x}, {tile.y}
-                self.map_lay.add_widget(tile_info)
+                # self.map_lay.add_widget(tile_info)
         self.map_lay.add_widget(self.hightlight)
         self.map_lay.add_widget(self.choice_hl)
         config.city_list.clear()  # TODO: отрисовка городов
@@ -157,7 +157,6 @@ class IsoMapScreen(Screen):
         return city_view
 
     def create_expedition(self, city, unit='Воин'):
-        print(city.pos)
         self.add_obj_to_map(unit, city.pos, city.coordinates)
 
     def add_obj_to_map(self, obj, pos, coords):
