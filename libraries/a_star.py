@@ -1,5 +1,7 @@
 from collections import deque
 
+import config
+
 
 def screenToLinear(scrx, scry):
     linx = scrx - scry // 2
@@ -25,7 +27,7 @@ class PathNode:
 
 fwidth = 25
 fheight = 50
-costField = [[0 for _ in range(fheight)] for _ in range(fwidth)]
+
 pathField = [[PathNode() for _ in range(fheight)] for _ in range(fwidth)]
 
 
@@ -55,7 +57,7 @@ def cornersOf(x, y):
     return [(x - 1, y), (x + 1, y), (x, y - 2), (x, y + 2)]
 
 
-def updatePathFieldNode(cx, cy, pending):
+def updatePathFieldNode(cx, cy, pending, costField):
     baseValue = pathField[cx][cy].value
     for x, y in sidesOf(cx, cy):
         if inField(x, y):
@@ -75,7 +77,7 @@ def updatePathFieldNode(cx, cy, pending):
                 pending.append((x, y))
 
 
-def generatePathField(initx, inity, initValue):
+def generatePathField(initx, inity, initValue, costField):
     clearPathField()
     pending = deque()
     if inField(initx, inity):
@@ -83,7 +85,7 @@ def generatePathField(initx, inity, initValue):
         pending.append((initx, inity))
     while len(pending) != 0:
         (x, y) = pending.popleft()
-        updatePathFieldNode(x, y, pending)
+        updatePathFieldNode(x, y, pending, costField)
 
 
 def buildPathTo(x, y, cost):
@@ -97,8 +99,13 @@ def buildPathTo(x, y, cost):
     return path
 
 
-def create_move_map(posX, posY, points):
-    generatePathField(posX, posY, points)
+def create_move_map(posX, posY, points, map):
+    costField = refresh_cost_list()
+    for tile in map.objects_list:
+        costField[tile.column_index][tile.row_index] = float('inf')
+    for unit in config.current_player.map_units:
+        costField[unit.coords[0]][unit.coords[1]] = float('inf')
+    generatePathField(posX, posY, points, costField)
     moves_list = []
     for x in range(fwidth):
         for y in range(fheight):
@@ -107,4 +114,5 @@ def create_move_map(posX, posY, points):
     return moves_list
 
 
-
+def refresh_cost_list():
+    return [[0 for _ in range(fheight)] for _ in range(fwidth)]

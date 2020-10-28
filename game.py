@@ -32,6 +32,8 @@ class Player:
         self.mutantcoin = config.money
         self.programs_max = config.programs_max
         self.player = player
+        self.selected_unit = None
+        self.map_units = []
 
     def add_city(self, pos, name='Default'):
         city = City(pos, name)

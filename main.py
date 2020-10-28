@@ -24,10 +24,13 @@ class StrategyApp(App):
     def build(self):
         Window.bind(on_key_down=self.key_action)
         self.root = ScreenManager(transition=RVBTransition())  # WipeTransition()
-        self.root.add_widget(MenuScreen(name='menu'))
+        menu_screen = MenuScreen(name='menu')
+        self.root.add_widget(menu_screen)
         self.root.add_widget(MainScreen(name='main'))
         self.root.add_widget(IsoMapScreen(name='iso_map'))
         self.root.current = 'menu'  # temporary for testing
+        menu_screen.new_game()
+        self.root.current = 'iso_map'
         return self.root
 
     def on_settings_cls(self, *args):
