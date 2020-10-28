@@ -101,6 +101,7 @@ player_programs = {'Червь': 0,
 city_list = []
 current_city = None
 map_units = []
+
 map_gui_list = []
 
 programs_max = 15

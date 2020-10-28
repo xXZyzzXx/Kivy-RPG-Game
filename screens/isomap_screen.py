@@ -74,7 +74,7 @@ class IsoMapScreen(Screen):
         self.map_lay = IsoFloatLayout(mymap=self.map)
         self.hightlight = IsoHightLightImage()
         config.hl = self.hightlight
-        config.map_gui_list.append(self.hightlight)
+        config.map_gui_list.insert(0, self.hightlight)
         self.choice_hl = ChoiceHightligh()  # Подсветка
         for layer in self.map.layers:
             for tile in layer:
