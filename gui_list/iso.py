@@ -70,15 +70,24 @@ class IsoFloatLayout(FloatLayout):
                         if config.selected_unit.selected:  # Снятие выделения
                             for moves in config.selected_unit.possible_moves:
                                 if tiles == moves[-1][0]:
-                                    for move in moves:
+                                    for i, move in enumerate(moves):
                                         anim = Animation(pos=ad.tile_to_world(move[0]), duration=.7)
                                         anim.start(config.selected_unit)
-
+                                        if i == 0:
+                                            continue
+                                        else:
+                                            config.selected_unit.movement -= move[1]
+                                            print(config.selected_unit.movement)
+                                    config.hl.opacity = 0
                                     config.selected_unit.coords = moves[-1][0]
-                                    config.selected_unit.selected = False
-                                    config.selected_unit = None
-                                    self.remove_units_moves()
-                                    self.parent.parent.parent.remove_selected_moves_list()  # current screen
+                                    self.parent.parent.parent.remove_selected_moves_list()
+                                    if config.selected_unit.movement >= 10:
+                                        config.selected_unit.on_release()
+                                    else:
+                                        config.selected_unit.selected = False
+                                        config.selected_unit = None
+                                        self.remove_units_moves()
+
                 else:
                     self.moved = False
         else:
@@ -309,7 +318,8 @@ class IsoMapUnit(ButtonBehavior, Image):
         self.width = config.TILE_WIDTH * config.SCALING
         self.height = config.TILE_HEIGHT * config.SCALING
         self.name = name
-        self.movement = 30
+        self.default_movement = 30
+        self.movement = self.default_movement
         self.moves_highlight_list = []
         self.selected = False
         self.possible_moves = []
@@ -329,6 +339,11 @@ class IsoMapUnit(ButtonBehavior, Image):
         ad.bring_to_front()
         config.selected_unit = self
         self.selected = True
+        for unit in config.map_units:
+            if unit == self:
+                continue
+            else:
+                unit.clear_move_list()
 
     def clear_move_list(self):
         for item in self.moves_highlight_list:

@@ -76,6 +76,7 @@ class IsoMapScreen(Screen):
         self.map_scatter = MyScatterLayout()
         self.map_lay = IsoFloatLayout(mymap=self.map)
         self.hightlight = IsoHightLightImage()
+        config.hl = self.hightlight
         config.map_gui_list.append(self.hightlight)
         self.choice_hl = ChoiceHightligh()  # Подсветка
         for layer in self.map.layers:
@@ -120,12 +121,18 @@ class IsoMapScreen(Screen):
         for unit in config.current_player.units:
             if config.current_player.units[unit] > 0:
                 unit_label.text += f'\n{unit} {config.current_player.units[unit]}'
-        main_lay.add_widget(Button(text='create', size_hint=(.8, .2), pos_hint=({'center_x': .5}),
+        main_lay.add_widget(Button(text='next turn', size_hint=(.8, .1), pos_hint=({'center_x': .5}),
+                                   on_release=lambda x: self.refresh_movement()))
+        main_lay.add_widget(Button(text='create', size_hint=(.8, .1), pos_hint=({'center_x': .5}),
                                    on_release=lambda x: self.create_expedition(config.current_city)))
         lay.add_widget(toggle_button)
         lay.add_widget(main_lay)
         toggle_button.menu_open()
         return lay
+
+    def refresh_movement(self):
+        for unit in config.map_units:
+            unit.movement = unit.default_movement
 
     def on_leave(self, *args):
         self.clear_widgets()
