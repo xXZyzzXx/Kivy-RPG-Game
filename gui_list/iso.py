@@ -63,13 +63,22 @@ class IsoFloatLayout(FloatLayout):
             touch.ungrab(self)
             if touch.button == 'left':
                 if not self.moved:
-                    self.remove_units_moves()
                     tiles = ad.world_to_tile(touch.pos)
                     if tiles is not None:
                         self.check_press(tiles)
-                    if config.selected_unit:  # Снятие выделения
-                        config.selected_unit.selected = False
-                        config.selected_unit = None
+                    if config.selected_unit is not None:
+                        if config.selected_unit.selected:  # Снятие выделения
+                            for moves in config.selected_unit.possible_moves:
+                                if tiles == moves[-1][0]:
+                                    for move in moves:
+                                        anim = Animation(pos=ad.tile_to_world(move[0]), duration=.7)
+                                        anim.start(config.selected_unit)
+
+                                    config.selected_unit.coords = moves[-1][0]
+                                    config.selected_unit.selected = False
+                                    config.selected_unit = None
+                                    self.remove_units_moves()
+                                    self.parent.parent.parent.remove_selected_moves_list()  # current screen
                 else:
                     self.moved = False
         else:
@@ -93,7 +102,7 @@ class IsoFloatLayout(FloatLayout):
                             tile.get_panel()
                     else:
                         self.remove_info()
-                        print(tiles)
+                        print(f'Выбранный тайл: {tiles}')
                     flag = True
                     break
             if flag:
@@ -309,10 +318,10 @@ class IsoMapUnit(ButtonBehavior, Image):
         self.clear_move_list()
         move_map = pathfind.create_move_map(int(self.coords[0]), int(self.coords[1]), self.movement)
         for move in move_map:
-            if move[-1] == self.coords:
+            if move[-1][0] == self.coords:
                 continue
             self.possible_moves.append(move)
-            hl = ChoiceHightligh(pos=ad.tile_to_world(move[-1]))
+            hl = ChoiceHightligh(pos=ad.tile_to_world(move[-1][0]))
             anim = Animation(opacity=1, duration=.2)
             anim.start(hl)
             self.parent.add_widget(hl)
@@ -320,7 +329,6 @@ class IsoMapUnit(ButtonBehavior, Image):
         ad.bring_to_front()
         config.selected_unit = self
         self.selected = True
-
 
     def clear_move_list(self):
         for item in self.moves_highlight_list:

@@ -31,14 +31,13 @@ class IsoMapScreen(Screen):
         if cur_coords[0] > 0 and cur_coords[1] > 0:
             if ad.world_to_tile(cur_coords) is not None:
                 current_coords = ad.world_to_tile(cur_coords)
-                # print(current_coords)
                 if self.hightlight.coordinates != current_coords:
                     self.in_radius = False
                     self.get_highlight(current_coords)
                     if config.selected_unit is not None:
                         if config.selected_unit.selected:
                             for moves in config.selected_unit.possible_moves:
-                                if current_coords == moves[-1]:
+                                if current_coords == moves[-1][0]:
                                     self.get_road_to_tile(moves)
                                     self.in_radius = True
                             if not self.in_radius:
@@ -52,11 +51,12 @@ class IsoMapScreen(Screen):
     def get_road_to_tile(self, moves):
         self.remove_selected_moves_list()
         for move in moves:
-            hl = MovesHightlight(pos=ad.tile_to_world(move))
+            hl = MovesHightlight(pos=ad.tile_to_world(move[0]))
             anim = Animation(opacity=1, duration=.2)
             anim.start(hl)
             self.map_lay.add_widget(hl)
             self.selected_moves_list.append(hl)
+
         ad.bring_to_front()
 
     def remove_selected_moves_list(self):
