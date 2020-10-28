@@ -1,20 +1,21 @@
 import additional as ad
-from tile_map import MyMap
 import config
 from game import Game, Player
-from kivy.core.window import Window
-from kivy.uix.button import Button
-from kivy.uix.gridlayout import GridLayout
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.label import Label
-from kivy.uix.carousel import Carousel
-from kivy.uix.image import Image, AsyncImage
-from kivy.uix.settings import SettingsWithSidebar
-from kivy.uix.popup import Popup
+from gui_list.iso import IsoMapUnit
 from kivy.app import App
+from kivy.core.window import Window
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
+from kivy.uix.carousel import Carousel
 from kivy.uix.effectwidget import EffectWidget, FXAAEffect
+from kivy.uix.gridlayout import GridLayout
+from kivy.uix.image import Image
+from kivy.uix.label import Label
+from kivy.uix.popup import Popup
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.screenmanager import Screen
+from kivy.uix.settings import SettingsWithSidebar
+from tile_map import MyMap
 
 
 class MenuScreen(Screen):
@@ -132,11 +133,17 @@ class MenuScreen(Screen):
         player1 = Player(player=True)  # TODO: город добавить тут
         player1.add_city((17, 17), name='Персеполис')
         player2 = Player()
-        player2.add_city((3, 41), name='Научград')
+        player2.add_city((15, 20), name='Научград')
+        self.add_obj_to_map(obj='Варвары', pos=ad.tile_to_world_adv((16, 22)), coords=(16, 22), player=player2)
         game.players = [player1, player2]
         config.game = game
         config.current_player = player1
         ad.set_screen('main', self.manager)
+
+    def add_obj_to_map(self, obj, pos, coords, player):
+        unit = IsoMapUnit(name=obj, pos=pos, coords=coords, player=player)
+        player.map_units.append(unit)
+        config.map_gui_list.append(unit)
 
     def open_settings(self):
         self.app.destroy_settings()

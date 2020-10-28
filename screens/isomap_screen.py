@@ -1,7 +1,6 @@
 import additional as ad
 import config
 from gui_list.iso import *
-from kivy.animation import Animation
 from kivy.core.window import Window
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
@@ -34,9 +33,9 @@ class IsoMapScreen(Screen):
                 if self.hightlight.coordinates != current_coords:
                     self.in_radius = False
                     self.get_highlight(current_coords)
-                    if config.selected_unit is not None:
-                        if config.selected_unit.selected:
-                            for moves in config.selected_unit.possible_moves:
+                    if config.current_player.selected_unit is not None:
+                        if config.current_player.selected_unit.selected:
+                            for moves in config.current_player.selected_unit.possible_moves:
                                 if current_coords == moves[-1][0]:
                                     self.get_road_to_tile(moves)
                                     self.in_radius = True
@@ -52,8 +51,6 @@ class IsoMapScreen(Screen):
         self.remove_selected_moves_list()
         for move in moves:
             hl = MovesHightlight(pos=ad.tile_to_world(move[0]))
-            anim = Animation(opacity=1, duration=.2)
-            anim.start(hl)
             self.map_lay.add_widget(hl)
             self.selected_moves_list.append(hl)
 
@@ -98,7 +95,9 @@ class IsoMapScreen(Screen):
             else:
                 for pre_city in player.pre_cities:
                     self.create_city(pre_city.pos, pre_city.name, player=player)
-        navigation = BoxLayout(orientation='vertical', size_hint=(.2, .05), pos_hint=({'center_x': .5, 'top': 1}))
+                for unit in player.map_units:
+                    self.map_lay.add_widget(unit)
+        navigation = BoxLayout(orientation='vertical', size_hint=(.25, .05), pos_hint=({'center_x': .5, 'top': 1}))
         navigation.add_widget(Button(text='Переключить на город',
                                      on_press=lambda x: ad.set_screen('main', self.manager)))
         self.map_scatter.add_widget(self.map_lay)
@@ -131,8 +130,13 @@ class IsoMapScreen(Screen):
         return lay
 
     def refresh_movement(self):
-        for unit in config.map_units:
+        for unit in config.current_player.map_units:
             unit.movement = unit.default_movement
+            unit.move_points = unit.default_move_points
+            unit.info_label.text = f'{unit.name} ({unit.default_move_points}/{unit.move_points})'
+        if config.current_player.selected_unit is not None:
+            config.current_player.selected_unit.clear_move_list()
+            config.current_player.selected_unit.create_move_path()
 
     def on_leave(self, *args):
         self.clear_widgets()
@@ -140,6 +144,7 @@ class IsoMapScreen(Screen):
     def create_city(self, pos, name, player, owner=False):
         city = IsoCity(pos=ad.tile_to_world(pos), coordinates=pos, hg=self.hightlight, name=name, player=player)
         city_info = CityLabelName(text=city.name, center_x=city.center_x, y=city.y + city.height * 0.8)
+        config.map_gui_list.append(city)
         config.map_gui_list.append(city_info)
         if not owner:
             city_info.color = (1, 0, 0, 1)
@@ -151,7 +156,7 @@ class IsoMapScreen(Screen):
         self.map.city_list.append(city)
 
     def city_view(self):
-        city_view = GridLayout(rows=1, size_hint=(.2, .05), pos_hint=({'top': 1}))
+        city_view = GridLayout(rows=1, size_hint=(.25, .05), pos_hint=({'top': 1}))
         for city in config.city_list:
             city_view.add_widget(CityViewButton(city=city, root=self.map_scatter))
         return city_view
@@ -160,9 +165,9 @@ class IsoMapScreen(Screen):
         self.add_obj_to_map(unit, city.pos, city.coordinates)
 
     def add_obj_to_map(self, obj, pos, coords):
-        unit = IsoMapUnit(name=obj, pos=pos, coords=coords, hl=self.choice_hl)
+        unit = IsoMapUnit(name=obj, pos=pos, player=config.current_player, coords=coords, hl=self.choice_hl, map=self.map)
         self.map_lay.add_widget(unit)
-        config.map_units.append(unit)
+        config.current_player.map_units.append(unit)
         config.map_gui_list.append(unit)
 # ====================================
 

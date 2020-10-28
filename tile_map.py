@@ -1,5 +1,5 @@
-from pytmx import TiledMap
 import config
+from pytmx import TiledMap
 
 TILE_WIDTH = config.TILE_WIDTH
 TILE_HEIGHT = config.TILE_HEIGHT
@@ -29,10 +29,10 @@ class MyMap:
         self.tile_width = self.tmxdata.tilewidth
         self.tile_height = self.tmxdata.tileheight
         self.floor_list = self.get_tile_info('floor')
-        self.items_list = self.get_tile_info('items')
+        self.objects_list = self.get_tile_info('items')
         self.city_list = self.get_tile_info('city')
         self.screen = r'data/maps/map_screen.png'
-        self.layers = [self.floor_list, self.items_list, self.city_list]
+        self.layers = [self.floor_list, self.objects_list, self.city_list]
 
     def get_tile_info(self, name, scaling=config.SCALING):
         tiles_list = []

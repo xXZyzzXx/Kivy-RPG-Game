@@ -67,24 +67,27 @@ class IsoFloatLayout(FloatLayout):
                     tiles = ad.world_to_tile(touch.pos)
                     if tiles is not None:
                         self.check_press(tiles)
-                    if config.selected_unit is not None:
+                    if config.current_player.selected_unit is not None:
                         self.in_radius = False
-                        if config.selected_unit.selected:  # Снятие выделения
-                            for moves in config.selected_unit.possible_moves:
+                        if config.current_player.selected_unit.selected:  # Снятие выделения
+                            for moves in config.current_player.selected_unit.possible_moves:
                                 if tiles == moves[-1][0]:
                                     for i, move in enumerate(moves):
-                                        anim = Animation(pos=ad.tile_to_world(move[0]), duration=.7)
-                                        anim.start(config.selected_unit)
                                         if i == 0:
                                             continue
                                         else:
-                                            config.selected_unit.movement -= move[1]
+                                            anim = Animation(pos=ad.tile_to_world_adv(move[0]), duration=.7)
+                                            anim.start(config.current_player.selected_unit)
+                                            config.current_player.selected_unit.movement -= move[1]
+                                            config.current_player.selected_unit.move_points -= 1
+                                            config.current_player.selected_unit.info_label.text = f'{config.current_player.selected_unit.name} ({config.current_player.selected_unit.default_move_points}/{config.current_player.selected_unit.move_points})'
                                     config.hl.opacity = 0
-                                    config.selected_unit.coords = moves[-1][0]
+                                    config.current_player.selected_unit.coords = moves[-1][0]
                                     self.parent.parent.parent.remove_selected_moves_list()
                                     self.in_radius = True
-                                    if config.selected_unit.movement >= 10:
-                                        config.selected_unit.on_release()
+                                    if config.current_player.selected_unit.movement > 10:
+                                        if tiles != moves[0][0]:
+                                            config.current_player.selected_unit.create_move_path()
                                     else:
                                         self.remove_movement()
                             if not self.in_radius:
@@ -97,19 +100,27 @@ class IsoFloatLayout(FloatLayout):
         return super(IsoFloatLayout, self).on_touch_up(touch)
 
     def remove_movement(self):
-        config.selected_unit.selected = False
-        config.selected_unit = None
+        config.current_player.selected_unit.selected = False
+        config.current_player.selected_unit = None
         self.remove_units_moves()
 
     def remove_units_moves(self):
-        for unit in config.map_units:
+        for unit in config.current_player.map_units:
             unit.clear_move_list()
 
     def check_press(self, tiles):
-        layers = [self.map.city_list, self.map.items_list, self.map.floor_list]
         flag = False  # Для выхода из двух циклов
-        for lay in layers:
+        flag2 = False
+        for lay in self.map.layers:
             for tile in lay:
+                for unit in config.current_player.map_units:
+                    if unit.coords == tiles:
+                        unit.create_move_path()
+                        flag = True
+                        flag2 = True
+                        break
+                if flag2:
+                    break
                 if tile.coordinates == tiles:
                     if tile.type == 'city':
                         if not tile.tools:
@@ -314,38 +325,79 @@ class IsoToggle(ButtonBehavior, Image):
         anim.start(self.menu)
 
 
-class IsoMapUnit(ButtonBehavior, Image):
-    def __init__(self, name, coords, hl, **kwargs):
+class IsoMapUnit(ButtonBehavior, BoxLayout):
+    def __init__(self, name, coords, player, hl=None, map=None, **kwargs):
         super(IsoMapUnit, self).__init__(**kwargs)
         self.source = r'data/images/Units/warrior.png'
+        self.orientation = 'vertical'
         self.hl = hl  # Подсветка
         self.coords = coords
+        self.map = map
         self.size_hint = (None, None)
         self.width = config.TILE_WIDTH * config.SCALING
-        self.height = config.TILE_HEIGHT * config.SCALING
+        self.height = config.TILE_HEIGHT * config.SCALING + 10
         self.name = name
         self.default_movement = 30
+        self.default_move_points = 2
+        self.move_points = self.default_move_points
         self.movement = self.default_movement
         self.moves_highlight_list = []
         self.selected = False
         self.possible_moves = []
+        self.player = player
+        unit_label_color = (.7, 0, 0, 1)
+        unit_label_text = f'{name}'
+        if player == config.current_player:
+            unit_label_text = f'{name} ({self.default_move_points}/{self.move_points})'
+            unit_label_color = (0, 0, 0, 1)
+        self.info_label = Label(text=unit_label_text, size_hint_y=None, height=10, font_size=14, color=unit_label_color)
+        self.add_widget(self.info_label)
+        self.add_widget(Image(source=self.source, size_hint=(None, None), width=config.TILE_WIDTH * config.SCALING,
+                              height=config.TILE_HEIGHT * config.SCALING))
 
     def on_release(self):
+        # self.create_move_path()
+        pass
+
+    def create_move_path(self):
         self.clear_move_list()
-        move_map = pathfind.create_move_map(int(self.coords[0]), int(self.coords[1]), self.movement)
+        move_map = pathfind.create_move_map(int(self.coords[0]), int(self.coords[1]), self.movement, self.map)
         for move in move_map:
+            disallow_highlight = False
+            friendly_object = True
+            for tile in self.map.objects_list:
+                if move[-1][0] == tile.coordinates:
+                    disallow_highlight = True
+                    break
+            if disallow_highlight:
+                continue
+            for city in self.map.city_list:
+                if move[-1][0] == city.coordinates:
+                    if city.player == config.current_player:
+                        hl = EnterBuildingHightligh(pos=ad.tile_to_world(move[-1][0]))
+                    else:
+                        hl = EnemyBuildingHightligh(pos=ad.tile_to_world(move[-1][0]))
+                    friendly_object = False
+                    break
+            for player in config.game.players:
+                if player != config.current_player:
+                    for unit in player.map_units:
+                        if move[-1][0] == unit.coords:
+                            hl = EnemyBuildingHightligh(pos=ad.tile_to_world(move[-1][0]))
+                            friendly_object = False
+            self.possible_moves.append(move)
             if move[-1][0] == self.coords:
                 continue
-            self.possible_moves.append(move)
-            hl = ChoiceHightligh(pos=ad.tile_to_world(move[-1][0]))
+            if friendly_object:
+                hl = ChoiceHightligh(pos=ad.tile_to_world(move[-1][0]))
             anim = Animation(opacity=1, duration=.2)
             anim.start(hl)
             self.parent.add_widget(hl)
             self.moves_highlight_list.append(hl)
         ad.bring_to_front()
-        config.selected_unit = self
+        config.current_player.selected_unit = self
         self.selected = True
-        for unit in config.map_units:
+        for unit in config.current_player.map_units:
             if unit == self:
                 continue
             else:
@@ -363,6 +415,28 @@ class ChoiceHightligh(Image):
     def __init__(self, opacity=0.2, **kwargs):
         super(ChoiceHightligh, self).__init__(**kwargs)
         self.source = r'data/images/iso/hightlight5.png'
+        self.choice = None
+        self.opacity = opacity
+        self.size = (config.TILE_WIDTH * config.SCALING, config.TILE_HEIGHT * config.SCALING + 10 * config.SCALING)
+        self.size_hint = (None, None)
+        self.coordinates = None
+
+
+class EnterBuildingHightligh(Image):
+    def __init__(self, opacity=0.2, **kwargs):
+        super(EnterBuildingHightligh, self).__init__(**kwargs)
+        self.source = r'data/images/iso/player_building_highlight.png'
+        self.choice = None
+        self.opacity = opacity
+        self.size = (config.TILE_WIDTH * config.SCALING, config.TILE_HEIGHT * config.SCALING + 10 * config.SCALING)
+        self.size_hint = (None, None)
+        self.coordinates = None
+
+
+class EnemyBuildingHightligh(Image):
+    def __init__(self, opacity=0.2, **kwargs):
+        super(EnemyBuildingHightligh, self).__init__(**kwargs)
+        self.source = r'data/images/iso/enemy_hightlight.png'
         self.choice = None
         self.opacity = opacity
         self.size = (config.TILE_WIDTH * config.SCALING, config.TILE_HEIGHT * config.SCALING + 10 * config.SCALING)
@@ -397,3 +471,7 @@ class RemoveMovesAnimation(Animation):
 
     def on_complete(self, widget):
         self.parent.remove_widget(self.widget)
+
+
+class UnitLabel(Label):
+    pass

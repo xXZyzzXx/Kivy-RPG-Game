@@ -2,7 +2,9 @@
 #:import utils kivy.utils
 <Label>
     color: (0, 0, 0, 1)
-
+    #text_size: self.size
+    #halign: 'center'
+    #valign: 'middle'
 
 <BuildingScrollView>
     scroll_wheel_distance: 15
@@ -387,3 +389,10 @@
             pos: self.pos
             size: self.size
             source: 'data/images/iso/nav_menu.png'
+
+<UnitLabel>
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/iso/unit_label.png'

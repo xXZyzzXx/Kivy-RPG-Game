@@ -113,6 +113,17 @@ def tile_to_world(pos):
     return x, y
 
 
+def tile_to_world_adv(pos):
+    column_index, row_index = pos
+    if row_index % 2 == 0:
+        x = column_index * (config.TILE_WIDTH * config.SCALING)
+        y = (config.MH - row_index - 1) * ((config.TILE_HEIGHT * config.SCALING) / 2)
+    else:
+        x = column_index * (config.TILE_WIDTH * config.SCALING) + ((config.TILE_WIDTH * config.SCALING) / 2)
+        y = (config.MH - row_index - 1) * ((config.TILE_HEIGHT * config.SCALING) / 2)
+    return x, y + config.TILE_Z
+
+
 def set_screen(name_screen, sm):
     sm.current = name_screen
 
@@ -171,6 +182,12 @@ def bring_to_front():
         parent.add_widget(widget)
 
 
+def widget_to_front(widget):
+    parent = widget.parent
+    parent.remove_widget(widget)
+    parent.add_widget(widget)
+
+
 def tile_to_world_center(pos):
     column_index, row_index = pos
     if row_index % 2 == 0:
@@ -185,9 +202,8 @@ def tile_to_world_center(pos):
 def generate_move_map(x, y, moves):
     rm = 1  # 'условный массив'
     if rm < moves:
-        #rm = moves
+        # rm = moves
         _y = -1
         for _x in range(-1, 1):
             _x += 1
             print(_x)
-
