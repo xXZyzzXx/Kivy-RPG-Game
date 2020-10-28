@@ -117,7 +117,7 @@ TILE_Z = 10
 MW = 25
 MH = 50
 
-
+hl = None
 selected_unit = None
 game = None
 current_player = None

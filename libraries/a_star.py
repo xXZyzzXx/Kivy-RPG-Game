@@ -17,6 +17,7 @@ class PathNode:
     def __init__(self):
         self.value = 0
         self.prev = None
+        self.cost = None
 
     def __str__(self):
         return '{:3}'.format(self.value)
@@ -62,6 +63,7 @@ def updatePathFieldNode(cx, cy, pending):
             if newValue > pathField[x][y].value:
                 pathField[x][y].value = newValue
                 pathField[x][y].prev = (cx, cy)
+                pathField[x][y].cost = sideStepCost
                 pending.append((x, y))
     for x, y in cornersOf(cx, cy):
         if inField(x, y):
@@ -69,6 +71,7 @@ def updatePathFieldNode(cx, cy, pending):
             if newValue > pathField[x][y].value:
                 pathField[x][y].value = newValue
                 pathField[x][y].prev = (cx, cy)
+                pathField[x][y].cost = cornerStepCost
                 pending.append((x, y))
 
 
@@ -83,13 +86,14 @@ def generatePathField(initx, inity, initValue):
         updatePathFieldNode(x, y, pending)
 
 
-def buildPathTo(x, y):
+def buildPathTo(x, y, cost):
     path = []
     current = (x, y)
     while current is not None:
-        path.insert(0, current)
+        path.insert(0, [current, cost])
         cx, cy = current
         current = pathField[cx][cy].prev
+    # print(path)
     return path
 
 
@@ -99,7 +103,7 @@ def create_move_map(posX, posY, points):
     for x in range(fwidth):
         for y in range(fheight):
             if pathField[x][y].value != 0:
-                moves_list.append(buildPathTo(x, y))
+                moves_list.append(buildPathTo(x, y, pathField[x][y].cost))
     return moves_list
 
 

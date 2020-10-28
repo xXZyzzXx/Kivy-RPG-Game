@@ -31,14 +31,13 @@ class IsoMapScreen(Screen):
         if cur_coords[0] > 0 and cur_coords[1] > 0:
             if ad.world_to_tile(cur_coords) is not None:
                 current_coords = ad.world_to_tile(cur_coords)
-                # print(current_coords)
                 if self.hightlight.coordinates != current_coords:
                     self.in_radius = False
                     self.get_highlight(current_coords)
                     if config.selected_unit is not None:
                         if config.selected_unit.selected:
                             for moves in config.selected_unit.possible_moves:
-                                if current_coords == moves[-1]:
+                                if current_coords == moves[-1][0]:
                                     self.get_road_to_tile(moves)
                                     self.in_radius = True
                             if not self.in_radius:
@@ -52,11 +51,12 @@ class IsoMapScreen(Screen):
     def get_road_to_tile(self, moves):
         self.remove_selected_moves_list()
         for move in moves:
-            hl = MovesHightlight(pos=ad.tile_to_world(move))
+            hl = MovesHightlight(pos=ad.tile_to_world(move[0]))
             anim = Animation(opacity=1, duration=.2)
             anim.start(hl)
             self.map_lay.add_widget(hl)
             self.selected_moves_list.append(hl)
+
         ad.bring_to_front()
 
     def remove_selected_moves_list(self):
@@ -76,6 +76,7 @@ class IsoMapScreen(Screen):
         self.map_scatter = MyScatterLayout()
         self.map_lay = IsoFloatLayout(mymap=self.map)
         self.hightlight = IsoHightLightImage()
+        config.hl = self.hightlight
         config.map_gui_list.append(self.hightlight)
         self.choice_hl = ChoiceHightligh()  # Подсветка
         for layer in self.map.layers:
@@ -85,7 +86,7 @@ class IsoMapScreen(Screen):
                 tile_info = Label(pos=(tile.x, tile.y), size=(tile.width, tile.height),
                                   text=f'{tile.column_index, tile.row_index}',
                                   size_hint=(None, None), color=(1, 1, 1, 1), font_size=12)  # \n{tile.x}, {tile.y}
-                self.map_lay.add_widget(tile_info)
+                # self.map_lay.add_widget(tile_info)
         self.map_lay.add_widget(self.hightlight)
         self.map_lay.add_widget(self.choice_hl)
         config.city_list.clear()  # TODO: отрисовка городов
@@ -120,12 +121,18 @@ class IsoMapScreen(Screen):
         for unit in config.current_player.units:
             if config.current_player.units[unit] > 0:
                 unit_label.text += f'\n{unit} {config.current_player.units[unit]}'
-        main_lay.add_widget(Button(text='create', size_hint=(.8, .2), pos_hint=({'center_x': .5}),
+        main_lay.add_widget(Button(text='next turn', size_hint=(.8, .1), pos_hint=({'center_x': .5}),
+                                   on_release=lambda x: self.refresh_movement()))
+        main_lay.add_widget(Button(text='create', size_hint=(.8, .1), pos_hint=({'center_x': .5}),
                                    on_release=lambda x: self.create_expedition(config.current_city)))
         lay.add_widget(toggle_button)
         lay.add_widget(main_lay)
         toggle_button.menu_open()
         return lay
+
+    def refresh_movement(self):
+        for unit in config.map_units:
+            unit.movement = unit.default_movement
 
     def on_leave(self, *args):
         self.clear_widgets()
@@ -150,7 +157,6 @@ class IsoMapScreen(Screen):
         return city_view
 
     def create_expedition(self, city, unit='Воин'):
-        print(city.pos)
         self.add_obj_to_map(unit, city.pos, city.coordinates)
 
     def add_obj_to_map(self, obj, pos, coords):
