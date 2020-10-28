@@ -394,7 +394,7 @@ class IsoMapUnit(ButtonBehavior, BoxLayout):
             anim.start(hl)
             self.parent.add_widget(hl)
             self.moves_highlight_list.append(hl)
-        ad.bring_to_front()
+
         config.current_player.selected_unit = self
         self.selected = True
         for unit in config.current_player.map_units:
@@ -402,6 +402,7 @@ class IsoMapUnit(ButtonBehavior, BoxLayout):
                 continue
             else:
                 unit.clear_move_list()
+        ad.bring_to_front()
 
     def clear_move_list(self):
         for item in self.moves_highlight_list:
