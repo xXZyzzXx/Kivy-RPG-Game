@@ -76,7 +76,7 @@ class IsoFloatLayout(FloatLayout):
                                         if i == 0:
                                             continue
                                         else:
-                                            anim = Animation(pos=ad.tile_to_world_adv(move[0]), duration=.7)
+                                            anim = Animation(pos=ad.tile_to_world_adv(move[0]), duration=.7, t='in_out_quad')
                                             anim.start(config.current_player.selected_unit)
                                             config.current_player.selected_unit.movement -= move[1]
                                             config.current_player.selected_unit.move_points -= 1
