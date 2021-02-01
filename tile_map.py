@@ -4,20 +4,6 @@ from pytmx import TiledMap
 TILE_WIDTH = config.TILE_WIDTH
 TILE_HEIGHT = config.TILE_HEIGHT
 
-'''
-def get_screen_coordinates(tile_x, tile_y, width=mw, height=mh, tilewidth=TILE_WIDTH, tileheight=TILE_HEIGHT):
-    screen_x = tilewidth * tile_x // 2 + height * tilewidth // 2 - tile_y * tilewidth // 2
-    screen_y = (height - tile_y - 1) * tileheight // 2 + width * tileheight // 2 - tile_x * tileheight // 2
-    return screen_x, screen_y
-
-
-def screen_to_isometric_grid(cartX, cartY):
-    screenx = mh - cartY / (TILE_HEIGHT * SPRITE_SCALING) + cartX / (TILE_WIDTH * SPRITE_SCALING) - mw / 2 - 1 / 2
-    screeny = mh - cartY / (TILE_HEIGHT * SPRITE_SCALING) - cartX / (TILE_WIDTH * SPRITE_SCALING) + mw / 2 - 1 / 2
-    screenx2 = round(screenx)
-    screeny2 = round(screeny)
-    return screenx2, screeny2'''
-
 
 class MyMap:
     def __init__(self, source="data/maps/first.tmx"):

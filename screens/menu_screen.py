@@ -1,7 +1,3 @@
-import additional as ad
-import config
-from game import Game, Player
-from gui_list.iso import IsoMapUnit
 from kivy.app import App
 from kivy.core.window import Window
 from kivy.uix.boxlayout import BoxLayout
@@ -15,6 +11,11 @@ from kivy.uix.popup import Popup
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.screenmanager import Screen
 from kivy.uix.settings import SettingsWithSidebar
+
+import additional as ad
+import config
+from game import Game, Player
+from gui_list.iso import IsoMapUnit
 from tile_map import MyMap
 
 
@@ -39,16 +40,17 @@ class MenuScreen(Screen):
         self.add_widget(self.layout)
         Window.bind(mouse_pos=self.on_mouse_pos)
 
-    def adv_menu(self):
-        menu_box = MenuRelativeLayout(size_hint=(None, None), size=(600, 600), pos_hint=({'center_x': .5, 'center_y': .5}))
+    def adv_menu(self):  # Второй вариант кругового меню, не подходит
+        menu_box = MenuRelativeLayout(size_hint=(None, None), size=(600, 600),
+                                      pos_hint=({'center_x': .5, 'center_y': .5}))
         menu_top = Image(source=r'data/images/menu/menu_top.png', size_hint=(None, None), size=(426, 212),
                          pos_hint=({'center_x': .5, 'top': 1}))
         menu_left = Image(source=r'data/images/menu/menu_left.png', size_hint=(None, None), size=(212, 426),
-                         pos_hint=({'x': 0, 'center_y': .5}))
+                          pos_hint=({'x': 0, 'center_y': .5}))
         menu_right = Image(source=r'data/images/menu/menu_right.png', size_hint=(None, None), size=(212, 426),
-                         pos_hint=({'right': 1, 'center_y': .5}))
+                           pos_hint=({'right': 1, 'center_y': .5}))
         menu_bottom = Image(source=r'data/images/menu/menu_bottom.png', size_hint=(None, None), size=(426, 212),
-                         pos_hint=({'center_x': .5, 'y': 0}))
+                            pos_hint=({'center_x': .5, 'y': 0}))
         menu_center = Image(source=r'data/images/menu/center.png', size_hint=(None, None), size=(250, 250),
                             pos_hint=({'center_x': .5, 'center_y': .5}))
         menu_box.add_widget(menu_top)
@@ -61,7 +63,8 @@ class MenuScreen(Screen):
     def menu(self):
         menu_box = GridLayout(cols=1, size_hint=(.4, .5), pos_hint=({'center_x': .5, 'center_y': .5}), spacing=10)
         continue_button = Button(text='Продолжить', size_hint_y=.2, disabled=True)
-        start_button = Button(text='Новая игра', size_hint_y=.2, on_release=lambda x: self.carousel.load_next(mode='next'))
+        start_button = Button(text='Новая игра', size_hint_y=.2,
+                              on_release=lambda x: self.carousel.load_next(mode='next'))
         load_button = Button(text='Загрузить игру', size_hint_y=.2,
                              on_release=lambda x: ad.set_screen('iso_map', self.manager))
         if config.game is None:
@@ -117,7 +120,7 @@ class MenuScreen(Screen):
                                      on_release=lambda x: self.carousel.load_previous(), text='<= Назад'))
 
         bottom_box.add_widget(Button(size_hint=(.3, .7), pos_hint=({'center_x': .5, 'center_y': .5}),
-                              on_release=lambda x: self.new_game(), text='Начать игру'))
+                                     on_release=lambda x: self.new_game(), text='Начать игру'))
 
         bottom_box.add_widget(Button(size_hint=(.2, .7), pos_hint=({'right': 1, 'center_y': .5}),
                                      on_release=lambda x: self.map_settings(), text='Настройки карты'))
@@ -128,7 +131,7 @@ class MenuScreen(Screen):
         box.add_widget(bottom_box)
         return box
 
-    def new_game(self):
+    def new_game(self):  # Создание новой игры
         game = Game()
         player1 = Player(player=True)  # TODO: город добавить тут
         player1.add_city((17, 17), name='Персеполис')

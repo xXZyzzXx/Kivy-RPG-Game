@@ -54,7 +54,7 @@ class HoverBehavior(object):
 Factory.register('HoverBehavior', HoverBehavior)
 
 
-def subregion(px, py, r_x, r_y):
+def subregion(px, py, r_x, r_y):  # Поиск нужного тайла среди выбранных
     rx = int(r_x)
     ry = int(r_y)
     foo = px - py
@@ -128,7 +128,7 @@ def set_screen(name_screen, sm):
     sm.current = name_screen
 
 
-def change_view(obj, root, quick=False):
+def change_view(obj, root, quick=False):  # Передвижение камеры к городам
     if quick:
         root.pos = -(obj.pos[0] - Window.width / 2 + obj.width / 2), -(obj.pos[1] - Window.height / 2 + obj.height / 2)
     else:
@@ -146,7 +146,7 @@ def to_tile_center(pos):
     return pos[0] + config.TILE_WIDTH / 2, pos[1] + config.TILE_HEIGHT / 2
 
 
-def get_moves(pos, frad):
+def get_moves(pos, frad):  # Список доступных ходов
     moves_list = []
     scrx, scry = pos
     irad = ceil(frad)
@@ -171,7 +171,6 @@ def screen_to_linear(scrx, scry):
 def linear_to_screen(linx, liny):
     rotx = (linx - liny) // 2
     roty = (-linx - liny)
-    # print(rotx, roty)
     return rotx, roty
 
 

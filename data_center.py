@@ -1,7 +1,5 @@
 import building
-from building import *
-import config
-from additional import *
+from additional import HoverBehavior
 from gui import *
 from kivy.utils import get_color_from_hex
 from kivy.uix.behaviors import ButtonBehavior
@@ -19,6 +17,8 @@ from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.tabbedpanel import TabbedPanel, TabbedPanelItem
 from kivy.uix.togglebutton import ToggleButton
+
+# TODO: переделать сразу к лучшему виду с новыми текстурами
 
 
 def data_center_content(build_place):

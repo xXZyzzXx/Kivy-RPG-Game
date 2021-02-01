@@ -20,7 +20,7 @@ class BuildingButt(ButtonBehavior, BoxLayout):
         with self.canvas.before:
             self.bg = Rectangle(pos=self.pos, size=self.size, source='data/images/gui_elements/build_button.png')
         res_cost = config.buildings[build_name]
-        for i in range(3):
+        for i in range(3):  # TODO: что это?))0)
             if i == 2:
                 if config.resources['Сырьевые ресурсы'][0] - res_cost[2][i] <= 0:
                     self.disabled = True
@@ -39,9 +39,9 @@ class BuildingButt(ButtonBehavior, BoxLayout):
     def on_press(self):
         pass
 
-    def on_release(self):
+    def on_release(self):  # Создать здание
         self.build_place.create_building(self.build_name)
-        self.build_place.parent.remove_widget(self.scatter)
+        self.build_place.parent.remove_widget(self.scatter)  # TODO: удаление скаттера?
         i = 0
         for res in config.resources:
             if res == 'Сырьевые ресурсы':
@@ -54,7 +54,7 @@ class BuildingButt(ButtonBehavior, BoxLayout):
         self.build_place.active = False
 
 
-class ResLayout(BoxLayout):  # TODO: add color by building type
+class ResLayout(BoxLayout):
     def __init__(self, build_type, **kwargs):
         super().__init__(**kwargs)
         self.orientation = 'horizontal'
@@ -69,23 +69,6 @@ class ResLayout(BoxLayout):  # TODO: add color by building type
     def on_size(self, *args):
         self.bg.size = self.size
         self.bg.pos = self.pos
-
-
-class BuildingScrollView(ScrollView):
-    '''
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-    def on_touch_down(self, touch):
-        if touch.is_mouse_scrolling:
-            if touch.button == 'scrolldown':
-                pass
-            elif touch.button == 'scrollup':
-                if self.scroll_y < 0.17:
-                    self.rel.add_widget(Button(text='suka'), pos_hint=({'top': .1}))
-                print(self.scroll_y)
-        return super(BuildingScrollView, self).on_touch_down(touch)'''
-    pass
 
 
 class TopUpgradeLayout(ButtonBehavior, BoxLayout):
@@ -163,6 +146,10 @@ class CloseMenuButton(ButtonBehavior, Image):
         self.source = 'data/images/gui_elements/close.png'
         self.building.parent.remove_widget(self.close_lay)
         self.building.active = False
+
+
+class BuildingScrollView(ScrollView):
+    pass
 
 
 class FrameBoxLayout(BoxLayout):

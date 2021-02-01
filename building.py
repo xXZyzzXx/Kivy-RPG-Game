@@ -1,5 +1,3 @@
-from kivy.uix.floatlayout import FloatLayout
-import config
 from gui import *
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
@@ -155,7 +153,7 @@ def prod_menu(build_place):
     return scatter
 
 
-def base_window(build_place):  # Шаблон
+def base_window(build_place):  # Шаблон для окна
     scatter = ScatterLayout()
     menu = MenuLayout()
     inside_menu = InsideMenuLayout()

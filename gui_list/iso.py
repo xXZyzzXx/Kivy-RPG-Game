@@ -15,7 +15,7 @@ from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.widget import Widget
 
 
-class IsoTileImage(Widget):
+class IsoTileImage(Widget):  # Изображение тайла на игровой карте
     def __init__(self, source, pos, size, **kwargs):
         super(IsoTileImage, self).__init__(**kwargs)
         with self.canvas:
@@ -26,7 +26,7 @@ class IsoTileImage(Widget):
         self.image.pos = self.pos
 
 
-class IsoHightLightImage(Image):
+class IsoHightLightImage(Image):  # Подсветка тайлов
     def __init__(self, **kwargs):
         super(IsoHightLightImage, self).__init__(**kwargs)
         self.source = r'data/images/iso/hightlight.png'
@@ -37,7 +37,7 @@ class IsoHightLightImage(Image):
         self.coordinates = None
 
 
-class IsoFloatLayout(FloatLayout):
+class IsoFloatLayout(FloatLayout):  # Слой карты
     def __init__(self, mymap, **kwargs):
         super(IsoFloatLayout, self).__init__(**kwargs)
         self.moved = False

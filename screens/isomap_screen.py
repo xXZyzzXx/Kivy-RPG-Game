@@ -1,6 +1,3 @@
-import additional as ad
-import config
-from gui_list.iso import *
 from kivy.core.window import Window
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
@@ -9,10 +6,15 @@ from kivy.uix.label import Label
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.scatterlayout import ScatterPlaneLayout
 from kivy.uix.screenmanager import Screen
+
+from gui_list.iso import IsoFloatLayout, IsoHightLightImage, ChoiceHightligh, IsoTileImage, MovesHightlight, \
+    IsoRightMenu, IsoNavMenu, IsoToggle, IsoCity, CityLabelName, CityViewButton, IsoMapUnit
 from tile_map import MyMap
+import additional as ad
+import config
 
 
-class IsoMapScreen(Screen):
+class IsoMapScreen(Screen):  # Скрин карты
     def __init__(self, **kw):
         super(IsoMapScreen, self).__init__(**kw)
         self.hightlight = None
@@ -24,6 +26,48 @@ class IsoMapScreen(Screen):
         self.in_radius = False
         self.selected_moves_list = []
 
+    def on_enter(self, *args):
+        self.layout = RelativeLayout()
+        self.map = MyMap(source="data/maps/first.tmx")  # Загруженная карта
+        self.map_scatter = MyScatterLayout()  # Управление картой
+        self.map_lay = IsoFloatLayout(mymap=self.map)  # Сама карта
+        self.hightlight = IsoHightLightImage()  # Подсветка под мышкой
+        config.hl = self.hightlight
+        config.map_gui_list.insert(0, self.hightlight)
+        self.choice_hl = ChoiceHightligh()  # Подсветка
+        for layer in self.map.layers:  # Отрисовка тайлов карты
+            for tile in layer:
+                self.map_lay.add_widget(IsoTileImage(source=tile.image, pos=(tile.x, tile.y),
+                                                     size=(tile.width, tile.height), size_hint=(None, None)))
+                tile_info = Label(pos=(tile.x, tile.y), size=(tile.width, tile.height),
+                                  text=f'{tile.column_index, tile.row_index}',
+                                  size_hint=(None, None), color=(1, 1, 1, 1), font_size=12)  # \n{tile.x}, {tile.y}
+                # self.map_lay.add_widget(tile_info)
+        self.map_lay.add_widget(self.hightlight)
+        # self.map_lay.add_widget(self.choice_hl)
+        config.city_list.clear()  # TODO: правильная отрисовка юнитов в зависимости от принадлежности
+        for player in config.game.players:
+            if player == config.current_player:
+                for pre_city in player.pre_cities:
+                    self.create_city(pre_city.pos, pre_city.name, player=player, owner=True)
+                ad.change_current_city(player.cities[-1])  # Дефолтный город
+            else:
+                for pre_city in player.pre_cities:
+                    self.create_city(pre_city.pos, pre_city.name, player=player)
+                for unit in player.map_units:
+                    self.map_lay.add_widget(unit)
+        navigation = BoxLayout(orientation='vertical', size_hint=(.25, .05), pos_hint=({'center_x': .5, 'top': 1}))
+        navigation.add_widget(Button(text='Переключить на город',
+                                     on_press=lambda x: ad.set_screen('main', self.manager)))
+        self.map_scatter.add_widget(self.map_lay)
+        self.layout.add_widget(self.map_scatter)  # Игровая карта
+        self.layout.add_widget(navigation)  # Панель навигации
+        self.layout.add_widget(self.city_view())  # Переключения на города
+        self.layout.add_widget(self.nav_right_content())
+        self.add_widget(self.layout)
+        Window.bind(mouse_pos=self.on_mouse_pos)
+        ad.change_view(config.current_city, self.map_scatter, quick=True)
+
     def on_mouse_pos(self, window, pos):
         map_offset = self.map_scatter.pos
         cur_coords = (pos[0] - map_offset[0], pos[1] - map_offset[1])
@@ -31,16 +75,16 @@ class IsoMapScreen(Screen):
             if ad.world_to_tile(cur_coords) is not None:
                 current_coords = ad.world_to_tile(cur_coords)
                 if self.hightlight.coordinates != current_coords:
-                    self.in_radius = False
+                    self.in_radius = False  # убрать self?
                     self.get_highlight(current_coords)
-                    if config.current_player.selected_unit is not None:
-                        if config.current_player.selected_unit.selected:
-                            for moves in config.current_player.selected_unit.possible_moves:
+                    if config.current_player.selected_unit is not None:  # хайлайт при выборе игрока
+                        if config.current_player.selected_unit.selected:  # TODO: убрать двойное наложение
+                            for moves in config.current_player.selected_unit.possible_moves:  # стоит ли делать цикл?
                                 if current_coords == moves[-1][0]:
                                     self.get_road_to_tile(moves)
                                     self.in_radius = True
                             if not self.in_radius:
-                                self.remove_selected_moves_list()
+                                self.remove_selected_moves_list()  # убрать подсветку
                 else:
                     if not self.hightlight.enter:
                         self.hightlight.opacity = 1
@@ -67,48 +111,6 @@ class IsoMapScreen(Screen):
         # print(f'TILE: {current_coords}, pos: {self.hightlight.pos}')
         self.hightlight.coordinates = current_coords
 
-    def on_enter(self, *args):
-        self.layout = RelativeLayout()
-        self.map = MyMap(source="data/maps/first.tmx")
-        self.map_scatter = MyScatterLayout()
-        self.map_lay = IsoFloatLayout(mymap=self.map)
-        self.hightlight = IsoHightLightImage()
-        config.hl = self.hightlight
-        config.map_gui_list.insert(0, self.hightlight)
-        self.choice_hl = ChoiceHightligh()  # Подсветка
-        for layer in self.map.layers:
-            for tile in layer:
-                self.map_lay.add_widget(IsoTileImage(source=tile.image, pos=(tile.x, tile.y),
-                                                     size=(tile.width, tile.height), size_hint=(None, None)))
-                tile_info = Label(pos=(tile.x, tile.y), size=(tile.width, tile.height),
-                                  text=f'{tile.column_index, tile.row_index}',
-                                  size_hint=(None, None), color=(1, 1, 1, 1), font_size=12)  # \n{tile.x}, {tile.y}
-                # self.map_lay.add_widget(tile_info)
-        # self.map_lay.add_widget(self.hightlight)
-        self.map_lay.add_widget(self.choice_hl)
-        config.city_list.clear()  # TODO: отрисовка городов
-        for player in config.game.players:
-            if player == config.current_player:
-                for pre_city in player.pre_cities:
-                    self.create_city(pre_city.pos, pre_city.name, player=player, owner=True)
-                ad.change_current_city(player.cities[-1])
-            else:
-                for pre_city in player.pre_cities:
-                    self.create_city(pre_city.pos, pre_city.name, player=player)
-                for unit in player.map_units:
-                    self.map_lay.add_widget(unit)
-        navigation = BoxLayout(orientation='vertical', size_hint=(.25, .05), pos_hint=({'center_x': .5, 'top': 1}))
-        navigation.add_widget(Button(text='Переключить на город',
-                                     on_press=lambda x: ad.set_screen('main', self.manager)))
-        self.map_scatter.add_widget(self.map_lay)
-        self.layout.add_widget(self.map_scatter)
-        self.layout.add_widget(navigation)
-        self.layout.add_widget(self.city_view())
-        self.layout.add_widget(self.nav_right_content())
-        self.add_widget(self.layout)
-        Window.bind(mouse_pos=self.on_mouse_pos)
-        ad.change_view(config.current_city, self.map_scatter, quick=True)
-
     def nav_right_content(self):
         lay = IsoRightMenu(orientation='horizontal', size_hint=(.17, .5))
         main_lay = IsoNavMenu(orientation='vertical', size_hint_x=.9)
@@ -129,7 +131,8 @@ class IsoMapScreen(Screen):
         toggle_button.menu_open()
         return lay
 
-    def refresh_movement(self):
+    @staticmethod
+    def refresh_movement():
         for unit in config.current_player.map_units:
             unit.movement = unit.default_movement
             unit.move_points = unit.default_move_points
@@ -140,6 +143,7 @@ class IsoMapScreen(Screen):
 
     def on_leave(self, *args):
         self.clear_widgets()
+        self.map_lay.clear_widgets()
 
     def create_city(self, pos, name, player, owner=False):
         city = IsoCity(pos=ad.tile_to_world(pos), coordinates=pos, hg=self.hightlight, name=name, player=player)
@@ -161,14 +165,17 @@ class IsoMapScreen(Screen):
             city_view.add_widget(CityViewButton(city=city, root=self.map_scatter))
         return city_view
 
-    def create_expedition(self, city, unit='Воин'):
+    def create_expedition(self, city, unit='Воин'):  # TODO: reformat expedition for any units
         self.add_obj_to_map(unit, city.pos, city.coordinates)
 
-    def add_obj_to_map(self, obj, pos, coords):
-        unit = IsoMapUnit(name=obj, pos=pos, player=config.current_player, coords=coords, hl=self.choice_hl, map=self.map)
+    def add_obj_to_map(self, obj, pos, coords):  # Добавлять воина, а не объект
+        unit = IsoMapUnit(name=obj, pos=pos, player=config.current_player, coords=coords, hl=self.choice_hl,
+                          map=self.map)
         self.map_lay.add_widget(unit)
         config.current_player.map_units.append(unit)
         config.map_gui_list.append(unit)
+
+
 # ====================================
 
 
@@ -184,7 +191,7 @@ class MyScatterLayout(ScatterPlaneLayout):  # MAIN LAYOUT in ISO
                 self.zoom('up')
         ScatterPlaneLayout.on_touch_down(self, touch)
 
-    def zoom(self, direction):
+    def zoom(self, direction):  # TODO: доделать зум на карте
         if direction == 'down':
             self.scale += .1
 

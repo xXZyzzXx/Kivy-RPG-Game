@@ -1,5 +1,4 @@
 import additional as ad
-from gui import *
 from kivy.app import App
 from kivy.config import Config
 from kivy.config import ConfigParser
@@ -29,7 +28,7 @@ class StrategyApp(App):
         self.root.add_widget(MainScreen(name='main'))
         self.root.add_widget(IsoMapScreen(name='iso_map'))
         self.root.current = 'menu'  # temporary for testing
-        menu_screen.new_game()
+        menu_screen.new_game()  # сразу создать новую игру
         self.root.current = 'iso_map'
         return self.root
 
@@ -47,7 +46,7 @@ class StrategyApp(App):
         if p is not None:
             p.dismiss()
 
-    def key_action(self, window, keycode1, keycode2, text, modifiers):
+    def key_action(self, window, keycode1, keycode2, text, modifiers):  # Открыть главное меню при нажатии Esc
         if keycode1 == 27:
             ad.set_screen('menu', self.root)
 

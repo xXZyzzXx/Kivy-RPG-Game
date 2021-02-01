@@ -1,4 +1,4 @@
-# Game properties
+# Game properties, инициализация игры и игроков
 import config
 
 
