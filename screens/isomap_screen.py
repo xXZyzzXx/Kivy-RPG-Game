@@ -43,7 +43,7 @@ class IsoMapScreen(Screen):  # Скрин карты
                                   text=f'{tile.column_index, tile.row_index}',
                                   size_hint=(None, None), color=(1, 1, 1, 1), font_size=12)  # \n{tile.x}, {tile.y}
                 # self.map_lay.add_widget(tile_info)
-        self.map_lay.add_widget(self.hightlight)
+        # self.map_lay.add_widget(self.hightlight)
         # self.map_lay.add_widget(self.choice_hl)
         config.city_list.clear()  # TODO: правильная отрисовка юнитов в зависимости от принадлежности
         for player in config.game.players:
