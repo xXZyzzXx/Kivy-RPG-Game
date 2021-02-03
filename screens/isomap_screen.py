@@ -8,7 +8,7 @@ from kivy.uix.scatterlayout import ScatterPlaneLayout
 from kivy.uix.screenmanager import Screen
 
 from gui_list.iso import IsoFloatLayout, IsoHightLightImage, ChoiceHightligh, IsoTileImage, MovesHightlight, \
-    IsoRightMenu, IsoNavMenu, IsoToggle, IsoCity, CityLabelName, CityViewButton, IsoMapUnit
+    IsoRightMenu, IsoNavMenu, IsoToggle, IsoCity, CityLabelName, CityViewButton, IsoMapUnit, ExpeditionButton
 from tile_map import MyMap
 import additional as ad
 import config
@@ -64,6 +64,7 @@ class IsoMapScreen(Screen):  # Скрин карты
         self.layout.add_widget(navigation)  # Панель навигации
         self.layout.add_widget(self.city_view())  # Переключения на города
         self.layout.add_widget(self.nav_right_content())
+        self.layout.add_widget(self.expedition_content())
         self.add_widget(self.layout)
         Window.bind(mouse_pos=self.on_mouse_pos)
         ad.change_view(config.current_city, self.map_scatter, quick=True)
@@ -110,6 +111,16 @@ class IsoMapScreen(Screen):  # Скрин карты
         self.hightlight.pos = ad.tile_to_world(current_coords)
         # print(f'TILE: {current_coords}, pos: {self.hightlight.pos}')
         self.hightlight.coordinates = current_coords
+
+    def expedition_content(self):
+        main_lay = IsoNavMenu(orientation='horizontal', size_hint_y=None, height=30, pos_hint=({'bottom': 1}))
+        # =============
+        main_lay.add_widget(ExpeditionButton(pos_hint=({'left': 0}), size_hint_x=0.1,
+                                             on_release=lambda x: self.open_expedition_menu()))
+        return main_lay
+
+    def open_expedition_menu(self):
+        print('here')
 
     def nav_right_content(self):
         lay = IsoRightMenu(orientation='horizontal', size_hint=(.17, .5))

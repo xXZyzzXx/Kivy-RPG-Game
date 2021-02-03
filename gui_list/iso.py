@@ -456,6 +456,17 @@ class MovesHightlight(Image):
         self.coordinates = None
 
 
+class ExpeditionButton(ButtonBehavior, Image):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.source = 'data/images/gui_elements/group.png'
+
+    def on_press(self):
+        pass
+
+    def on_release(self):
+        pass
+
 class IsoRightMenu(BoxLayout):
     pass
 
