@@ -25,6 +25,7 @@ class IsoMapScreen(Screen):  # Скрин карты
         self.choice_hl = None
         self.in_radius = False
         self.selected_moves_list = []
+        self.group_menu = GroupMenu()
 
     def on_enter(self, *args):
         self.layout = RelativeLayout()
@@ -59,6 +60,7 @@ class IsoMapScreen(Screen):  # Скрин карты
         navigation = BoxLayout(orientation='vertical', size_hint=(.25, .05), pos_hint=({'center_x': .5, 'top': 1}))
         navigation.add_widget(Button(text='Переключить на город',
                                      on_press=lambda x: ad.set_screen('main', self.manager)))
+
         self.map_scatter.add_widget(self.map_lay)
         self.layout.add_widget(self.map_scatter)  # Игровая карта
         self.layout.add_widget(navigation)  # Панель навигации
@@ -112,6 +114,10 @@ class IsoMapScreen(Screen):  # Скрин карты
         # print(f'TILE: {current_coords}, pos: {self.hightlight.pos}')
         self.hightlight.coordinates = current_coords
 
+    def build_group_menu(self):
+        self.group_menu.build_base_ui()
+        self.group_menu.build_ui()
+
     def expedition_content(self):
         main_lay = IsoNavMenu(orientation='horizontal', size_hint_y=None, height=30, pos_hint=({'bottom': 1}))
         # =============
@@ -120,7 +126,14 @@ class IsoMapScreen(Screen):  # Скрин карты
         return main_lay
 
     def open_expedition_menu(self):
-        print('here')
+        if self.group_menu.active:
+            self.group_menu.clear_widgets()
+            self.layout.remove_widget(self.group_menu)
+            self.group_menu.active = False
+        else:
+            self.build_group_menu()
+            self.layout.add_widget(self.group_menu)
+            self.group_menu.active = True
 
     def nav_right_content(self):
         lay = IsoRightMenu(orientation='horizontal', size_hint=(.17, .5))
@@ -190,7 +203,7 @@ class IsoMapScreen(Screen):  # Скрин карты
 # ====================================
 
 
-class MyScatterLayout(ScatterPlaneLayout):  # MAIN LAYOUT in ISO
+class MyScatterLayout(ScatterPlaneLayout):
     def __init__(self, **kwargs):
         super(MyScatterLayout, self).__init__(**kwargs)
 
@@ -210,3 +223,63 @@ class MyScatterLayout(ScatterPlaneLayout):  # MAIN LAYOUT in ISO
             self.scale -= .1
 
         # print(config.SCALING)
+
+
+class GroupMenuBase(BoxLayout):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.orientation = 'vertical'
+        self.size_hint = (.9, .8)
+        self.pos_hint = ({'center_x': .5, 'center_y': .5})
+        self.active = False
+        # =====
+
+    def build_base_ui(self):
+        self.top_box = BoxLayout(orientation='horizontal', size_hint_y=0.45)
+        self.top_left_box = BoxLayout(orientation='horizontal', size_hint_x=0.2)
+        self.top_center_box = BoxLayout(orientation='horizontal', size_hint_x=0.4)
+        self.top_right_box = BoxLayout(orientation='horizontal', size_hint_x=0.2)
+        self.top_box.add_widget(self.top_left_box)
+        self.top_box.add_widget(self.top_center_box)
+        self.top_box.add_widget(self.top_right_box)
+        # ====
+        self.bottom_box = BoxLayout(orientation='horizontal', size_hint_y=0.55)
+        self.bottom_left_box = BoxLayout(orientation='horizontal', size_hint_x=0.2)
+        self.bottom_center_box = BoxLayout(orientation='horizontal', size_hint_x=0.4)
+        self.bottom_right_box = BoxLayout(orientation='horizontal', size_hint_x=0.2)
+        self.bottom_box.add_widget(self.bottom_left_box)
+        self.bottom_box.add_widget(self.bottom_center_box)
+        self.bottom_box.add_widget(self.bottom_right_box)
+        # ====
+        self.add_widget(self.top_box)
+        self.add_widget(self.bottom_box)
+
+
+class GroupMenu(GroupMenuBase):
+    def __init__(self, **kwargs):
+        super(GroupMenu, self).__init__(**kwargs)
+        # ====
+
+    def build_ui(self):
+        self.medical_box = GroupMainBox()
+        self.character_box = GroupMainBox()
+        self.specials_box = GroupMainBox()
+        self.top_left_box.add_widget(self.medical_box)
+        self.top_center_box.add_widget(self.character_box)
+        self.top_right_box.add_widget(self.specials_box)
+        # ====
+        self.companions_box = GroupMainBox()
+        self.inventory_box = GroupMainBox()
+        self.specials_box = GroupMainBox()
+        self.bottom_left_box.add_widget(self.companions_box)
+        self.bottom_center_box.add_widget(self.inventory_box)
+        self.bottom_right_box.add_widget(self.specials_box)
+        # ====
+
+
+class GroupMainBox(RelativeLayout):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        # self.orientation = 'vertical'
+        self.size_hint = (.9, .9)
+        self.pos_hint = ({'center_x': .5, 'center_y': .5})

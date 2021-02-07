@@ -396,3 +396,25 @@
             pos: self.pos
             size: self.size
             source: 'data/images/iso/unit_label.png'
+
+<GroupMenu>
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'data/images/gui_elements/main_ui.png'
+
+<GroupMainBox>
+    canvas.before:
+        Rectangle:
+
+            size: self.size
+            source: 'data/images/gui_elements/city_label.png'
+
+<BoxLayout>
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+        Line:
+            width: 1
+            rectangle: self.x, self.y, self.width, self.height
